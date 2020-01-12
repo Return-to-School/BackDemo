@@ -26,7 +26,7 @@ public class Student {
 
     private String qq;
 
-    private String backCard;
+    private String bankCard;
 
     private String phone;
 
@@ -107,12 +107,12 @@ public class Student {
         this.qq = qq;
     }
 
-    public String getBackCard() {
-        return backCard;
+    public String getBankCard() {
+        return bankCard;
     }
 
-    public void setBackCard(String backCard) {
-        this.backCard = backCard;
+    public void setBankCard(String bankCard) {
+        this.bankCard = bankCard;
     }
 
     public String getPhone() {
@@ -174,7 +174,7 @@ public class Student {
                 ", classname='" + classname + '\'' +
                 ", idCard='" + idCard + '\'' +
                 ", qq='" + qq + '\'' +
-                ", backCard='" + backCard + '\'' +
+                ", bankCard='" + bankCard + '\'' +
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 ", origin='" + origin + '\'' +
