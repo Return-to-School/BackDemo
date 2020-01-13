@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface StudentDao {
-    int addStudent(@Param("student") Student student);
+    int insertStudent(@Param("student") Student student);
 
     int updateStudent(@Param("student") Student student);
 

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.ncu.newmedia.backschool.dao.StudentDao">
-    <insert id="addStudent" useGeneratedKeys="true" keyProperty="student.id">
+    <insert id="insertStudent" useGeneratedKeys="true" keyProperty="student.id">
         insert into student values (#{student.id},#{student.name},#{student.gender},
                                    #{student.studentCard},#{student.college},#{student.classname},
                                    #{student.idCard},#{student.qq},#{student.bankCard},
@@ -16,7 +16,7 @@
                                  class = #{student.classname},idCard = #{student.idCard},qq = #{student.qq},
                                  bank_card = #{student.bankCard},phone = #{student.phone},
                                  email = #{student.email},origin = #{student.origin},
-                                 verified = #{student.verified};
+                                 verified = #{student.verified} where student_id = #{student.id};
     </update>
 
     <select id="idCardHashMatch" resultType="int">

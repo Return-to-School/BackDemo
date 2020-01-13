@@ -18,7 +18,7 @@ public class StudentService {
 
     @Transactional
     public boolean saveStudent(Student student) {
-        return studentDao.addStudent(student)>0;
+        return studentDao.insertStudent(student)>0;
     }
 
     @Transactional

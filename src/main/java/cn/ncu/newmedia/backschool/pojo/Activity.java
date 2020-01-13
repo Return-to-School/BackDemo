@@ -19,9 +19,9 @@ public class Activity {
 
     private Date applyEndTime;
 
-    private Date feedBackStartTime;
+    private Date feedbackStartTime;
 
-    private Date feedBackEndTime;
+    private Date feedbackEndTime;
 
     private String creator;
 
@@ -67,20 +67,20 @@ public class Activity {
         this.applyEndTime = applyEndTime;
     }
 
-    public Date getFeedBackStartTime() {
-        return feedBackStartTime;
+    public Date getFeedbackStartTime() {
+        return feedbackStartTime;
     }
 
-    public void setFeedBackStartTime(Date feedBackStartTime) {
-        this.feedBackStartTime = feedBackStartTime;
+    public void setFeedbackStartTime(Date feedbackStartTime) {
+        this.feedbackStartTime = feedbackStartTime;
     }
 
-    public Date getFeedBackEndTime() {
-        return feedBackEndTime;
+    public Date getFeedbackEndTime() {
+        return feedbackEndTime;
     }
 
-    public void setFeedBackEndTime(Date feedBackEndTime) {
-        this.feedBackEndTime = feedBackEndTime;
+    public void setFeedbackEndTime(Date feedbackEndTime) {
+        this.feedbackEndTime = feedbackEndTime;
     }
 
     public String getCreator() {
@@ -122,8 +122,8 @@ public class Activity {
                 ", name='" + name + '\'' +
                 ", applyStartTime=" + applyStartTime +
                 ", applyEndTime=" + applyEndTime +
-                ", feedBackStartTime=" + feedBackStartTime +
-                ", feedBackEndTime=" + feedBackEndTime +
+                ", feedbackStartTime=" + feedbackStartTime +
+                ", feedbackEndTime=" + feedbackEndTime +
                 ", creator='" + creator + '\'' +
                 ", createTime=" + createTime +
                 ", content='" + content + '\'' +
