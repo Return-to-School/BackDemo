@@ -9,9 +9,8 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,14 +22,15 @@ import java.util.Map;
  * @date 2020/1/12 16:22
  * @description
  */
-@Controller("/user")
+@Controller
+@RequestMapping("/user")
 public class UserController {
 
     @Autowired
     private UserService userService;
 
     @RequestMapping("/login")
-    private String showLoginPage(){return "login";}
+    public String showLoginPage(){return "login";}
 
 
     /**
@@ -39,7 +39,8 @@ public class UserController {
      * @return
      */
     @RequestMapping("/validate")
-    private String validate(@RequestBody User user){
+    @ResponseBody
+    public String validate(@RequestBody User user){
         Subject subject = SecurityUtils.getSubject();
 
         UsernamePasswordToken token = new UsernamePasswordToken(user.getAccount(),user.getPassword());

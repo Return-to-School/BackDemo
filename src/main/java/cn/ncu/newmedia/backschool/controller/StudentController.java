@@ -5,9 +5,7 @@ import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
@@ -17,7 +15,8 @@ import java.util.Map;
  * @date 2020/1/12 22:31
  * @description
  */
-@Controller("/student")
+@Controller
+@RequestMapping("/student")
 public class StudentController {
 
     @Autowired
@@ -30,6 +29,7 @@ public class StudentController {
      * @return
      */
     @RequestMapping("/addProfile")
+    @ResponseBody
     public Map<String,Object> addProfile(@RequestBody Student student){
         boolean success = studentService.saveStudent(student);
 
@@ -42,6 +42,7 @@ public class StudentController {
      * @return
      */
     @RequestMapping("/updateProfile")
+    @ResponseBody
     public Map<String,Object> updateProfile(@RequestBody Student student) {
 
         boolean success = false;
@@ -53,6 +54,7 @@ public class StudentController {
     }
 
     @RequestMapping("/identify/{idCard}/{name}")
+    @ResponseBody
     public Map<String,Object> identify(@PathVariable("idCard")String idCard,
                                        @PathVariable("name")String name){
         boolean success =  studentService.idCardHasMatch(idCard,name);

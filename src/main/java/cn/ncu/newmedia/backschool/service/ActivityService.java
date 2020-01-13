@@ -1,5 +1,7 @@
 package cn.ncu.newmedia.backschool.service;
 
+import cn.ncu.newmedia.backschool.dao.ActivityDao;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -11,5 +13,10 @@ import org.springframework.stereotype.Service;
 public class ActivityService {
 
 
+    @Autowired
+    private ActivityDao activityDao;
 
+    public String findCreatorById(int id) {
+        return activityDao.getCreatorById(id);
+    }
 }

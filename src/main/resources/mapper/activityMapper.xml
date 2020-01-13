@@ -23,4 +23,9 @@
                             activity_file_path = #{activity.filePath} where
                             activity_id = #{activity.id};
     </update>
+
+    <select id="getCreatorById" resultType="String">
+        select creator from activity where activity_id = #{id};
+    </select>
+
 </mapper>

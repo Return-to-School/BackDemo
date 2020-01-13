@@ -17,4 +17,6 @@ public interface ActivityDao {
     int insertActivity(@Param("activity") Activity activity);
 
     int updateActivity(@Param("activity") Activity activity);
+
+    String getCreatorById(@Param("id") int id);
 }
