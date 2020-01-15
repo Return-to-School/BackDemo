@@ -28,9 +28,10 @@ public class StudentController {
      * @param student
      * @return
      */
-    @RequestMapping("/addProfile")
+    @RequestMapping("/add")
     @ResponseBody
     public Map<String,Object> addProfile(@RequestBody Student student){
+
         boolean success = studentService.saveStudent(student);
 
         return MessageObject.dealMap(List.of("success"),List.of(success));
@@ -41,7 +42,7 @@ public class StudentController {
      * @param student
      * @return
      */
-    @RequestMapping("/updateProfile")
+    @RequestMapping("/update")
     @ResponseBody
     public Map<String,Object> updateProfile(@RequestBody Student student) {
 
@@ -53,6 +54,13 @@ public class StudentController {
         return MessageObject.dealMap(List.of("success"), List.of(success));
     }
 
+
+    /**
+     * 验证身份证与本人姓名是否一致
+     * @param idCard
+     * @param name
+     * @return
+     */
     @RequestMapping("/identify/{idCard}/{name}")
     @ResponseBody
     public Map<String,Object> identify(@PathVariable("idCard")String idCard,
@@ -60,4 +68,6 @@ public class StudentController {
         boolean success =  studentService.idCardHasMatch(idCard,name);
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
+
+
 }

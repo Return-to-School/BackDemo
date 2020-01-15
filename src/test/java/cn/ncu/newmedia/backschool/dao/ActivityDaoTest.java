@@ -32,7 +32,7 @@ class ActivityDaoTest {
 
     @Test
     void testInsert(){
-        activityDao.insertActivity(activity);
+        activityDao.insert(activity);
     }
 
     @Test
@@ -40,7 +40,12 @@ class ActivityDaoTest {
         activity.setId(2);
         activity.setApplyEndTime(new Date());
         activity.setContent("测试。。。");
-        System.out.println(activityDao.updateActivity(activity));
+        System.out.println(activityDao.update(activity));
+    }
+
+    @Test
+    void testFind(){
+        System.out.println(activityDao.getActivityByValue("activity_id","1"));
     }
 
 }

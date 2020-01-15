@@ -37,7 +37,7 @@ class StudentDaoTest {
     @Test
     void testinsertStudent(){
 
-        System.out.println(studentDao.insertStudent(student));
+        System.out.println(studentDao.insert(student));
     }
 
     @Test
@@ -45,7 +45,7 @@ class StudentDaoTest {
         student.setId(1);
         student.setOrigin("湖南省-永州市-祁阳县-大中桥");
 
-        System.out.println(studentDao.updateStudent(student));
+        System.out.println(studentDao.update(student));
     }
 
 

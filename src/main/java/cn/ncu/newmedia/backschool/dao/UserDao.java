@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface UserDao {
+
     String getPasswordByAccount(@Param("account")String account);
 
     int userExist(@Param("account")String account);

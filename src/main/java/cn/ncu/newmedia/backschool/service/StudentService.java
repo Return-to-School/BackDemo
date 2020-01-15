@@ -18,12 +18,12 @@ public class StudentService {
 
     @Transactional
     public boolean saveStudent(Student student) {
-        return studentDao.insertStudent(student)>0;
+        return studentDao.insert(student)>0;
     }
 
     @Transactional
     public boolean updateStudent(Student student) {
-        return studentDao.updateStudent(student)>0;
+        return studentDao.update(student)>0;
     }
 
     public boolean idCardHasMatch(String idCard, String name) {

@@ -5,6 +5,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author maoalong
  * @date 2020/1/13 20:49
@@ -14,9 +16,14 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface ActivityDao {
 
-    int insertActivity(@Param("activity") Activity activity);
+    int insert(@Param("activity") Activity activity);
 
-    int updateActivity(@Param("activity") Activity activity);
+    int update(@Param("activity") Activity activity);
 
-    String getCreatorById(@Param("id") int id);
+    Activity getActivityByValue(@Param("column") String column,@Param("value") String value);
+
+    List<Activity> listAll();
+
+    int delete(@Param("activityId") int activityId);
 }
+

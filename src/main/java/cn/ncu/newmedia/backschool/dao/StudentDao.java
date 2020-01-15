@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 @Mapper
 public interface StudentDao {
-    int insertStudent(@Param("student") Student student);
+    int insert(@Param("student") Student student);
 
-    int updateStudent(@Param("student") Student student);
+    int update(@Param("student") Student student);
 
     int idCardHashMatch(@Param("idCard") String idCard,@Param("name") String name);
 }

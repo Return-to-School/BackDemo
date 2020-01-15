@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.ncu.newmedia.backschool.dao.LocationDao">
+    <resultMap id="provinceMap" type="Province">
+        <id property="id" column="province_id" />
+        <result property="name" column="province_name" />
+    </resultMap>
+
+    <resultMap id="cityMap" type="City">
+        <id property="id" column="city_id" />
+        <result property="name" column="city_name" />
+        <result property="province" column="province_id" />
+    </resultMap>
+
+    <resultMap id="countyMap" type="County">
+        <id property="id" column="county_id" />
+        <result property="name" column="county_name" />
+        <result property="city" column="city_id" />
+    </resultMap>
+
+    <resultMap id="collegeMap" type="College">
+        <id property="id" column="college_id" />
+        <result property="name" column="college_name" />
+    </resultMap>
+
+    <resultMap id="classMap" type="Class">
+        <id property="id" column="class_id" />
+        <result property="name" column="class_name" />
+        <result property="college" column="college_id" />
+    </resultMap>
+
+    <select id="listAllProvinces" resultMap="provinceMap">
+        select * from province;
+    </select>
+
+    <select id="getCitiesByProvinceId" resultMap="cityMap">
+        select * from city where province_id = #{provinceId}
+    </select>
+
+    <select id="getCountiesByCityId" resultMap="countyMap">
+        select * from county where city_id = #{cityId}
+    </select>
+
+    <select id="listAllColleges" resultMap="collegeMap">
+        select * from college
+    </select>
+
+    <select id="getClassesByCollegeId" resultMap="classMap">
+        select * from class where college_id = #{collegeId}
+    </select>
+
+</mapper>

@@ -9,6 +9,7 @@ import java.util.Set;
 @Repository
 @Mapper
 public interface UserRoleDao {
+
     Set<String> getRolsByAccount(@Param("account")String account);
 
 }
