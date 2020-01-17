@@ -52,6 +52,10 @@ class StudentDaoTest {
     @Test
     void testIdCardHashMatch(){
         System.out.println(studentDao.idCardHashMatch("431121199907298790","along"));
+    }
 
+    @Test
+    void testGetStdent(){
+        System.out.println(studentDao.getStudentByColumn("user_id",1));
     }
 }

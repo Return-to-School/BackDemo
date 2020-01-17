@@ -13,4 +13,6 @@ public interface StudentDao {
     int update(@Param("student") Student student);
 
     int idCardHashMatch(@Param("idCard") String idCard,@Param("name") String name);
+
+    Student getStudentByColumn(@Param("column") String column, @Param("value") Object value);
 }

@@ -29,4 +29,9 @@ public class StudentService {
     public boolean idCardHasMatch(String idCard, String name) {
         return studentDao.idCardHashMatch(idCard,name)>0;
     }
+
+    public Student getStudentByColumn(String column,Object value){
+        return studentDao.getStudentByColumn(column,value);
+    }
+
 }

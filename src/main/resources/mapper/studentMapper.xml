@@ -2,6 +2,25 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.ncu.newmedia.backschool.dao.StudentDao">
+
+    <resultMap id="studentMap" type="Student">
+        <id property="id" column="student_id" />
+        <result property="name" column="name" />
+        <result property="gender" column="gender" />
+        <result property="studentCard" column="student_card"/>
+        <result property="college" column="college" />
+        <result property="classname" column="class" />
+        <result property="idCard" column="idCard" />
+        <result property="qq" column="qq"  />
+        <result property="bankCard" column="bank_card" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="origin" column="origin" />
+        <result property="highSchool" column="high_school" />
+        <result property="verified" column="verified" />
+        <result property="user" column="user_id" />
+    </resultMap>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="student.id">
         insert into student values (#{student.id},#{student.name},#{student.gender},
                                    #{student.studentCard},#{student.college},#{student.classname},
@@ -21,6 +40,10 @@
 
     <select id="idCardHashMatch" resultType="int">
         select count(*) from studentbase where name = #{name} and idCard = #{idCard};
+    </select>
+
+    <select id="getStudentByColumn" resultMap="studentMap">
+        select * from student where ${column} = #{value}
     </select>
 
 </mapper>

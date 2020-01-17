@@ -69,5 +69,11 @@ public class StudentController {
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
 
+    @RequestMapping("/get/{userId}")
+    @ResponseBody
+    public Student getStudent(@PathVariable("userId")int userId){
+        return studentService.getStudentByColumn("user_id",userId);
+    }
+
 
 }
