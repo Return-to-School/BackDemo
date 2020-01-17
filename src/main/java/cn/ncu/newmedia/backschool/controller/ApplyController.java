@@ -50,4 +50,35 @@ public class ApplyController {
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
 
+    /**
+     * 获取所有的申请
+     * @return
+     */
+    @RequestMapping("/getAll")
+    @ResponseBody
+    public List<Apply> getAllApply(){
+        return applyService.listAllApplies();
+    }
+
+    /**
+     * 获取某个活动的所有申请
+     * @param activityId
+     * @return
+     */
+    @RequestMapping("/getAllByActivityId/{activityId}")
+    @ResponseBody
+    public List<Apply> getAllByActivityId(@PathVariable("activityId") int activityId){
+        return applyService.listAllByActivityId(activityId);
+    }
+
+    /**
+     * 获取某个学生的所有的活动申请
+     * @param studentId
+     * @return
+     */
+    @RequestMapping("/getAllByStudentId/{studentId}")
+    @ResponseBody
+    public List<Apply> getAllByStudentId(@PathVariable("studentId") int studentId){
+        return applyService.listAllByStudentId(studentId);
+    }
 }

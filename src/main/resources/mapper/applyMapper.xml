@@ -2,6 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.ncu.newmedia.backschool.dao.ApplyDao">
+
+    <resultMap id="applyMap" type="Apply">
+        <id property="id" column="apply_id" />
+        <result property="createTime" column="create_time" />
+        <result property="status" column="apply_status" />
+        <result property="origin" column="origin" />
+        <result property="highSchool" column="high_school" />
+        <result property="description" column="description" />
+        <result property="student" column="student_id" />
+        <result property="activity" column="activity_id" />
+    </resultMap>
+
     <insert id="insert" useGeneratedKeys="true" keyProperty="apply.id">
         insert into apply values (#{apply.id},#{apply.createTime},
                                   #{apply.status},#{apply.origin},
@@ -9,5 +21,12 @@
                                   #{apply.student},#{apply.activity})
     </insert>
 
+    <select id="listAll" resultMap="applyMap">
+        select * from apply;
+    </select>
+
+    <select id="getAppliesByColumn" resultMap="applyMap">
+        select * from apply where ${column} = #{value}
+    </select>
 
 </mapper>

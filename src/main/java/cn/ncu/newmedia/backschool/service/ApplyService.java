@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author maoalong
@@ -37,4 +38,18 @@ public class ApplyService {
 
         return  applyDao.insert(apply)>0;
     }
+
+    public List<Apply> listAllApplies() {
+        return applyDao.listAll();
+    }
+
+    public List<Apply> listAllByActivityId(int activityId) {
+        return applyDao.getAppliesByColumn("activity_id",activityId);
+    }
+
+    public List<Apply> listAllByStudentId(int studentId){
+        return applyDao.getAppliesByColumn("student_id",studentId);
+    }
+
+    public Apply getApplyById(int applyId){return applyDao.getAppliesByColumn("apply_id",applyId).get(0);}
 }

@@ -24,9 +24,9 @@ import java.util.Map;
 @RequestMapping("/activity")
 public class ActivityController {
 
-    private final String ACTVITYFILEPATH = "e:/activityFile";
+    private final String FILEPATH = "e:/所有文件";
 
-    private final String STATICFILEPATH = "/activityFile";
+//    private final String STATICFILEPATH = "/activityFile";
     @Autowired
     private ActivityService activityService;
 
@@ -49,10 +49,10 @@ public class ActivityController {
         String filePath = activityService.getActivityById(activityId).getFilePath();
 
         /*获取活动资料的目录*/
-        File director = new File(ACTVITYFILEPATH+filePath);
+        File director = new File(FILEPATH+filePath+"/活动资料");
 
         if(!director.exists())
-            director.mkdir();
+            director.mkdirs();
 
         File file = new File(director+"/"+filename);
 
@@ -73,6 +73,14 @@ public class ActivityController {
 
         activity.setCreateTime(new Date());
         activity.setFilePath("/"+activity.getName());
+
+        /*创建两个文件夹存放活动文件和返回文件*/
+
+        File activityFileDirector = new File(FILEPATH+activity.getFilePath()+"/活动资料");
+        File feedBackFileDirector = new File(FILEPATH+activity.getFilePath()+"/反馈文件");
+
+        activityFileDirector.mkdirs();
+        feedBackFileDirector.mkdirs();
 
         boolean success = activityService.saveActivity(activity);
 
@@ -99,9 +107,11 @@ public class ActivityController {
 
         if(success){
             /*修改成新的资料文件路径*/
-            File director = new File(ACTVITYFILEPATH+activityOld.getFilePath());
+            File activityFileDirector = new File(FILEPATH+activityOld.getFilePath());
 
-            director.renameTo(new File(ACTVITYFILEPATH+activity.getFilePath()));
+            if(activityFileDirector.exists()){
+                activityFileDirector.renameTo(new File(FILEPATH+activity.getFilePath()));
+            }
 
             return MessageObject.dealMap(List.of("success"),List.of(success));
         }
