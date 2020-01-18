@@ -1,10 +1,13 @@
 package cn.ncu.newmedia.backschool.service;
 
 import cn.ncu.newmedia.backschool.dao.FeedBackDao;
+import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.FeedBack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 /**
  * @author maoalong
@@ -18,7 +21,14 @@ public class FeedBackService {
     private FeedBackDao feedBackDao;
 
     @Transactional
-    public boolean saveFeedback(FeedBack feedBack) {
-        return feedBackDao.save(feedBack)>0;
+    public boolean saveFeedback(Activity activity, FeedBack feedBack) {
+
+        Date now  = new Date();
+
+        if(now.after(activity.getFeedbackStartTime())
+                &&now.before(activity.getApplyEndTime()))
+            return feedBackDao.save(feedBack)>0;
+
+        return false;
     }
 }

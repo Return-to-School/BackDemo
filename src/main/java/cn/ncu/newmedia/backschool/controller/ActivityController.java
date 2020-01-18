@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class ActivityController {
 
     private final String FILEPATH = "e:/所有文件";
 
-//    private final String STATICFILEPATH = "/activityFile";
+
     @Autowired
     private ActivityService activityService;
 
@@ -36,34 +37,41 @@ public class ActivityController {
     /**
      * 活动资料上传,只支持单文件
      * @param activityId
-     * @param activityFile
+     * @param activityFiles
      * @return
      */
     @RequestMapping("/upload/{activityId}")
     @ResponseBody
-    public Map<String, Object> upload(@PathVariable("activityId")int activityId, MultipartFile activityFile){
+    public Map<String, Object> upload(@PathVariable("activityId")int activityId,@RequestParam("activityFiles") List<MultipartFile> activityFiles){
 
-        /*避免文件重名使用时间戳*/
-        String filename = System.currentTimeMillis()+activityFile.getOriginalFilename();
 
-        String filePath = activityService.getActivityById(activityId).getFilePath();
+        Activity activity = activityService.getActivityById(activityId);
 
+        String filePath = activity.getFilePath();
         /*获取活动资料的目录*/
         File director = new File(FILEPATH+filePath+"/活动资料");
 
+        /*避免文件重名使用时间戳*/
+        String time = new Date().toLocaleString().replace(":","-");
         if(!director.exists())
             director.mkdirs();
 
-        File file = new File(director+"/"+filename);
+        List<File> fileList = new ArrayList<>();
+        for (MultipartFile e:activityFiles) {
 
-        try{
-            activityFile.transferTo(file);
-        }catch (IOException e){
-            e.printStackTrace();
-            return MessageObject.dealMap(List.of("success"),List.of(false));
+            File file = new File(director+"/"+time+"_"+activity.getCreator()+"_"+e.getOriginalFilename());
+
+            try{
+                e.transferTo(file);
+                fileList.add(file);
+            }catch (IOException e1){
+                e1.printStackTrace();
+                fileList.forEach(e2->e2.delete());
+                return MessageObject.dealMap(List.of("success","message"),List.of(false,"文件上传错误"));
+            }
         }
 
-        return MessageObject.dealMap(List.of("success"),List.of(true));
+        return MessageObject.dealMap(List.of("success","message"),List.of(true,"文件上传成功"));
     }
 
 
@@ -128,7 +136,6 @@ public class ActivityController {
 
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
-
 
     @RequestMapping("/getAll")
     @ResponseBody

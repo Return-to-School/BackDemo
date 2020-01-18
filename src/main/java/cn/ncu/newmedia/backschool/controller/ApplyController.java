@@ -81,4 +81,8 @@ public class ApplyController {
     public List<Apply> getAllByStudentId(@PathVariable("studentId") int studentId){
         return applyService.listAllByStudentId(studentId);
     }
+
+    @RequestMapping("/examine/")
+    @ResponseBody
+    public Map<String,Object> examine()
 }
