@@ -2,6 +2,8 @@ package cn.ncu.newmedia.backschool.pojo;
 
 import org.apache.ibatis.type.Alias;
 
+import java.util.List;
+
 /**
  * @author maoalong
  * @date 2020/1/12 16:23
@@ -16,6 +18,7 @@ public class User {
 
     private String password;
 
+    private List<Activity> activities;
 
     public User() {
     }
@@ -44,12 +47,21 @@ public class User {
         this.password = password;
     }
 
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", account='" + account + '\'' +
                 ", password='" + password + '\'' +
+                ", activities=" + (activities==null?"null":activities.toString())+
                 '}';
     }
 }

@@ -29,4 +29,8 @@
         select * from apply where ${column} = #{value}
     </select>
 
+    <update id="changeApplyStatus">
+        update apply set apply_status = #{status} where apply_id = #{applyId}
+    </update>
+
 </mapper>

@@ -25,5 +25,13 @@ public interface ActivityDao {
     List<Activity> listAll();
 
     int delete(@Param("activityId") int activityId);
+
+    List<Activity> filterActivityByColumn(@Param("column")String column,@Param("key") String key);
+
+    List<Activity> getActivityByGroupManagerId(@Param("userId") int userId);
+
+    List<Activity> listAllUnderwayAct();
+
+    List<Activity> listGroupUnderwayAct(@Param("managerId") int managerId);
 }
 

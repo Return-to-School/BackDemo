@@ -30,7 +30,6 @@ class StudentDaoTest {
         student.setEmail("5413138@qq.com");
         student.setOrigin("江西省-高安市-南城县");
         student.setHighSchool("南城县第一中学");
-        student.setVerified(false);
         student.setUser(1);
     }
 
@@ -56,6 +55,6 @@ class StudentDaoTest {
 
     @Test
     void testGetStdent(){
-        System.out.println(studentDao.getStudentByColumn("user_id",1));
+        studentDao.getStudentListInAct(1).forEach(System.out::println);
     }
 }

@@ -2,13 +2,15 @@ package cn.ncu.newmedia.backschool.pojo;
 
 import org.apache.ibatis.type.Alias;
 
+import java.io.Serializable;
+
 /**
  * @author maoalong
  * @date 2020/1/12 16:37
  * @description
  */
 @Alias("Student")
-public class Student {
+public class Student implements Serializable {
 
     private int id;
 
@@ -36,7 +38,6 @@ public class Student {
 
     private String highSchool;
 
-    private boolean verified;
 
     private int user;
 
@@ -147,14 +148,6 @@ public class Student {
         this.highSchool = highSchool;
     }
 
-    public boolean isVerified() {
-        return verified;
-    }
-
-    public void setVerified(boolean verified) {
-        this.verified = verified;
-    }
-
     public int getUser() {
         return user;
     }
@@ -179,7 +172,6 @@ public class Student {
                 ", email='" + email + '\'' +
                 ", origin='" + origin + '\'' +
                 ", highSchool='" + highSchool + '\'' +
-                ", verified=" + verified +
                 ", user=" + user +
                 '}';
     }

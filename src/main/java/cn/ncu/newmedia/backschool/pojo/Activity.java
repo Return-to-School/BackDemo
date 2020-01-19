@@ -2,6 +2,7 @@ package cn.ncu.newmedia.backschool.pojo;
 
 import org.apache.ibatis.type.Alias;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Date;
  * @description
  */
 @Alias("Activity")
-public class Activity {
+public class Activity implements Serializable {
     private int id;
 
     private String name;
@@ -31,6 +32,9 @@ public class Activity {
 
     private String filePath;
 
+    private String location;
+
+    private Boolean needExamine;
 
     public Activity() {
     }
@@ -115,6 +119,23 @@ public class Activity {
         this.filePath = filePath;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Boolean getNeedExamine() {
+        return needExamine;
+    }
+
+    public void setNeedExamine(Boolean needExamine) {
+        this.needExamine = needExamine;
+    }
+
+
     @Override
     public String toString() {
         return "Activity{" +
@@ -128,6 +149,8 @@ public class Activity {
                 ", createTime=" + createTime +
                 ", content='" + content + '\'' +
                 ", filePath='" + filePath + '\'' +
+                ", location='" + location + '\'' +
+                ", needExamine=" + needExamine +
                 '}';
     }
 }

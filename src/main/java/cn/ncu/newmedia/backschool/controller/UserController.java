@@ -1,5 +1,7 @@
 package cn.ncu.newmedia.backschool.controller;
 
+import cn.ncu.newmedia.backschool.Utils.MessageObject;
+import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.pojo.User;
 import cn.ncu.newmedia.backschool.service.UserService;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -61,6 +64,50 @@ public class UserController {
             }
         }
     }
+
+    @RequestMapping("/getAll")
+    @ResponseBody
+    public List<User> getAllUsers(){
+        return userService.getAll();
+    }
+
+
+    /**
+     * 将用户指定为宣传组管理员
+     * @param userId
+     * @param activityList
+     * @return
+     */
+    @RequestMapping("/addGroupManager/{userId}")
+    @ResponseBody
+    public Map<String, Object> addGroupManager(@PathVariable("userId") int userId,
+                                               @RequestBody List<Activity> activityList){
+
+        User user = userService.getUserByColumn("user_id",userId).get(0);
+
+        if(user==null){
+            return MessageObject.dealMap(List.of("success","message"),List.of(false,"用户不存在"));
+        }
+
+        user.setActivities(activityList);
+        boolean success = userService.addGroupManager(user)==user.getActivities().size();
+
+        return MessageObject.dealMap(List.of("success"),List.of(success));
+    }
+
+    /**
+     * 删除用户
+     * @param userId
+     * @return
+     */
+    @RequestMapping("/delete/{userId}")
+    @ResponseBody
+    public Map<String,Object> deleteUser(@PathVariable("userId")int userId){
+
+        boolean success = userService.deleteUser(userId);
+        return MessageObject.dealMap(List.of("success"),List.of(success));
+    }
+
 
 }
 

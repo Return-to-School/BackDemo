@@ -12,6 +12,8 @@
         <result property="feedbackEndTime" column="feedback_end_time" />
         <result property="creator" column="creator" />
         <result property="createTime" column="create_time" />
+        <result property="location" column="location" />
+        <result property="needExamine" column="need_examine" />
         <result property="filePath" column="activity_file_path" />
     </resultMap>
 
@@ -20,7 +22,7 @@
                                      #{activity.applyEndTime},#{activity.feedbackStartTime},
                                      #{activity.feedbackEndTime},#{activity.creator},
                                      #{activity.createTime},#{activity.content},
-                                     #{activity.filePath}
+                                     #{activity.filePath},#{activity.location}
                                      );
     </insert>
 
@@ -33,7 +35,8 @@
                             creator = #{activity.creator},
                             create_time = #{activity.createTime},
                             content = #{activity.content},
-                            activity_file_path = #{activity.filePath} where
+                            activity_file_path = #{activity.filePath},
+                            location = #{activity.location} where
                             activity_id = #{activity.id};
     </update>
 
@@ -47,6 +50,24 @@
 
     <select id="listAll" resultMap="activityMap">
         select * from activity;
+    </select>
+
+    <select id="filterActivityByColumn" resultMap="activityMap">
+        select * from activity where ${column} like #{key}
+    </select>
+
+    <select id="getActivityByGroupManagerId" resultMap="activityMap">
+        select * from activity a,user u,activity_manager am where a.activity_id = am.activity_id
+        and u.user_id = am.user_id and u.user_id = #{userId}
+    </select>
+
+    <select id="listAllUnderwayAct" resultMap="activityMap">
+        select * from activity where now() between apply_start_time and feedback_start_time
+    </select>
+
+    <select id="listGroupUnderwayAct" resultMap="activityMap">
+        select * from user u,activity_manager am,activity a where u.user_id = am.user_id and
+              a.activity_id =  am.activity_id and u.user_id = #{managerId}
     </select>
 
 </mapper>

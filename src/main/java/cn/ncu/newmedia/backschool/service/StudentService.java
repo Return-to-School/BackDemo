@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author maoalong
  * @date 2020/1/12 22:30
@@ -34,4 +36,7 @@ public class StudentService {
         return studentDao.getStudentByColumn(column,value);
     }
 
+    public List<Student> getStudentListInAct(int activityId) {
+        return studentDao.getStudentListInAct(activityId);
+    }
 }

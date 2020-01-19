@@ -17,7 +17,6 @@
         <result property="email" column="email" />
         <result property="origin" column="origin" />
         <result property="highSchool" column="high_school" />
-        <result property="verified" column="verified" />
         <result property="user" column="user_id" />
     </resultMap>
 
@@ -26,7 +25,7 @@
                                    #{student.studentCard},#{student.college},#{student.classname},
                                    #{student.idCard},#{student.qq},#{student.bankCard},
                                    #{student.phone},#{student.email},#{student.origin},
-                                   #{student.highSchool},#{student.verified},#{student.user})
+                                   #{student.highSchool},#{student.user})
     </insert>
 
     <update id="update">
@@ -34,8 +33,8 @@
                                  studend_card = #{student.studentCard},college = #{student.college},
                                  class = #{student.classname},idCard = #{student.idCard},qq = #{student.qq},
                                  bank_card = #{student.bankCard},phone = #{student.phone},
-                                 email = #{student.email},origin = #{student.origin},
-                                 verified = #{student.verified} where student_id = #{student.id};
+                                 email = #{student.email},origin = #{student.origin}
+                                 where student_id = #{student.id};
     </update>
 
     <select id="idCardHashMatch" resultType="int">
@@ -46,4 +45,12 @@
         select * from student where ${column} = #{value}
     </select>
 
+    <delete id="delete">
+        delete from student where student_id = #{studentId}
+    </delete>
+
+    <select id="getStudentListInAct" resultMap="studentMap">
+        select * from student s,apply a,activity ac where s.student_id = a.student_id
+          and a.activity_id = ac.activity_id and a.activity_id = #{activityId}
+    </select>
 </mapper>

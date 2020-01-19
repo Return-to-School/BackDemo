@@ -16,7 +16,7 @@ public class Apply {
 
     private Date createTime;
 
-    private boolean status;
+    private int  status;
 
     private String origin;
 
@@ -47,11 +47,11 @@ public class Apply {
         this.createTime = createTime;
     }
 
-    public boolean isStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 

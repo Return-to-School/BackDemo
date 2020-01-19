@@ -9,6 +9,7 @@ import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.FeedBackService;
 import cn.ncu.newmedia.backschool.service.StudentService;
+import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,16 +55,23 @@ public class FeedbackController {
                                            @PathVariable("applyId") int applyId,
                                            @PathVariable("level") int level){
 
+        Apply apply = applyService.getApplyById(applyId);
+
+        if(apply.getStatus()==0){
+            return MessageObject.dealMap(List.of("success","message"),List.of(false,"未审核"));
+        }else if(apply.getStatus()==2){
+            return MessageObject.dealMap(List.of("success","message"),List.of(false,"审核不通过"));
+        }
+
         if(feedbackFiles.size()==0){
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"请选择需要上传反馈文件"));
         }
 
         /*获取活动的文件路径*/
-        Apply apply = applyService.getApplyById(applyId);
         Student student = studentService.getStudentByColumn("student_id",apply.getStudent());
         Activity activity = activityService.getActivityById(apply.getActivity());
-        String filePath = "/"+activity.getName();
-        File director = new File (FILEPATH +filePath+"/反馈文件");
+        String filePath = activity.getFilePath()+"/反馈文件/"+student.getName();
+        File director = new File (FILEPATH +filePath);
 
         if(!director.exists()){
             director.mkdirs();
@@ -79,7 +87,7 @@ public class FeedbackController {
         for(MultipartFile e:feedbackFiles){
 
             File file = new File(director+"/"
-                    +time+"_"+student.getName()+"_"+e.getOriginalFilename());
+                    +time+"_"+e.getOriginalFilename());
             try {
                 e.transferTo(file);
             } catch (IOException e1) {

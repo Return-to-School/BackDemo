@@ -1,10 +1,12 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/1/12 22:24:32                           */
+/* Created on:     2020/1/20 0:04:41                            */
 /*==============================================================*/
 
 
 drop table if exists activity;
+
+drop table if exists activity_manager;
 
 drop table if exists apply;
 
@@ -43,10 +45,24 @@ create table activity
   create_time          datetime comment '活动创建时间',
   content              longtext comment '活动内容',
   activity_file_path   varchar(256) comment '活动的材料文件路径',
+  location             varchar(64),
+  need_examine         tinyint default 0 comment '是否需要审核',
   primary key (activity_id)
 );
 
 alter table activity comment '活动表';
+
+/*==============================================================*/
+/* Table: activity_manager                                      */
+/*==============================================================*/
+create table activity_manager
+(
+  activity_manager     int not null auto_increment comment '活动管理表id',
+  activity_id          int comment '活动id',
+  user_id              int comment '用户id',
+  primary key (activity_manager),
+  unique key AK_Key_2 (activity_id, user_id)
+);
 
 /*==============================================================*/
 /* Table: apply                                                 */
@@ -55,8 +71,8 @@ create table apply
 (
   apply_id             int not null auto_increment comment '申请表id',
   create_time          datetime comment '申请时间',
-  apply_status         tinyint comment '申请状态',
-  origin               varchar(32) comment '学生生源地',
+  apply_status         tinyint default 0 comment '申请状态',
+  origin               varchar(64) comment '学生生源地',
   high_school          varchar(32) comment '回访学校',
   description          text comment '个人简介',
   student_id           int,
@@ -161,7 +177,6 @@ create table student
   email                varchar(320),
   origin               varchar(64) comment '学生生源地',
   high_school          varchar(32) comment '毕业高中',
-  verified             tinyint comment '是否通过验证',
   user_id              int,
   primary key (student_id)
 );
@@ -206,6 +221,12 @@ create table user_role
 );
 
 alter table user_role comment '用户角色表';
+
+alter table activity_manager add constraint FK_Reference_11 foreign key (activity_id)
+  references activity (activity_id) on delete restrict on update restrict;
+
+alter table activity_manager add constraint FK_Reference_12 foreign key (user_id)
+  references user (user_id) on delete restrict on update restrict;
 
 alter table apply add constraint FK_Reference_2 foreign key (activity_id)
   references activity (activity_id) on delete restrict on update restrict;

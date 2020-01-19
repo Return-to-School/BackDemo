@@ -41,4 +41,24 @@ public class ActivityService {
     public boolean deleteActivity(int activityId) {
         return activityDao.delete(activityId)>0;
     }
+
+    public List<Activity> filterActivityByLocation(String key) {
+        return activityDao.filterActivityByColumn("location",key);
+    }
+
+    public List<Activity> filterActivityByName(String key) {
+        return activityDao.filterActivityByColumn("activity_name",key);
+    }
+
+    public List<Activity> getGroupActivityList(int userId) {
+        return activityDao.getActivityByGroupManagerId(userId);
+    }
+
+    public List<Activity> listAllUnderwayAct() {
+        return activityDao.listAllUnderwayAct();
+    }
+
+    public List<Activity> listGroupUnderwayAct(int managerId) {
+        return activityDao.listGroupUnderwayAct(managerId);
+    }
 }

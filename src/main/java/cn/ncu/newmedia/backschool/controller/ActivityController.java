@@ -51,15 +51,13 @@ public class ActivityController {
         /*获取活动资料的目录*/
         File director = new File(FILEPATH+filePath+"/活动资料");
 
-        /*避免文件重名使用时间戳*/
-        String time = new Date().toLocaleString().replace(":","-");
         if(!director.exists())
             director.mkdirs();
 
         List<File> fileList = new ArrayList<>();
         for (MultipartFile e:activityFiles) {
 
-            File file = new File(director+"/"+time+"_"+activity.getCreator()+"_"+e.getOriginalFilename());
+            File file = new File(director+"/"+System.currentTimeMillis()+"_"+e.getOriginalFilename());
 
             try{
                 e.transferTo(file);
@@ -80,10 +78,10 @@ public class ActivityController {
     public Map<String,Object> addActivity(@RequestBody Activity activity){
 
         activity.setCreateTime(new Date());
-        activity.setFilePath("/"+activity.getName());
+        /*去掉目录非法字符*/
+        activity.setFilePath("/"+activity.getName().replaceAll("[<>\"|/:?*\\\\ ]",""));
 
         /*创建两个文件夹存放活动文件和返回文件*/
-
         File activityFileDirector = new File(FILEPATH+activity.getFilePath()+"/活动资料");
         File feedBackFileDirector = new File(FILEPATH+activity.getFilePath()+"/反馈文件");
 
@@ -128,6 +126,11 @@ public class ActivityController {
 
     }
 
+    /**
+     * 删除一个活动
+     * @param activityId
+     * @return
+     */
     @RequestMapping("/delete/{activityId}")
     @ResponseBody
     public Map<String,Object> deleteActivity(@PathVariable("activityId")int activityId){
@@ -137,9 +140,69 @@ public class ActivityController {
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
 
+    /**
+     * 获取所有的活动
+     * @return
+     */
     @RequestMapping("/getAll")
     @ResponseBody
     public List<Activity> listAllActivities(){
         return activityService.listAllActivities();
     }
+
+
+    /**
+     * 显示所有正在进行的活动
+     * @return
+     */
+    @RequestMapping("/allUnderwayAct")
+    @ResponseBody
+    public List<Activity> listAllUnderwayAct(){
+        return activityService.listAllUnderwayAct();
+    }
+
+    /**
+     * 获取宣传组管理员下的所有正在进行的活动
+     * @param managerId
+     * @return
+     */
+    @RequestMapping("/group/allUnderwayAct/{managerId}")
+    @ResponseBody
+    public List<Activity> listGroupUnderwayAct(@PathVariable("managerId")int managerId){
+        return activityService.listGroupUnderwayAct(managerId);
+    }
+
+    /**
+     * 获取宣传组管理员管理的活动
+     * @param userId
+     * @return
+     */
+    @RequestMapping("/group/{userId}")
+    @ResponseBody
+    public List<Activity> groupActivity(@PathVariable("userId") int userId){
+        return activityService.getGroupActivityList(userId);
+    }
+
+    /**
+     * 搜索指定区域的活动
+     * @param key
+     * @return
+     */
+    @RequestMapping("/search/location/{key}")
+    @ResponseBody
+    public List<Activity> searchByLoc(@PathVariable("key")String key){
+        return activityService.filterActivityByLocation(key);
+    }
+
+    /**
+     * 搜索指定名称的活动
+     * @param key
+     * @return
+     */
+    @RequestMapping("/search/name/{key}")
+    @ResponseBody
+    public List<Activity> searchByName(@PathVariable("key")String key){
+        return activityService.filterActivityByName(key);
+    }
+
 }

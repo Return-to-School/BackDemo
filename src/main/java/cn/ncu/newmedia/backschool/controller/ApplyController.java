@@ -3,8 +3,10 @@ package cn.ncu.newmedia.backschool.controller;
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
+import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.ApplyService;
+import cn.ncu.newmedia.backschool.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +33,9 @@ public class ApplyController {
     @Autowired
     private ApplyService applyService;
 
+    @Autowired
+    private StudentService studentService;
+
 
     /**
      * 学生申请报名参加活动
@@ -41,13 +46,24 @@ public class ApplyController {
     @ResponseBody
     public Map<String,Object> apply(@RequestBody Apply apply){
 
+        /*判断是否存在该学生*/
+        Student student = studentService.getStudentByColumn("student_id",apply.getStudent());
+
+        if(student==null){
+            return MessageObject.dealMap(List.of("success","message"),List.of(false,"请完善个人资料"));
+        }
+
         Activity activity = activityService.getActivityById(apply.getActivity());
 
-        apply.setStatus(false);
+        /*需要审核*/
+        if(activity.getNeedExamine())
+            apply.setStatus(0);
+        else
+            apply.setStatus(1);
 
         boolean success = applyService.apply(apply,activity);
 
-        return MessageObject.dealMap(List.of("success"),List.of(success));
+        return MessageObject.dealMap(List.of("success","message"),List.of(success,"提交申请成功"));
     }
 
     /**
@@ -82,7 +98,20 @@ public class ApplyController {
         return applyService.listAllByStudentId(studentId);
     }
 
-    @RequestMapping("/examine/")
+
+    /**
+     * 管理员审核报名申请
+     * @param applyId
+     * @param status
+     * @return
+     */
+    @RequestMapping("/examine/{applyId}/{status}")
     @ResponseBody
-    public Map<String,Object> examine()
+    public Map<String,Object> examine(@PathVariable("applyId") int applyId,@PathVariable("status") int status){
+
+        boolean success = applyService.examine(applyId,status);
+        return MessageObject.dealMap(List.of("success"),List.of(success));
+
+    }
+
 }

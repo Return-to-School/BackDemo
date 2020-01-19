@@ -2,6 +2,7 @@ package cn.ncu.newmedia.backschool.controller;
 
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.pojo.Student;
+import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,7 @@ public class StudentController {
      * @param student
      * @return
      */
-    @RequestMapping("/add")
+    @RequestMapping("/new")
     @ResponseBody
     public Map<String,Object> addProfile(@RequestBody Student student){
 
@@ -42,7 +43,7 @@ public class StudentController {
      * @param student
      * @return
      */
-    @RequestMapping("/update")
+    @RequestMapping("/revision")
     @ResponseBody
     public Map<String,Object> updateProfile(@RequestBody Student student) {
 
@@ -69,10 +70,22 @@ public class StudentController {
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
 
-    @RequestMapping("/get/{userId}")
+    /**
+     * 获取指定学生信息
+     * @param userId
+     * @return
+     */
+    @RequestMapping("/allStudents/{userId}")
     @ResponseBody
     public Student getStudent(@PathVariable("userId")int userId){
         return studentService.getStudentByColumn("user_id",userId);
+    }
+
+
+    @RequestMapping("/studentInAct/{activityId}")
+    @ResponseBody
+    public List<Student> getStudentInAct(@PathVariable("activityId")int activityId){
+        return studentService.getStudentListInAct(activityId);
     }
 
 

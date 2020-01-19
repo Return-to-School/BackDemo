@@ -48,4 +48,8 @@ class ActivityDaoTest {
         System.out.println(activityDao.getActivityByValue("activity_id","1"));
     }
 
+    @Test
+    void testGetGroupActivityList(){
+        activityDao.getActivityByGroupManagerId(1).forEach(System.out::println);
+    }
 }
