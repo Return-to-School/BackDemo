@@ -22,7 +22,7 @@
         select password from user where account = #{account}
     </select>
 
-    <select id="userExist">
+    <select id="userExist" resultType="int">
         select count(*) from user where account = #{account}
     </select>
 
@@ -38,4 +38,12 @@
     <select id="listAll" resultMap="userMap">
         select * from user;
     </select>
+
+    <delete id="delete">
+        delete from user where user_id = #{userId};
+    </delete>
+
+    <delete id="deleteManager">
+        delete from activity_manager where user_id = #{userId}
+    </delete>
 </mapper>

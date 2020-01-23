@@ -1,19 +1,13 @@
 package cn.ncu.newmedia.backschool.service;
 
-import cn.ncu.newmedia.backschool.dao.ActivityManagerDao;
-import cn.ncu.newmedia.backschool.dao.StudentDao;
-import cn.ncu.newmedia.backschool.dao.UserDao;
-import cn.ncu.newmedia.backschool.pojo.Activity;
-import cn.ncu.newmedia.backschool.pojo.Student;
-import cn.ncu.newmedia.backschool.pojo.User;
-import org.apache.ibatis.annotations.Param;
+import cn.ncu.newmedia.backschool.dao.*;
+import cn.ncu.newmedia.backschool.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author maoalong
@@ -28,6 +22,12 @@ public class UserService {
 
     @Autowired
     private StudentDao studentDao;
+
+    @Autowired
+    private ApplyDao applyDao;
+
+    @Autowired
+    private FeedBackDao feedBackDao;
 
     @Autowired
     private ActivityManagerDao activityManagerDao;
@@ -59,12 +59,33 @@ public class UserService {
     @Transactional
     public boolean deleteUser(int userId) {
 
-        Student student = studentDao.getStudentByColumn("user_id",userId);
 
-        if(student!=null){
-            studentDao.delete(student.getId());
+        try {
+
+            Student student = studentDao.getStudentByColumn("user_id", userId);
+
+            List<Apply> applyList = applyDao.getAppliesByColumn("student_id", student.getId());
+            if (applyList != null) {
+                applyList.forEach(e->applyDao.delete(e.getId()));
+            }
+
+            if (student != null) {
+                studentDao.delete(student.getId());
+            }
+
+
+            List<Feedback> feedbackList  = new ArrayList<>();
+            applyList.forEach(e->feedbackList.addAll(feedBackDao.getFeedbackByColumn("apply_id",e.getId())));
+
+            if (feedbackList != null) {
+                feedbackList.forEach(e->feedBackDao.delete(e.getId()));
+            }
+
+            userDao.deleteManager(userId);
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
         }
-
         return userDao.delete(userId)>0;
     }
 }

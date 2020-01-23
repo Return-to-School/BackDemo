@@ -18,4 +18,6 @@ public interface ApplyDao {
     List<Apply> getAppliesByColumn(@Param("column")String column,@Param("value") Object value);
 
     int changeApplyStatus(@Param("applyId")int applyId,@Param("status") int status);
+
+    int delete(@Param("applyId") int id);
 }

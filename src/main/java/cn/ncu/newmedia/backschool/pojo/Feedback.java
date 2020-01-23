@@ -7,8 +7,8 @@ import org.apache.ibatis.type.Alias;
  * @date 2020/1/12 16:31
  * @description
  */
-@Alias("FeedBack")
-public class FeedBack {
+@Alias("Feedback")
+public class Feedback {
 
     private int id;
 
@@ -18,7 +18,7 @@ public class FeedBack {
 
     private String filePath;
 
-    public FeedBack() {
+    public Feedback() {
     }
 
     public int getId() {
@@ -51,5 +51,15 @@ public class FeedBack {
 
     public void setFilePath(String filePath) {
         this.filePath = filePath;
+    }
+
+    @Override
+    public String toString() {
+        return "Feedback{" +
+                "id=" + id +
+                ", apply=" + apply +
+                ", level=" + level +
+                ", filePath='" + filePath + '\'' +
+                '}';
     }
 }

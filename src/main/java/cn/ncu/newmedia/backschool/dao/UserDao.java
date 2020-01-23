@@ -22,4 +22,6 @@ public interface UserDao {
     List<User> listAll();
 
     int delete(@Param("userId") int userId);
+
+    int deleteManager(int userId);
 }

@@ -35,12 +35,12 @@ public class ActivityController {
     private UserService userService;
 
     /**
-     * 活动资料上传,只支持单文件
+     * 活动资料上传
      * @param activityId
      * @param activityFiles
      * @return
      */
-    @RequestMapping("/upload/{activityId}")
+    @RequestMapping(value = "/file/{activityId}",method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> upload(@PathVariable("activityId")int activityId,@RequestParam("activityFiles") List<MultipartFile> activityFiles){
 
@@ -73,7 +73,12 @@ public class ActivityController {
     }
 
 
-    @RequestMapping("/add")
+    /**
+     * 添加一个活动
+     * @param activity
+     * @return
+     */
+    @RequestMapping(value = "",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> addActivity(@RequestBody Activity activity){
 
@@ -100,12 +105,18 @@ public class ActivityController {
      * @param activity
      * @return
      */
-    @RequestMapping("/update")
+    @RequestMapping(value = "/{id}",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> updateActivity(@RequestBody Activity activity){
+    public Map<String,Object> updateActivity(@PathVariable("id") Integer id,@RequestBody Activity activity){
 
         /*保留原来的旧的活动信息*/
-        Activity activityOld = activityService.getActivityById(activity.getId());
+        Activity activityOld = activityService.getActivityById(id);
+
+        if(activityOld==null){
+            return MessageObject.dealMap(List.of("success","message"),List.of(false,"活动不存在"));
+        }else if(activityOld.getId()!=activity.getId()){
+            return MessageObject.dealMap(List.of("success","message"),List.of(false,"传入id与对象id不一致"));
+        }
 
         activity.setFilePath("/"+activity.getName());
 
@@ -131,9 +142,9 @@ public class ActivityController {
      * @param activityId
      * @return
      */
-    @RequestMapping("/delete/{activityId}")
+    @RequestMapping(value = "/{activityId}",method = RequestMethod.DELETE)
     @ResponseBody
-    public Map<String,Object> deleteActivity(@PathVariable("activityId")int activityId){
+    public Map<String,Object> deleteActivity(@PathVariable("activityId")Integer activityId){
 
         boolean success = activityService.deleteActivity(activityId);
 
@@ -144,7 +155,7 @@ public class ActivityController {
      * 获取所有的活动
      * @return
      */
-    @RequestMapping("/getAll")
+    @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
     public List<Activity> listAllActivities(){
         return activityService.listAllActivities();
@@ -155,20 +166,21 @@ public class ActivityController {
      * 显示所有正在进行的活动
      * @return
      */
-    @RequestMapping("/allUnderwayAct")
+    @RequestMapping(value = "/all/underway-act",method = RequestMethod.GET)
     @ResponseBody
     public List<Activity> listAllUnderwayAct(){
         return activityService.listAllUnderwayAct();
     }
+
 
     /**
      * 获取宣传组管理员下的所有正在进行的活动
      * @param managerId
      * @return
      */
-    @RequestMapping("/group/allUnderwayAct/{managerId}")
+    @RequestMapping(value = "/group/all/underway-act/{managerId}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> listGroupUnderwayAct(@PathVariable("managerId")int managerId){
+    public List<Activity> listGroupUnderwayAct(@PathVariable("managerId")Integer managerId){
         return activityService.listGroupUnderwayAct(managerId);
     }
 
@@ -177,9 +189,9 @@ public class ActivityController {
      * @param userId
      * @return
      */
-    @RequestMapping("/group/{userId}")
+    @RequestMapping(value = "/group/all/{managerId}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> groupActivity(@PathVariable("userId") int userId){
+    public List<Activity> groupActivity(@PathVariable("managerId") Integer userId){
         return activityService.getGroupActivityList(userId);
     }
 
@@ -188,7 +200,7 @@ public class ActivityController {
      * @param key
      * @return
      */
-    @RequestMapping("/search/location/{key}")
+    @RequestMapping(value = "/search-by-loc/{key}",method = RequestMethod.GET)
     @ResponseBody
     public List<Activity> searchByLoc(@PathVariable("key")String key){
         return activityService.filterActivityByLocation(key);
@@ -199,7 +211,7 @@ public class ActivityController {
      * @param key
      * @return
      */
-    @RequestMapping("/search/name/{key}")
+    @RequestMapping(value = "/search-by-name/{key}",method = RequestMethod.GET)
     @ResponseBody
     public List<Activity> searchByName(@PathVariable("key")String key){
         return activityService.filterActivityByName(key);

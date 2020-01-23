@@ -7,6 +7,7 @@ import cn.ncu.newmedia.backschool.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.RequestToViewNameTranslator;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class StudentController {
      * @param student
      * @return
      */
-    @RequestMapping("/new")
+    @RequestMapping(value = "",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> addProfile(@RequestBody Student student){
 
@@ -43,16 +44,23 @@ public class StudentController {
      * @param student
      * @return
      */
-    @RequestMapping("/revision")
+    @RequestMapping(value = "/{id}",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> updateProfile(@RequestBody Student student) {
+    public Map<String,Object> updateProfile(@PathVariable("id")Integer id,@RequestBody Student student) {
 
         boolean success = false;
+        Student studentOld = studentService.getStudentByColumn("student_id",id);
+        if(studentOld==null)
+            return MessageObject.dealMap(List.of("success","message"),List.of(false,"学生信息不存在"));
+
+        String message = "更新成功";
         if(!(boolean)identify(student.getIdCard(),student.getName()).get("success")==false){
             success = studentService.updateStudent(student);
+        }else{
+            message = "学生姓名与身份证不匹配";
         }
 
-        return MessageObject.dealMap(List.of("success"), List.of(success));
+        return MessageObject.dealMap(List.of("success","message"), List.of(success,message));
     }
 
 
@@ -62,10 +70,10 @@ public class StudentController {
      * @param name
      * @return
      */
-    @RequestMapping("/identify/{idCard}/{name}")
+    @RequestMapping(value = "/verification",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> identify(@PathVariable("idCard")String idCard,
-                                       @PathVariable("name")String name){
+    public Map<String,Object> identify(@RequestParam("idCard") String idCard,
+                                       @RequestParam("name")String name){
         boolean success =  studentService.idCardHasMatch(idCard,name);
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
@@ -75,16 +83,21 @@ public class StudentController {
      * @param userId
      * @return
      */
-    @RequestMapping("/allStudents/{userId}")
+    @RequestMapping(value = "/{id}",method = RequestMethod.GET)
     @ResponseBody
-    public Student getStudent(@PathVariable("userId")int userId){
+    public Student getStudent(@PathVariable("id")int userId){
         return studentService.getStudentByColumn("user_id",userId);
     }
 
 
-    @RequestMapping("/studentInAct/{activityId}")
+    /**
+     * 获取参与活动的所有学生信息
+     * @param activityId
+     * @return
+     */
+    @RequestMapping(value = "/student-in-act/{activityId}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Student> getStudentInAct(@PathVariable("activityId")int activityId){
+    public List<Student> getStudentInAct(@PathVariable("activityId")Integer activityId){
         return studentService.getStudentListInAct(activityId);
     }
 

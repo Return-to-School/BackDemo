@@ -9,10 +9,7 @@ import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.List;
@@ -42,7 +39,7 @@ public class ApplyController {
      * @param apply
      * @return
      */
-    @RequestMapping("/signUp")
+    @RequestMapping(value = "",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> apply(@RequestBody Apply apply){
 
@@ -70,29 +67,31 @@ public class ApplyController {
      * 获取所有的申请
      * @return
      */
-    @RequestMapping("/getAll")
+    @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
     public List<Apply> getAllApply(){
         return applyService.listAllApplies();
     }
+
 
     /**
      * 获取某个活动的所有申请
      * @param activityId
      * @return
      */
-    @RequestMapping("/getAllByActivityId/{activityId}")
+    @RequestMapping("/all/activity-id/{activityId}")
     @ResponseBody
     public List<Apply> getAllByActivityId(@PathVariable("activityId") int activityId){
         return applyService.listAllByActivityId(activityId);
     }
+
 
     /**
      * 获取某个学生的所有的活动申请
      * @param studentId
      * @return
      */
-    @RequestMapping("/getAllByStudentId/{studentId}")
+    @RequestMapping("/all/student-id/{studentId}")
     @ResponseBody
     public List<Apply> getAllByStudentId(@PathVariable("studentId") int studentId){
         return applyService.listAllByStudentId(studentId);
@@ -105,7 +104,7 @@ public class ApplyController {
      * @param status
      * @return
      */
-    @RequestMapping("/examine/{applyId}/{status}")
+    @RequestMapping("/examination/{applyId}/{status}")
     @ResponseBody
     public Map<String,Object> examine(@PathVariable("applyId") int applyId,@PathVariable("status") int status){
 

@@ -3,13 +3,12 @@ package cn.ncu.newmedia.backschool.controller;
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
-import cn.ncu.newmedia.backschool.pojo.FeedBack;
+import cn.ncu.newmedia.backschool.pojo.Feedback;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.FeedBackService;
 import cn.ncu.newmedia.backschool.service.StudentService;
-import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -49,7 +48,7 @@ public class FeedbackController {
     @Autowired
     private StudentService studentService;
 
-    @RequestMapping("/sendFeedback/{applyId}/{level}")
+    @RequestMapping("/{applyId}/level/{level}")
     @ResponseBody
     public Map<String,Object> sendFeedback(@RequestParam("feedbackFiles") List<MultipartFile> feedbackFiles,
                                            @PathVariable("applyId") int applyId,
@@ -101,7 +100,7 @@ public class FeedbackController {
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"文件上传错误"));
         }
 
-        FeedBack feedBack = new FeedBack();
+        Feedback feedBack = new Feedback();
         feedBack.setApply(applyId);
         feedBack.setLevel(level);
         feedBack.setFilePath(filePath);

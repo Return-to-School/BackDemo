@@ -26,7 +26,7 @@ public class LocationController {
     @Autowired
     private LocationService locationService;
 
-    @RequestMapping("/allProvinces")
+    @RequestMapping("/all-provinces")
     @ResponseBody
     public List<Province> listAllProvince(){
         return locationService.listAllProvinces();
@@ -44,7 +44,7 @@ public class LocationController {
         return locationService.getCountiesByCityId(cityId);
     }
 
-    @RequestMapping("/allColleges")
+    @RequestMapping("/all-colleges")
     @ResponseBody
     public List<City> listAllColleges(){
         return locationService.listAllColleges();

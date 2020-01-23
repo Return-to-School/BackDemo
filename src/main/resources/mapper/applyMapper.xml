@@ -33,4 +33,7 @@
         update apply set apply_status = #{status} where apply_id = #{applyId}
     </update>
 
+    <delete id="delete">
+        delete from apply where apply_id = #{applyId}
+    </delete>
 </mapper>

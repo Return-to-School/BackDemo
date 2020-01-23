@@ -2,8 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.ncu.newmedia.backschool.dao.FeedBackDao">
+    <resultMap id="feedbackMap" type="Feedback">
+        <id property="id" column="feedback_id" />
+        <result property="apply" column="apply_id" />
+        <result property="level" column="level" />
+        <result property="filePath" column="feedback_file_path" />
+    </resultMap>
+
     <insert id="save" useGeneratedKeys="true" keyProperty="feedback.id">
         insert into feedback values (#{feedback.id},#{feedback.apply},
                                      #{feedback.level},#{feedback.filePath});
     </insert>
+
+    <select id="getFeedbackByColumn" resultMap="feedbackMap">
+        select * from feedback where ${column} = #{value}
+    </select>
+
+    <delete id="delete">
+        delete from feedback where feedback_id = #{feedbackId}
+    </delete>
 </mapper>

@@ -32,7 +32,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping("/login")
+    @RequestMapping(value = "/login",method = RequestMethod.GET)
     public String showLoginPage(){return "login";}
 
 
@@ -41,31 +41,36 @@ public class UserController {
      * @param user
      * @return
      */
-    @RequestMapping("/validate")
+    @RequestMapping(value = "/verification",method = RequestMethod.POST)
     @ResponseBody
-    public String validate(@RequestBody User user){
+    public Map<String,Object> validate(@RequestBody User user){
         Subject subject = SecurityUtils.getSubject();
 
+        String message = "";
+        boolean success = false;
         UsernamePasswordToken token = new UsernamePasswordToken(user.getAccount(),user.getPassword());
 
         try{
             subject.login(token);
         }catch (AuthenticationException e){
-            return e.getMessage();
+            message = e.getMessage();
         }
 
         if(subject.hasRole("user")){
-            return "登录成功";
+            message = "登录成功";
+            success = true;
         }else{
             if(userService.hasUser(user.getAccount())){
-                return "密码错误";
+                message = "密码错误";
             }else{
-                return "用户名不存在";
+                message = "用户名不存在";
             }
         }
+
+        return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
     }
 
-    @RequestMapping("/getAll")
+    @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
     public List<User> getAllUsers(){
         return userService.getAll();
@@ -78,7 +83,7 @@ public class UserController {
      * @param activityList
      * @return
      */
-    @RequestMapping("/addGroupManager/{userId}")
+    @RequestMapping(value = "/group-manager/{userId}",method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> addGroupManager(@PathVariable("userId") int userId,
                                                @RequestBody List<Activity> activityList){
@@ -100,14 +105,27 @@ public class UserController {
      * @param userId
      * @return
      */
-    @RequestMapping("/delete/{userId}")
+    @RequestMapping(value = "/{userId}",method = RequestMethod.DELETE)
     @ResponseBody
-    public Map<String,Object> deleteUser(@PathVariable("userId")int userId){
+    public Map<String,Object> deleteUser(@PathVariable("userId")Integer userId){
 
         boolean success = userService.deleteUser(userId);
         return MessageObject.dealMap(List.of("success"),List.of(success));
+
     }
 
+    /**
+     * 获取一个用户
+     * @param userId
+     * @return
+     */
+    @RequestMapping(value = "{userId}" ,method = RequestMethod.GET)
+    @ResponseBody
+    public User getUserById(@PathVariable("userId")Integer userId){
+
+        return userService.getUserByColumn("user_id",userId).get(0);
+
+    }
 
 }
 
