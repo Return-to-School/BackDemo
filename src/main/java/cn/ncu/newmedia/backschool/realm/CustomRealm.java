@@ -38,7 +38,7 @@ public class CustomRealm extends AuthorizingRealm {
     }
 
     private Set<String> getRolesByUsername(String username) {
-        return userRoleDao.getRolsByAccount(username);
+        return userRoleDao.getRolesByAccount(username);
     }
 
     @Override

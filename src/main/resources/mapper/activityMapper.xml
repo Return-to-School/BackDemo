@@ -53,7 +53,7 @@
     </select>
 
     <select id="filterActivityByColumn" resultMap="activityMap">
-        select * from activity where ${column} like #{key}
+        select * from activity where ${column} like concat(concat('%',#{key}),'%')
     </select>
 
     <select id="getActivityByGroupManagerId" resultMap="activityMap">

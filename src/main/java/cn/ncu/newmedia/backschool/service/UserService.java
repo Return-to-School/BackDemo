@@ -36,8 +36,8 @@ public class UserService {
         return userDao.userExist(username)>0;
     }
 
-    public List<User> getUserByColumn(String column,Object value){
-        return userDao.getUserByColumn(column,value);
+    public User getUsersByColumn(String account){
+        return userDao.getUserByAccount(account);
     }
 
     @Transactional
@@ -87,5 +87,14 @@ public class UserService {
             return false;
         }
         return userDao.delete(userId)>0;
+    }
+
+    @Transactional
+    public boolean addUser(User user) {
+        return userDao.insert(user)>0;
+    }
+
+    public User getUserById(Integer userId) {
+        return userDao.getUserById(userId);
     }
 }

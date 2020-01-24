@@ -200,9 +200,9 @@ public class ActivityController {
      * @param key
      * @return
      */
-    @RequestMapping(value = "/search-by-loc/{key}",method = RequestMethod.GET)
+    @RequestMapping(value = "/search-by-loc",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> searchByLoc(@PathVariable("key")String key){
+    public List<Activity> searchByLoc(@RequestParam("key")String key){
         return activityService.filterActivityByLocation(key);
     }
 
@@ -211,9 +211,9 @@ public class ActivityController {
      * @param key
      * @return
      */
-    @RequestMapping(value = "/search-by-name/{key}",method = RequestMethod.GET)
+    @RequestMapping(value = "/search-by-name",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> searchByName(@PathVariable("key")String key){
+    public List<Activity> searchByName(@RequestParam("key")String key){
         return activityService.filterActivityByName(key);
     }
 

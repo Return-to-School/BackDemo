@@ -51,7 +51,7 @@ public class ApplyService {
         return applyDao.getAppliesByColumn("student_id",studentId);
     }
 
-    public Apply getApplyById(int applyId){return applyDao.getAppliesByColumn("apply_id",applyId).get(0);}
+    public Apply getApplyById(int applyId){return applyDao.getApplyById(applyId);}
 
     public boolean examine(int applyId,int status) {
         return applyDao.changeApplyStatus(applyId,status)>0;

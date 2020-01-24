@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
 class UserRoleDaoTest {
     @Autowired
@@ -13,6 +11,6 @@ class UserRoleDaoTest {
 
     @Test
     void testGetRolesByAccount(){
-        System.out.println(userRoleDao.getRolsByAccount("along"));
+        System.out.println(userRoleDao.getRolesByAccount("along"));
     }
 }

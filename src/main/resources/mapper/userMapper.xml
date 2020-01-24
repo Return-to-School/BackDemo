@@ -26,8 +26,12 @@
         select count(*) from user where account = #{account}
     </select>
 
-    <select id="getUserByColumn" resultMap="userMap">
-        select * from user where ${column} = #{value}
+    <select id="getUserByAccount" resultMap="userMap">
+        select * from user where account = #{account}
+    </select>
+
+    <select id="getUserById" resultMap="userMap">
+        select * from user where user_id = #{userId}
     </select>
 
     <select id="getGroupManagerById" resultMap="groupManagerMap">
@@ -46,4 +50,8 @@
     <delete id="deleteManager">
         delete from activity_manager where user_id = #{userId}
     </delete>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="user.id">
+        insert into user values (#{user.id},#{user.account},#{user.password})
+    </insert>
 </mapper>

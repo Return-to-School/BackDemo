@@ -88,7 +88,7 @@ public class UserController {
     public Map<String, Object> addGroupManager(@PathVariable("userId") int userId,
                                                @RequestBody List<Activity> activityList){
 
-        User user = userService.getUserByColumn("user_id",userId).get(0);
+        User user = userService.getUserById(userId);
 
         if(user==null){
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"用户不存在"));
@@ -122,9 +122,28 @@ public class UserController {
     @RequestMapping(value = "{userId}" ,method = RequestMethod.GET)
     @ResponseBody
     public User getUserById(@PathVariable("userId")Integer userId){
+        return userService.getUserById(userId);
+    }
 
-        return userService.getUserByColumn("user_id",userId).get(0);
 
+    /**
+     * 注册用户
+     * @param user
+     * @return
+     */
+    @RequestMapping(value = "",method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> register(@RequestBody User user){
+
+        String message = "注册成功";
+        boolean success = false;
+        User userInDb = userService.getUsersByColumn(user.getAccount());
+        if(userInDb!=null){
+            message = "用户名已存在";
+            return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
+        }
+        success = userService.addUser(user);
+        return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
     }
 
 }

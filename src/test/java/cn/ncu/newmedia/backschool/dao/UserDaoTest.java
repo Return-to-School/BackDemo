@@ -16,10 +16,6 @@ class UserDaoTest {
         System.out.println(userDao.getPasswordByAccount("along"));
     }
 
-    @Test
-    void testGetUser(){
-        userDao.getUserByColumn("user_id",1).forEach(System.out::println);
-    }
 
     @Test
     void testGetGroupManager(){

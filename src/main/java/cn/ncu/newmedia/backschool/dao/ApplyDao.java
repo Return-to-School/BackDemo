@@ -20,4 +20,6 @@ public interface ApplyDao {
     int changeApplyStatus(@Param("applyId")int applyId,@Param("status") int status);
 
     int delete(@Param("applyId") int id);
+
+    Apply getApplyById(@Param("applyId") int applyId);
 }

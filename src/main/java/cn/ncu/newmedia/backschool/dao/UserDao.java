@@ -15,7 +15,9 @@ public interface UserDao {
 
     int userExist(@Param("account")String account);
 
-    List<User> getUserByColumn(@Param("column") String column, @Param("value") Object value);
+    User getUserById(@Param("userId") Integer userId);
+
+    User getUserByAccount(@Param("account")String account);
 
     List<User> getGroupManagerById(@Param("userId")int userId);
 
@@ -24,4 +26,6 @@ public interface UserDao {
     int delete(@Param("userId") int userId);
 
     int deleteManager(int userId);
+
+    int insert(@Param("user") User user);
 }

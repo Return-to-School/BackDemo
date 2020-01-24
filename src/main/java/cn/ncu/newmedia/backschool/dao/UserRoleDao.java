@@ -10,6 +10,6 @@ import java.util.Set;
 @Mapper
 public interface UserRoleDao {
 
-    Set<String> getRolsByAccount(@Param("account")String account);
+    Set<String> getRolesByAccount(@Param("account")String account);
 
 }
