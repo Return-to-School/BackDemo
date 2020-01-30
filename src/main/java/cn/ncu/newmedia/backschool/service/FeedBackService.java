@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.Date;
 
 /**
@@ -30,5 +31,25 @@ public class FeedBackService {
             return feedBackDao.save(feedBack)>0;
 
         return false;
+    }
+
+    public Feedback getFeedBackByApplyId(Integer applyId){return feedBackDao.getFeedbackByColumn("apply_id",applyId);}
+
+    @Transactional
+    public int delete(int feedbackId) {
+        return feedBackDao.delete(feedbackId);
+    }
+
+    /*删除存在的文件夹*/
+    public void deleteFolder(File director) {
+
+        File[] files = director.listFiles();
+
+        if(files!=null&&files.length!=0){
+            for(File file:files){
+                if(file.isDirectory())  deleteFolder(file);
+                else    file.delete();
+            }
+        }
     }
 }

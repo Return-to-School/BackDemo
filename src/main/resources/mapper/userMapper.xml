@@ -15,7 +15,6 @@
         <result property="account" column="account" />
         <collection property="activities" column="activity_id" ofType="Activity"
                     resultMap="cn.ncu.newmedia.backschool.dao.ActivityDao.activityMap" />
-
     </resultMap>
 
     <select id="getPasswordByAccount" resultType="String">
@@ -54,4 +53,5 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="user.id">
         insert into user values (#{user.id},#{user.account},#{user.password})
     </insert>
+
 </mapper>

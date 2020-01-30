@@ -14,6 +14,7 @@
         <result property="createTime" column="create_time" />
         <result property="location" column="location" />
         <result property="needExamine" column="need_examine" />
+        <result property="content" column="content" />
         <result property="filePath" column="activity_file_path" />
     </resultMap>
 
@@ -22,7 +23,8 @@
                                      #{activity.applyEndTime},#{activity.feedbackStartTime},
                                      #{activity.feedbackEndTime},#{activity.creator},
                                      #{activity.createTime},#{activity.content},
-                                     #{activity.filePath},#{activity.location}
+                                     #{activity.filePath},#{activity.location},
+                                     #{activity.needExamine}
                                      );
     </insert>
 
@@ -41,7 +43,7 @@
     </update>
 
     <delete id="delete">
-        delete from activity where activity_id = #{activityId}
+        delete from activity where activity_id = #{activity}
     </delete>
 
     <select id="getActivityByValue" resultMap="activityMap">

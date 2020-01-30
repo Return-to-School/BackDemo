@@ -1,6 +1,7 @@
 package cn.ncu.newmedia.backschool.dao;
 
 import cn.ncu.newmedia.backschool.pojo.Apply;
+import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -22,4 +23,8 @@ public interface ApplyDao {
     int delete(@Param("applyId") int id);
 
     Apply getApplyById(@Param("applyId") int applyId);
+
+    List<ApplyVo> getApplyVoListByColumn(@Param("column")String column,
+                                       @Param("value")String value);
+
 }

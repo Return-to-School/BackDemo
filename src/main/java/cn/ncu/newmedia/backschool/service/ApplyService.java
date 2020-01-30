@@ -3,6 +3,7 @@ package cn.ncu.newmedia.backschool.service;
 import cn.ncu.newmedia.backschool.dao.ApplyDao;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
+import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,7 +54,21 @@ public class ApplyService {
 
     public Apply getApplyById(int applyId){return applyDao.getApplyById(applyId);}
 
-    public boolean examine(int applyId,int status) {
-        return applyDao.changeApplyStatus(applyId,status)>0;
+    @Transactional
+    public boolean examine(List<Apply> applyList,int status) {
+
+        try {
+            applyList.forEach(e->{
+                applyDao.changeApplyStatus(e.getId(),status);
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    public List<ApplyVo> search(String name, String key) {
+        return applyDao.getApplyVoListByColumn(name,key);
     }
 }

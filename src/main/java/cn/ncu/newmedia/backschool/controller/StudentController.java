@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.RequestToViewNameTranslator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -89,6 +91,16 @@ public class StudentController {
         return studentService.getStudentByColumn("user_id",userId);
     }
 
+
+    /**
+     * 获取所有学生的信息
+     * @return
+     */
+    @RequestMapping(value = "/all",method = RequestMethod.GET)
+    @ResponseBody
+    public List<Student> listAll(){
+        return studentService.listAll();
+    }
 
     /**
      * 获取参与活动的所有学生信息

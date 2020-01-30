@@ -39,4 +39,9 @@ public class StudentService {
     public List<Student> getStudentListInAct(int activityId) {
         return studentDao.getStudentListInAct(activityId);
     }
+
+    public List<Student> listAll() {
+        return studentDao.listAll();
+    }
+
 }

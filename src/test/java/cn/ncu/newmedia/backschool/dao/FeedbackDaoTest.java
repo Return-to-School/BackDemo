@@ -23,7 +23,7 @@ class FeedbackDaoTest {
 
     @Test
     void testGet(){
-        feedBackDao.getFeedbackByColumn("apply_id",2).forEach(System.out::println);
+
     }
 
 }

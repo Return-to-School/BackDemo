@@ -16,4 +16,9 @@ class ApplyDaoTest {
     void testListAll(){
         applyDao.listAll().forEach(System.out::println);
     }
+
+    @Test
+    void testSearch(){
+        applyDao.getApplyVoListByColumn("name","张三").forEach(System.out::println);
+    }
 }

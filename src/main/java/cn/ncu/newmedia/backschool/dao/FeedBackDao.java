@@ -18,7 +18,10 @@ public interface FeedBackDao {
 
     int save(@Param("feedback") Feedback feedBack);
 
-    List<Feedback> getFeedbackByColumn(@Param("column") String column, @Param("value") Object value);
+    Feedback getFeedbackByColumn(@Param("column") String column, @Param("value") Object value);
 
-    int delete(@Param("feedbackId") int feedbackId);
+
+    int delete(@Param("feedbackId") Integer feedbackId);
+
+    Feedback getFeedbackById(@Param("feedbackId")Integer feedbackId);
 }

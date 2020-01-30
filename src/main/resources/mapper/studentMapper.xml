@@ -53,4 +53,12 @@
         select * from student s,apply a,activity ac where s.student_id = a.student_id
           and a.activity_id = ac.activity_id and a.activity_id = #{activityId}
     </select>
+
+    <select id="listAll" resultMap="studentMap">
+        select * from student
+    </select>
+
+    <select id="searchByColumn" resultMap="studentMap">
+        select * from student where ${column} like concat('%',concat(#{key},'%'))
+    </select>
 </mapper>

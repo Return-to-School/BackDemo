@@ -10,4 +10,10 @@ class BackSchoolApplicationTests {
     void contextLoads() {
     }
 
+    @Test
+    void m(){
+        String[] s = {"姓名","学号"};
+
+    }
+
 }

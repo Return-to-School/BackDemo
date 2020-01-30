@@ -22,4 +22,8 @@ public interface StudentDao {
     int  delete(@Param("studentId") int studentId);
 
     List<Student> getStudentListInAct(@Param("activityId") int activityId);
+
+    List<Student> listAll();
+
+    List<Student> searchByColumn(@Param("column") String column,@Param("key")String key);
 }

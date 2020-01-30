@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/1/20 0:04:41                            */
+/* Created on:     2020/1/30 14:22:08                           */
 /*==============================================================*/
 
 
@@ -71,7 +71,7 @@ create table apply
 (
   apply_id             int not null auto_increment comment '申请表id',
   create_time          datetime comment '申请时间',
-  apply_status         tinyint default 0 comment '申请状态',
+  apply_status         tinyint default 0 comment '申请状态，0未审核，1通过，2不通过',
   origin               varchar(64) comment '学生生源地',
   high_school          varchar(32) comment '回访学校',
   description          text comment '个人简介',
@@ -140,9 +140,10 @@ create table feedback
 (
   feedback_id          int not null auto_increment comment '反馈表id',
   apply_id             int comment '申请表id',
-  level                int comment '评价等级',
+  level                int default 0 comment '评价等级',
   feedback_file_path   varchar(256) comment '反馈文件路径',
-  primary key (feedback_id)
+  primary key (feedback_id),
+  unique key AK_Key_2 (apply_id)
 );
 
 alter table feedback comment '反馈表';
@@ -167,7 +168,7 @@ create table student
   student_id           int not null auto_increment comment '学生表id',
   name                 varchar(32) comment '学生姓名',
   gender               varchar(2) comment '学生性别',
-  studend_card         varchar(32) comment '学号',
+  student_card         varchar(32) comment '学号',
   college              varchar(32) comment '学院',
   class                varchar(32) comment '班级',
   idCard               varchar(32) comment '身份证',
@@ -178,7 +179,8 @@ create table student
   origin               varchar(64) comment '学生生源地',
   high_school          varchar(32) comment '毕业高中',
   user_id              int,
-  primary key (student_id)
+  primary key (student_id),
+  unique key AK_Key_2 (user_id)
 );
 
 alter table student comment '学生表';

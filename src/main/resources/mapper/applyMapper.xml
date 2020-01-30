@@ -10,15 +10,32 @@
         <result property="origin" column="origin" />
         <result property="highSchool" column="high_school" />
         <result property="description" column="description" />
-        <result property="student" column="student_id" />
-        <result property="activity" column="activity_id" />
+        <result property="studentId" column="student_id" />
+        <result property="activityId" column="activity_id" />
+    </resultMap>
+
+    <!--这个map为了前端的查询导出功能-->
+    <resultMap id="applyVoMap" type="ApplyVo">
+        <id property="id" column="apply.apply_id" />
+        <result property="createTime" column="apply.create_time" />
+        <result property="status" column="apply_status" />
+        <result property="origin" column="loc" />
+        <result property="highSchool" column="highSchool" />
+        <result property="description" column="description" />
+        <association property="student" column="student_id"
+                     javaType="Student"
+                     resultMap="cn.ncu.newmedia.backschool.dao.StudentDao.studentMap" />
+        <association property="activity" column="activity_id" javaType="Activity"
+                     resultMap="cn.ncu.newmedia.backschool.dao.ActivityDao.activityMap" />
+        <association property="feedback" column="feedback_id" javaType="Feedback"
+                     select="cn.ncu.newmedia.backschool.dao.FeedBackDao.getFeedbackById" />
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="apply.id">
         insert into apply values (#{apply.id},#{apply.createTime},
                                   #{apply.status},#{apply.origin},
                                   #{apply.highSchool},#{apply.description},
-                                  #{apply.student},#{apply.activity})
+                                  #{apply.studentId},#{apply.activityId})
     </insert>
 
     <select id="listAll" resultMap="applyMap">
@@ -36,4 +53,46 @@
     <delete id="delete">
         delete from apply where apply_id = #{applyId}
     </delete>
+
+    <select id="getApplyById" resultMap="applyMap">
+        select * from apply where apply_id = #{applyId}
+    </select>
+
+    <select id="getApplyVoListByColumn" resultMap="applyVoMap">
+        select apply.apply_id,
+               apply.create_time,
+               apply_status,
+               apply.origin loc,
+               apply.high_school highSchool,
+               description,
+               student.student_id,
+               name,
+               gender,
+               student_card,
+               college,
+               class,
+               idCard,
+               qq,
+               bank_card,
+               phone,
+               email,
+               student.origin,
+               student.high_school,
+               user_id,
+               activity.activity_id,
+               activity_name,
+               apply_start_time,
+               apply_end_time,
+               feedback_start_time,
+               feedback_end_time,
+               creator,
+               activity.create_time,
+               content,
+               activity_file_path,
+               location,
+               need_examine,feedback_id,feedback.apply_id,
+               level,feedback_file_path from student ,apply,activity,feedback where apply.student_id = student.student_id
+        and apply.activity_id = activity.activity_id and apply.apply_id = feedback.apply_id and ${column} like concat('%',concat(#{value},'%'))
+    </select>
+
 </mapper>

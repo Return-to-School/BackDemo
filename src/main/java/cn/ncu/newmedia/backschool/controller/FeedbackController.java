@@ -56,6 +56,7 @@ public class FeedbackController {
 
         Apply apply = applyService.getApplyById(applyId);
 
+        /*先对申请状态进行判断，若审核未通过、或者还未被申请则不允许进行反馈*/
         if(apply.getStatus()==0){
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"未审核"));
         }else if(apply.getStatus()==2){
@@ -66,15 +67,23 @@ public class FeedbackController {
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"请选择需要上传反馈文件"));
         }
 
-        /*获取活动的文件路径*/
-        Student student = studentService.getStudentByColumn("student_id",apply.getStudent());
-        Activity activity = activityService.getActivityById(apply.getActivity());
+        /*活动的文件路径+学生姓名=学生反馈文件路径*/
+        Student student = studentService.getStudentByColumn("student_id",apply.getStudentId());
+        Activity activity = activityService.getActivityById(apply.getActivityId());
         String filePath = activity.getFilePath()+"/反馈文件/"+student.getName();
         File director = new File (FILEPATH +filePath);
 
-        if(!director.exists()){
+        /*若之前存在反馈文件，需要先删除它*/
+        Feedback feedback = feedBackService.getFeedBackByApplyId(applyId);
+        if(feedback!=null) {
+            feedBackService.delete(feedback.getId());
+        }
+        if(director.exists()){
+            feedBackService.deleteFolder(director);
+        }else{
             director.mkdirs();
         }
+
 
         List<File> fileList = new ArrayList<>();
         int flag = 0;

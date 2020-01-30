@@ -24,9 +24,9 @@ public class Apply {
 
     private String description;
 
-    private int student;
+    private int studentId;
 
-    private int activity;
+    private int activityId;
 
     public Apply() {
     }
@@ -79,20 +79,20 @@ public class Apply {
         this.description = description;
     }
 
-    public int getStudent() {
-        return student;
+    public int getStudentId() {
+        return studentId;
     }
 
-    public void setStudent(int student) {
-        this.student = student;
+    public void setStudentId(int studentId) {
+        this.studentId = studentId;
     }
 
-    public int getActivity() {
-        return activity;
+    public int getActivityId() {
+        return activityId;
     }
 
-    public void setActivity(int activity) {
-        this.activity = activity;
+    public void setActivityId(int activityId) {
+        this.activityId = activityId;
     }
 
     @Override
@@ -104,8 +104,8 @@ public class Apply {
                 ", origin='" + origin + '\'' +
                 ", highSchool='" + highSchool + '\'' +
                 ", description='" + description + '\'' +
-                ", student=" + student +
-                ", activity=" + activity +
+                ", studentId=" + studentId +
+                ", activityId=" + activityId +
                 '}';
     }
 }

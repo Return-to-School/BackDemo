@@ -59,23 +59,23 @@ public class UserService {
     @Transactional
     public boolean deleteUser(int userId) {
 
-
         try {
 
             Student student = studentDao.getStudentByColumn("user_id", userId);
 
             List<Apply> applyList = applyDao.getAppliesByColumn("student_id", student.getId());
+            /*级联删除申请*/
             if (applyList != null) {
                 applyList.forEach(e->applyDao.delete(e.getId()));
             }
 
+            /*然后才能删除student，有外键约束*/
             if (student != null) {
                 studentDao.delete(student.getId());
             }
 
-
             List<Feedback> feedbackList  = new ArrayList<>();
-            applyList.forEach(e->feedbackList.addAll(feedBackDao.getFeedbackByColumn("apply_id",e.getId())));
+            applyList.forEach(e->feedbackList.add(feedBackDao.getFeedbackByColumn("apply_id",e.getId())));
 
             if (feedbackList != null) {
                 feedbackList.forEach(e->feedBackDao.delete(e.getId()));
