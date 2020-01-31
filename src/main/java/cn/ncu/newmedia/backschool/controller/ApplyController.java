@@ -1,5 +1,6 @@
 package cn.ncu.newmedia.backschool.controller;
 
+import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
@@ -66,9 +67,9 @@ public class ApplyController {
 
         /*判断申请是否需要审核*/
         if(activity.getNeedExamine())
-            apply.setStatus(0);
+            apply.setStatus(ApplyStatus.NOTEXAMINE);
         else
-            apply.setStatus(1);
+            apply.setStatus(ApplyStatus.AGREE);
 
         boolean success = applyService.apply(apply,activity);
 

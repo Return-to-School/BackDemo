@@ -1,5 +1,6 @@
 package cn.ncu.newmedia.backschool.pojo;
 
+import cn.ncu.newmedia.backschool.Enumeration.SexEnum;
 import org.apache.ibatis.type.Alias;
 
 import java.io.Serializable;
@@ -16,7 +17,7 @@ public class Student implements Serializable {
 
     private String name;
 
-    private String gender;
+    private SexEnum gender;
 
     private String studentCard;
 
@@ -60,11 +61,11 @@ public class Student implements Serializable {
         this.name = name;
     }
 
-    public String getGender() {
+    public SexEnum getGender() {
         return gender;
     }
 
-    public void setGender(String gender) {
+    public void setGender(SexEnum gender) {
         this.gender = gender;
     }
 
@@ -161,9 +162,9 @@ public class Student implements Serializable {
         return "Student{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", gender='" + gender + '\'' +
+                ", gender=" + gender +
                 ", studentCard='" + studentCard + '\'' +
-                ", College='" + college + '\'' +
+                ", college='" + college + '\'' +
                 ", classname='" + classname + '\'' +
                 ", idCard='" + idCard + '\'' +
                 ", qq='" + qq + '\'' +

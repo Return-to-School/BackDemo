@@ -20,7 +20,7 @@ public class ActivityService {
     private ActivityDao activityDao;
 
     public Activity getActivityById(int id) {
-        return activityDao.getActivityByValue("activity_id",id+"");
+        return activityDao.getActivityByColumn("activity_id",id+"");
     }
 
     @Transactional

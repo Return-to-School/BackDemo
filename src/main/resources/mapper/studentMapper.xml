@@ -6,7 +6,7 @@
     <resultMap id="studentMap" type="Student">
         <id property="id" column="student_id" />
         <result property="name" column="name" />
-        <result property="gender" column="gender" />
+        <result property="gender" column="gender" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
         <result property="studentCard" column="student_card"/>
         <result property="college" column="college" />
         <result property="classname" column="class" />
@@ -21,7 +21,7 @@
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="student.id">
-        insert into student values (#{student.id},#{student.name},#{student.gender},
+        insert into student values (#{student.id},#{student.name},#{student.gender.code},
                                    #{student.studentCard},#{student.college},#{student.classname},
                                    #{student.idCard},#{student.qq},#{student.bankCard},
                                    #{student.phone},#{student.email},#{student.origin},
@@ -29,7 +29,7 @@
     </insert>
 
     <update id="update">
-        update student set name = #{student.name},gender = #{student.gender},
+        update student set name = #{student.name},gender = #{student.gender.code},
                                  studend_card = #{student.studentCard},college = #{student.college},
                                  class = #{student.classname},idCard = #{student.idCard},qq = #{student.qq},
                                  bank_card = #{student.bankCard},phone = #{student.phone},
@@ -61,4 +61,5 @@
     <select id="searchByColumn" resultMap="studentMap">
         select * from student where ${column} like concat('%',concat(#{key},'%'))
     </select>
+
 </mapper>

@@ -5,13 +5,13 @@
     <resultMap id="feedbackMap" type="Feedback">
         <id property="id" column="feedback_id" />
         <result property="apply" column="apply_id" />
-        <result property="level" column="level" />
+        <result property="level" column="level" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
         <result property="filePath" column="feedback_file_path" />
     </resultMap>
 
     <insert id="save" useGeneratedKeys="true" keyProperty="feedback.id">
         insert into feedback values (#{feedback.id},#{feedback.apply},
-                                     #{feedback.level},#{feedback.filePath});
+                                     #{feedback.level.code},#{feedback.filePath});
     </insert>
 
     <select id="getFeedbackByColumn" resultMap="feedbackMap">

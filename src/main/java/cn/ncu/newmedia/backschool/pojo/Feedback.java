@@ -1,5 +1,6 @@
 package cn.ncu.newmedia.backschool.pojo;
 
+import cn.ncu.newmedia.backschool.Enumeration.Level;
 import org.apache.ibatis.type.Alias;
 
 /**
@@ -14,7 +15,7 @@ public class Feedback {
 
     private int apply;
 
-    private int level;
+    private Level level;
 
     private String filePath;
 
@@ -37,11 +38,11 @@ public class Feedback {
         this.apply = apply;
     }
 
-    public int getLevel() {
+    public Level getLevel() {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(Level level) {
         this.level = level;
     }
 

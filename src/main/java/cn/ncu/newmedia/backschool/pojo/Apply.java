@@ -1,5 +1,6 @@
 package cn.ncu.newmedia.backschool.pojo;
 
+import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import org.apache.ibatis.type.Alias;
 
 import java.util.Date;
@@ -16,7 +17,7 @@ public class Apply {
 
     private Date createTime;
 
-    private int  status;
+    private ApplyStatus status;
 
     private String origin;
 
@@ -47,11 +48,11 @@ public class Apply {
         this.createTime = createTime;
     }
 
-    public int getStatus() {
+    public ApplyStatus getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(ApplyStatus status) {
         this.status = status;
     }
 

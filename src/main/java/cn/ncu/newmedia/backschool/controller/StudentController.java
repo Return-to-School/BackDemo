@@ -112,6 +112,4 @@ public class StudentController {
     public List<Student> getStudentInAct(@PathVariable("activityId")Integer activityId){
         return studentService.getStudentListInAct(activityId);
     }
-
-
 }

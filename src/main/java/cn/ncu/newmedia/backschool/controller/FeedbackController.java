@@ -1,5 +1,8 @@
 package cn.ncu.newmedia.backschool.controller;
 
+import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
+import cn.ncu.newmedia.backschool.Enumeration.Level;
+import cn.ncu.newmedia.backschool.Utils.EnumUtils;
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
@@ -57,9 +60,9 @@ public class FeedbackController {
         Apply apply = applyService.getApplyById(applyId);
 
         /*先对申请状态进行判断，若审核未通过、或者还未被申请则不允许进行反馈*/
-        if(apply.getStatus()==0){
+        if(apply.getStatus()== ApplyStatus.NOTEXAMINE){
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"未审核"));
-        }else if(apply.getStatus()==2){
+        }else if(apply.getStatus()==ApplyStatus.DISAGREE){
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"审核不通过"));
         }
 
@@ -111,7 +114,7 @@ public class FeedbackController {
 
         Feedback feedBack = new Feedback();
         feedBack.setApply(applyId);
-        feedBack.setLevel(level);
+        feedBack.setLevel(EnumUtils.getEnumByCode(Level.class,level));
         feedBack.setFilePath(filePath);
         boolean success = feedBackService.saveFeedback(activity,feedBack);
 

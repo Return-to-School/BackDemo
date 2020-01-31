@@ -1,5 +1,6 @@
 package cn.ncu.newmedia.backschool.dao;
 
+import cn.ncu.newmedia.backschool.Enumeration.SexEnum;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ class StudentDaoTest {
     @PostConstruct
     void init(){
         student.setName("张三");
-        student.setGender("男");
+        student.setGender(SexEnum.MALE);
         student.setStudentCard("6109117198");
         student.setCollege("信工");
         student.setClassname("计算机");
@@ -35,7 +36,6 @@ class StudentDaoTest {
 
     @Test
     void testinsertStudent(){
-
         System.out.println(studentDao.insert(student));
     }
 
@@ -54,7 +54,12 @@ class StudentDaoTest {
     }
 
     @Test
-    void testGetStdent(){
+    void testGetStdentInAct(){
         studentDao.getStudentListInAct(1).forEach(System.out::println);
+    }
+
+    @Test
+    void testGetStudentById(){
+        System.out.println(studentDao.getStudentByColumn("student_id",2));
     }
 }

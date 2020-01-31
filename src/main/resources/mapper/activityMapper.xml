@@ -46,7 +46,7 @@
         delete from activity where activity_id = #{activity}
     </delete>
 
-    <select id="getActivityByValue" resultMap="activityMap">
+    <select id="getActivityByColumn" resultMap="activityMap">
         select * from activity where ${column} = #{value};
     </select>
 

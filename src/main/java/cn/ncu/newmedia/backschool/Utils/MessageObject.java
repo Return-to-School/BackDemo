@@ -11,7 +11,7 @@ import java.util.Map;
  */
 public class MessageObject {
     /**
-     * 复用代码块，返回一个处理结果消息
+     * 复用代码块，返回一个处理结果消息的map
      * @param keys
      * @param values
      * @return

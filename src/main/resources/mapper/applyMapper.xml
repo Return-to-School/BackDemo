@@ -6,7 +6,7 @@
     <resultMap id="applyMap" type="Apply">
         <id property="id" column="apply_id" />
         <result property="createTime" column="create_time" />
-        <result property="status" column="apply_status" />
+        <result property="status" column="apply_status" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler" />
         <result property="origin" column="origin" />
         <result property="highSchool" column="high_school" />
         <result property="description" column="description" />
@@ -18,7 +18,7 @@
     <resultMap id="applyVoMap" type="ApplyVo">
         <id property="id" column="apply.apply_id" />
         <result property="createTime" column="apply.create_time" />
-        <result property="status" column="apply_status" />
+        <result property="status" column="apply_status" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
         <result property="origin" column="loc" />
         <result property="highSchool" column="highSchool" />
         <result property="description" column="description" />
@@ -33,7 +33,7 @@
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="apply.id">
         insert into apply values (#{apply.id},#{apply.createTime},
-                                  #{apply.status},#{apply.origin},
+                                  #{apply.status.code},#{apply.origin},
                                   #{apply.highSchool},#{apply.description},
                                   #{apply.studentId},#{apply.activityId})
     </insert>
@@ -47,7 +47,7 @@
     </select>
 
     <update id="changeApplyStatus">
-        update apply set apply_status = #{status} where apply_id = #{applyId}
+        update apply set apply_status = #{status.code} where apply_id = #{applyId}
     </update>
 
     <delete id="delete">

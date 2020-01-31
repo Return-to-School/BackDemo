@@ -45,7 +45,7 @@ class ActivityDaoTest {
 
     @Test
     void testFind(){
-        System.out.println(activityDao.getActivityByValue("activity_id","1"));
+        System.out.println(activityDao.getActivityByColumn("activity_id","1"));
     }
 
     @Test

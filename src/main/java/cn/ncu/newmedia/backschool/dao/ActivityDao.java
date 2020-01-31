@@ -20,7 +20,7 @@ public interface ActivityDao {
 
     int update(@Param("activity") Activity activity);
 
-    Activity getActivityByValue(@Param("column") String column,@Param("value") String value);
+    Activity getActivityByColumn(@Param("column") String column, @Param("value") String value);
 
     List<Activity> listAll();
 
