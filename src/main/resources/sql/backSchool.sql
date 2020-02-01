@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/1/31 23:24:16                           */
+/* Created on:     2020/2/1 20:20:43                            */
 /*==============================================================*/
 
 
@@ -77,7 +77,8 @@ create table apply
    description          text comment '个人简介',
    student_id           int,
    activity_id          int,
-   primary key (apply_id)
+   primary key (apply_id),
+   unique key AK_Key_2 (student_id, activity_id)
 );
 
 alter table apply comment '报名申请表';
@@ -225,29 +226,29 @@ create table user_role
 alter table user_role comment '用户角色表';
 
 alter table activity_manager add constraint FK_Reference_11 foreign key (activity_id)
-      references activity (activity_id) on delete restrict on update restrict;
+   references activity (activity_id) on delete restrict on update restrict;
 
 alter table activity_manager add constraint FK_Reference_12 foreign key (user_id)
-      references user (user_id) on delete restrict on update restrict;
+   references user (user_id) on delete restrict on update restrict;
 
 alter table apply add constraint FK_Reference_2 foreign key (activity_id)
-      references activity (activity_id) on delete restrict on update restrict;
+   references activity (activity_id) on delete restrict on update restrict;
 
 alter table apply add constraint FK_Reference_3 foreign key (student_id)
-      references student (student_id) on delete restrict on update restrict;
+   references student (student_id) on delete restrict on update restrict;
 
 alter table city add constraint FK_Reference_8 foreign key (province_id)
-      references province (province_id) on delete restrict on update restrict;
+   references province (province_id) on delete restrict on update restrict;
 
 alter table class add constraint FK_Reference_7 foreign key (college_id)
-      references college (college_id) on delete restrict on update restrict;
+   references college (college_id) on delete restrict on update restrict;
 
 alter table county add constraint FK_Reference_9 foreign key (city_id)
-      references city (city_id) on delete restrict on update restrict;
+   references city (city_id) on delete restrict on update restrict;
 
 alter table feedback add constraint FK_feedback_apply foreign key (apply_id)
-      references apply (apply_id) on delete restrict on update restrict;
+   references apply (apply_id) on delete restrict on update restrict;
 
 alter table student add constraint FK_Reference_10 foreign key (user_id)
-      references user (user_id) on delete restrict on update restrict;
+   references user (user_id) on delete restrict on update restrict;
 

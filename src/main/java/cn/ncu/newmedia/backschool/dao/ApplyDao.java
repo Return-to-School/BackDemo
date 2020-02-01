@@ -1,5 +1,6 @@
 package cn.ncu.newmedia.backschool.dao;
 
+import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,9 +19,11 @@ public interface ApplyDao {
 
     List<Apply> getAppliesByColumn(@Param("column")String column,@Param("value") Object value);
 
-    int changeApplyStatus(@Param("applyId")int applyId,@Param("status") int status);
+    int changeApplyStatus(@Param("applyId")int applyId,@Param("status") ApplyStatus status);
 
     int delete(@Param("applyId") int id);
+
+    int deleteByActId(@Param("activityId")Integer activityId);
 
     Apply getApplyById(@Param("applyId") int applyId);
 

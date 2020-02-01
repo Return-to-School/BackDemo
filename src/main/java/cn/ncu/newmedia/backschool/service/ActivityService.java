@@ -1,11 +1,17 @@
 package cn.ncu.newmedia.backschool.service;
 
+import cn.ncu.newmedia.backschool.Utils.FolderDelUtils;
+import cn.ncu.newmedia.backschool.controller.ActivityController;
 import cn.ncu.newmedia.backschool.dao.ActivityDao;
+import cn.ncu.newmedia.backschool.dao.ApplyDao;
+import cn.ncu.newmedia.backschool.dao.FeedBackDao;
 import cn.ncu.newmedia.backschool.pojo.Activity;
+import cn.ncu.newmedia.backschool.pojo.Apply;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -16,8 +22,16 @@ import java.util.List;
 @Service
 public class ActivityService {
 
+    static final String FILEPATH = "e:/所有文件";
+
     @Autowired
     private ActivityDao activityDao;
+
+    @Autowired
+    private ApplyDao  applyDao;
+
+    @Autowired
+    private FeedBackDao feedBackDao;
 
     public Activity getActivityById(int id) {
         return activityDao.getActivityByColumn("activity_id",id+"");
@@ -39,6 +53,22 @@ public class ActivityService {
 
     @Transactional
     public boolean deleteActivity(int activityId) {
+
+        /*删除活动的管理者*/
+        activityDao.deleteManagerByActId(activityId);
+
+        List<Apply> applyList = applyDao.getAppliesByColumn("activity_id",activityId);
+
+        /* 删除所有相关的反馈*/
+        applyList.forEach(e->feedBackDao.deleteByApplyId(e.getId()));
+
+        /*删除所有申请*/
+        applyDao.deleteByActId(activityId);
+
+        /*删除文件*/
+        File director = new File(FILEPATH+activityDao.getActivityById(activityId).getFilePath());
+        FolderDelUtils.deleteFolder(director);
+
         return activityDao.delete(activityId)>0;
     }
 
@@ -60,5 +90,9 @@ public class ActivityService {
 
     public List<Activity> listGroupUnderwayAct(int managerId) {
         return activityDao.listGroupUnderwayAct(managerId);
+    }
+
+    public boolean isManagedByGroup(int id, String userId) {
+        return activityDao.isManagedByGroup(id,userId)>0;
     }
 }

@@ -70,6 +70,10 @@ public class UserController {
         return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
     }
 
+    /**
+     * 获取所有的用户
+     * @return
+     */
     @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
     public List<User> getAllUsers(){

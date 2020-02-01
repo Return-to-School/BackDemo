@@ -3,6 +3,7 @@ package cn.ncu.newmedia.backschool.controller;
 import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.Enumeration.Level;
 import cn.ncu.newmedia.backschool.Utils.EnumUtils;
+import cn.ncu.newmedia.backschool.Utils.FolderDelUtils;
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
@@ -14,10 +15,7 @@ import cn.ncu.newmedia.backschool.service.FeedBackService;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -36,7 +34,7 @@ import java.util.Map;
 @RequestMapping("/feedback")
 public class FeedbackController {
 
-    private final String FILEPATH = "e:/所有文件";
+    static final String FILEPATH = "e:/所有文件";
 
     @Autowired
     private FeedBackService feedBackService;
@@ -51,7 +49,14 @@ public class FeedbackController {
     @Autowired
     private StudentService studentService;
 
-    @RequestMapping("/{applyId}/level/{level}")
+    /**
+     * 添加反馈信息
+     * @param feedbackFiles
+     * @param applyId
+     * @param level
+     * @return
+     */
+    @RequestMapping(value = "/{applyId}/level/{level}",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> sendFeedback(@RequestParam("feedbackFiles") List<MultipartFile> feedbackFiles,
                                            @PathVariable("applyId") int applyId,
@@ -81,9 +86,9 @@ public class FeedbackController {
         if(feedback!=null) {
             feedBackService.delete(feedback.getId());
         }
-        if(director.exists()){
-            feedBackService.deleteFolder(director);
-        }else{
+        if(director.exists())
+            FolderDelUtils.deleteFileInFolder(director);
+        else{
             director.mkdirs();
         }
 

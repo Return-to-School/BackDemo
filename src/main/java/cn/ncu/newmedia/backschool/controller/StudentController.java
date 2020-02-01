@@ -46,7 +46,7 @@ public class StudentController {
      * @param student
      * @return
      */
-    @RequestMapping(value = "/{id}",method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
     @ResponseBody
     public Map<String,Object> updateProfile(@PathVariable("id")Integer id,@RequestBody Student student) {
 
@@ -56,8 +56,10 @@ public class StudentController {
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"学生信息不存在"));
 
         String message = "更新成功";
-        if(!(boolean)identify(student.getIdCard(),student.getName()).get("success")==false){
+        student.setId(id);
+        if((boolean)identify(student.getIdCard(),student.getName()).get("success")){
             success = studentService.updateStudent(student);
+            if(!success) message = "更新失败";
         }else{
             message = "学生姓名与身份证不匹配";
         }
@@ -80,6 +82,7 @@ public class StudentController {
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
 
+
     /**
      * 获取指定学生信息
      * @param userId
@@ -101,6 +104,7 @@ public class StudentController {
     public List<Student> listAll(){
         return studentService.listAll();
     }
+
 
     /**
      * 获取参与活动的所有学生信息

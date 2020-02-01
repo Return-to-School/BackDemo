@@ -1,5 +1,6 @@
 package cn.ncu.newmedia.backschool.service;
 
+import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.dao.ApplyDao;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
@@ -55,7 +56,7 @@ public class ApplyService {
     public Apply getApplyById(int applyId){return applyDao.getApplyById(applyId);}
 
     @Transactional
-    public boolean examine(List<Apply> applyList,int status) {
+    public boolean examine(List<Apply> applyList, ApplyStatus status) {
 
         try {
             applyList.forEach(e->{

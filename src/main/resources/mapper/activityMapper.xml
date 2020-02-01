@@ -42,12 +42,21 @@
                             activity_id = #{activity.id};
     </update>
 
+
     <delete id="delete">
-        delete from activity where activity_id = #{activity}
+        delete from activity where activity_id = #{activityId}
+    </delete>
+
+    <delete id="deleteManagerByActId">
+        delete from activity_manager where activity_id = #{activityId}
     </delete>
 
     <select id="getActivityByColumn" resultMap="activityMap">
         select * from activity where ${column} = #{value};
+    </select>
+
+    <select id="getActivityById" resultMap="activityMap">
+        select * from activity where activity_id = #{activityId}
     </select>
 
     <select id="listAll" resultMap="activityMap">
@@ -69,7 +78,10 @@
 
     <select id="listGroupUnderwayAct" resultMap="activityMap">
         select * from user u,activity_manager am,activity a where u.user_id = am.user_id and
-              a.activity_id =  am.activity_id and u.user_id = #{managerId}
+              a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() between apply_start_time and feedback_start_time
     </select>
 
+    <select id="isManagedByGroup" resultType="int">
+        select count(*) from activity_manager where activity_id = #{activityId} and user_id = #{userId}
+    </select>
 </mapper>

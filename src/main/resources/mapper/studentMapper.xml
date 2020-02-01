@@ -30,7 +30,7 @@
 
     <update id="update">
         update student set name = #{student.name},gender = #{student.gender.code},
-                                 studend_card = #{student.studentCard},college = #{student.college},
+                                 student_card = #{student.studentCard},college = #{student.college},
                                  class = #{student.classname},idCard = #{student.idCard},qq = #{student.qq},
                                  bank_card = #{student.bankCard},phone = #{student.phone},
                                  email = #{student.email},origin = #{student.origin}

@@ -25,7 +25,7 @@ import java.util.Map;
 @RequestMapping("/activity")
 public class ActivityController {
 
-    private final String FILEPATH = "e:/所有文件";
+    static final String FILEPATH = "e:/所有文件";
 
 
     @Autowired
@@ -105,7 +105,7 @@ public class ActivityController {
      * @param activity
      * @return
      */
-    @RequestMapping(value = "/{id}",method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
     @ResponseBody
     public Map<String,Object> updateActivity(@PathVariable("id") Integer id,@RequestBody Activity activity){
 
@@ -119,7 +119,7 @@ public class ActivityController {
         }
 
         activity.setFilePath("/"+activity.getName());
-
+        activity.setCreateTime(activityOld.getCreateTime());
         boolean success = activityService.updateActivity(activity);
 
         if(success){
@@ -137,6 +137,8 @@ public class ActivityController {
 
     }
 
+
+
     /**
      * 删除一个活动
      * @param activityId
@@ -146,10 +148,12 @@ public class ActivityController {
     @ResponseBody
     public Map<String,Object> deleteActivity(@PathVariable("activityId")Integer activityId){
 
+
         boolean success = activityService.deleteActivity(activityId);
 
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
+
 
     /**
      * 获取所有的活动
@@ -160,6 +164,7 @@ public class ActivityController {
     public List<Activity> listAllActivities(){
         return activityService.listAllActivities();
     }
+
 
 
     /**
@@ -184,6 +189,7 @@ public class ActivityController {
         return activityService.listGroupUnderwayAct(managerId);
     }
 
+
     /**
      * 获取宣传组管理员管理的活动
      * @param userId
@@ -205,6 +211,7 @@ public class ActivityController {
     public List<Activity> searchByLoc(@RequestParam("key")String key){
         return activityService.filterActivityByLocation(key);
     }
+
 
     /**
      * 搜索指定名称的活动

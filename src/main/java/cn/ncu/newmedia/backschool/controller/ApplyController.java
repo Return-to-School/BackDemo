@@ -1,6 +1,7 @@
 package cn.ncu.newmedia.backschool.controller;
 
 import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
+import cn.ncu.newmedia.backschool.Utils.EnumUtils;
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +66,8 @@ public class ApplyController {
         }
 
         Activity activity = activityService.getActivityById(apply.getActivityId());
+        if(activity==null)
+            return MessageObject.dealMap(List.of("success","message"),List.of(false,"活动不存在"));
 
         /*判断申请是否需要审核*/
         if(activity.getNeedExamine())
@@ -71,10 +75,17 @@ public class ApplyController {
         else
             apply.setStatus(ApplyStatus.AGREE);
 
-        boolean success = applyService.apply(apply,activity);
+        boolean success = false;
+        try{
+            success = applyService.apply(apply,activity);
+        } catch (Exception e){
+            return MessageObject.dealMap(List.of("success","message"),List.of(false,"该活动已经申请"));
+        }
 
-        return MessageObject.dealMap(List.of("success","message"),List.of(success,"提交申请成功"));
+        return MessageObject.dealMap(List.of("success","message"),List.of(success,success?"提交申请成功":"提交申请失败"));
     }
+
+
 
     /**
      * 获取所有的申请
@@ -92,7 +103,7 @@ public class ApplyController {
      * @param activityId
      * @return
      */
-    @RequestMapping("/all/activity-id/{activityId}")
+    @RequestMapping(value = "/all/activity-id/{activityId}",method = RequestMethod.GET)
     @ResponseBody
     public List<Apply> getAllByActivityId(@PathVariable("activityId") int activityId){
         return applyService.listAllByActivityId(activityId);
@@ -104,7 +115,7 @@ public class ApplyController {
      * @param studentId
      * @return
      */
-    @RequestMapping("/all/student-id/{studentId}")
+    @RequestMapping(value = "/all/student-id/{studentId}",method = RequestMethod.GET)
     @ResponseBody
     public List<Apply> getAllByStudentId(@PathVariable("studentId") int studentId){
         return applyService.listAllByStudentId(studentId);
@@ -114,13 +125,14 @@ public class ApplyController {
     /**
      * 管理员批量审核报名申请
      * @param applyList
-     * @param status
+     * @param statusCode
      * @return
      */
     @RequestMapping(value = "/examination/{status}",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> examine(@RequestBody List<Apply> applyList,@PathVariable("status") int status){
+    public Map<String,Object> examine(@RequestBody List<Apply> applyList,@PathVariable("status") int statusCode){
 
+        ApplyStatus status = EnumUtils.getEnumByCode(ApplyStatus.class,statusCode);
         boolean success = applyService.examine(applyList,status);
         return MessageObject.dealMap(List.of("success"),List.of(success));
 
@@ -139,7 +151,7 @@ public class ApplyController {
                                      @RequestParam("key")String key){
 
         String message = "查询成功";
-        boolean success = false;
+        boolean success = true;
         List<ApplyVo> applyVoList = new ArrayList<>();
 
         column = column.trim().replaceAll(" ","");
@@ -147,23 +159,25 @@ public class ApplyController {
 
         if(column.equals("")){
             message = "搜索的列不能为空";
+            success = false;
         }else if(key.equals("")){
             message = "搜索的关键字不能为空";
+            success = false;
         }else if(column.equals("province")||column.equals("city")||column.equals("county")){
-            applyVoList = applyService.search("apply.origin",key);
+            applyVoList = applyService.search("loc",key);
         }else if(column.equals("name")){
             applyVoList = applyService.search("name",key);
         }else if(column.equals("college")){
             applyVoList = applyService.search("college",key);
         }else if(column.equals("high-school")){
-            applyVoList = applyService.search("apply.high_school",key);
+            applyVoList = applyService.search("highSchool",key);
         }else if(column.equals("status")){
             applyVoList = applyService.search("apply_status",key);
         }else{
             message = "搜索字段错误";
+            success = false;
         }
 
-        if(applyVoList.size()!=0) success = true;
 
         return MessageObject.dealMap(List.of("success","message","applyVoList"),List.of(success,message,applyVoList));
 
@@ -176,16 +190,21 @@ public class ApplyController {
      * @param key
      * @return
      */
-    @RequestMapping("/search-for-group/{column}/{key}")
+    @RequestMapping(value = "/search-for-group/{userId}/{column}",method = RequestMethod.GET)
     @ResponseBody
     public Map<String,Object> searchForGroupManager(@PathVariable("column")String column,
-                                                    @PathVariable("key")String key){
+                                                    @PathVariable("userId")String userId,
+                                                    @RequestParam("key")String key){
 
         column = column.trim().replaceAll(" ","");
         if(column.equals("province")||column.equals("city")){
             return MessageObject.dealMap(List.of("success","message","applyVoList"),List.of(false,"宣传组管理员不能进行按区域搜索",new ArrayList<>()));
         }else{
-            return searchForSuperManager(column,key);
+            Map<String,Object> tmp = searchForSuperManager(column,key);
+            List<ApplyVo> applyVoList = (List<ApplyVo>)tmp.get("applyVoList");
+            /*筛选出管理员所管理的活动*/
+            tmp.put("applyVoList",applyVoList.stream().filter(e->activityService.isManagedByGroup(e.getActivity().getId(),userId)));
+            return tmp;
         }
     }
 

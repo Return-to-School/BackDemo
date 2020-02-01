@@ -24,4 +24,6 @@ public interface FeedBackDao {
     int delete(@Param("feedbackId") Integer feedbackId);
 
     Feedback getFeedbackById(@Param("feedbackId")Integer feedbackId);
+
+    int deleteByApplyId(@Param("applyId") int applyId);
 }

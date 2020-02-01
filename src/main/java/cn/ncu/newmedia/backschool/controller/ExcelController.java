@@ -29,20 +29,12 @@ public class ExcelController {
     /**
      * 用excel的形式导出信息
      * @param dataModel
-     * @param request
      * @return
      */
     @RequestMapping(value = "/export",method = RequestMethod.POST)
-    public ModelAndView showParticipantListInExcel(@RequestBody DataModel dataModel, HttpServletRequest request){
+    public ModelAndView showParticipantListInExcel(@RequestBody DataModel dataModel){
 
-        //判断是否是直接通过网址访问
-        String referer = request.getHeader("referer");
         ModelAndView mv = new ModelAndView();
-//        if(referer==null){
-//            //是的话请登录
-//            mv.setViewName("login");
-//            return mv;
-//        }
 
         View view = new ExcelView(exportApplyExcelService());
         mv.setView(view);

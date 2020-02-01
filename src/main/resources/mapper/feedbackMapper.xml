@@ -22,6 +22,10 @@
         delete from feedback where feedback_id = #{feedbackId}
     </delete>
 
+    <delete id="deleteByApplyId">
+        delete from feedback where apply_id = #{applyId}
+    </delete>
+
     <select id="getFeedbackById" resultMap="feedbackMap">
         select * from feedback where feedback_id = #{feedbackId}
     </select>

@@ -39,17 +39,4 @@ public class FeedBackService {
     public int delete(int feedbackId) {
         return feedBackDao.delete(feedbackId);
     }
-
-    /*删除存在的文件夹*/
-    public void deleteFolder(File director) {
-
-        File[] files = director.listFiles();
-
-        if(files!=null&&files.length!=0){
-            for(File file:files){
-                if(file.isDirectory())  deleteFolder(file);
-                else    file.delete();
-            }
-        }
-    }
 }

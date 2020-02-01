@@ -22,9 +22,13 @@ public interface ActivityDao {
 
     Activity getActivityByColumn(@Param("column") String column, @Param("value") String value);
 
+    Activity getActivityById(@Param("activityId") Integer activityId);
+
     List<Activity> listAll();
 
-    int delete(@Param("activityId") int activityId);
+    int delete(@Param("activityId") Integer activityId);
+
+    int deleteManagerByActId(@Param("activityId")Integer activityId);
 
     List<Activity> filterActivityByColumn(@Param("column")String column,@Param("key") String key);
 
@@ -33,5 +37,8 @@ public interface ActivityDao {
     List<Activity> listAllUnderwayAct();
 
     List<Activity> listGroupUnderwayAct(@Param("managerId") int managerId);
+
+    int isManagedByGroup(@Param("activityId") Integer activityId,@Param("userId") String userId);
+
 }
 

@@ -16,8 +16,8 @@
 
     <!--这个map为了前端的查询导出功能-->
     <resultMap id="applyVoMap" type="ApplyVo">
-        <id property="id" column="apply.apply_id" />
-        <result property="createTime" column="apply.create_time" />
+        <id property="id" column="ap_apply_id" />
+        <result property="createTime" column="ap_create_time" />
         <result property="status" column="apply_status" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
         <result property="origin" column="loc" />
         <result property="highSchool" column="highSchool" />
@@ -54,45 +54,49 @@
         delete from apply where apply_id = #{applyId}
     </delete>
 
+    <delete id="deleteByActId">
+        delete from apply where activity_id = #{activityId}
+    </delete>
+
+
     <select id="getApplyById" resultMap="applyMap">
         select * from apply where apply_id = #{applyId}
     </select>
 
     <select id="getApplyVoListByColumn" resultMap="applyVoMap">
-        select apply.apply_id,
-               apply.create_time,
-               apply_status,
-               apply.origin loc,
-               apply.high_school highSchool,
-               description,
-               student.student_id,
-               name,
-               gender,
-               student_card,
-               college,
-               class,
-               idCard,
-               qq,
-               bank_card,
-               phone,
-               email,
-               student.origin,
-               student.high_school,
-               user_id,
-               activity.activity_id,
-               activity_name,
-               apply_start_time,
-               apply_end_time,
-               feedback_start_time,
-               feedback_end_time,
-               creator,
-               activity.create_time,
-               content,
-               activity_file_path,
-               location,
-               need_examine,feedback_id,feedback.apply_id,
-               level,feedback_file_path from student ,apply,activity,feedback where apply.student_id = student.student_id
-        and apply.activity_id = activity.activity_id and apply.apply_id = feedback.apply_id and ${column} like concat('%',concat(#{value},'%'))
+        select * FROM (select * from (select apply.apply_id ap_apply_id,
+                                             apply.create_time ap_create_time,
+                                             apply_status,
+                                             apply.origin loc,
+                                             apply.high_school highSchool,
+                                             description,
+                                             student.student_id,
+                                             name,
+                                             gender,
+                                             student_card,
+                                             college,
+                                             class,
+                                             idCard,
+                                             qq,
+                                             bank_card,
+                                             phone,
+                                             email,
+                                             student.origin,
+                                             student.high_school,
+                                             user_id,
+                                             activity.activity_id,
+                                             activity_name,
+                                             apply_start_time,
+                                             apply_end_time,
+                                             feedback_start_time,
+                                             feedback_end_time,
+                                             creator,
+                                             activity.create_time create_time,
+                                             content,
+                                             activity_file_path,
+                                             location,
+                                             need_examine from student ,apply,activity where apply.student_id = student.student_id
+                                                                                         and apply.activity_id = activity.activity_id ) a left join feedback on ap_apply_id = feedback.apply_id ) b where ${column} like concat('%',concat(#{value},'%'))
     </select>
 
 </mapper>
