@@ -1,6 +1,7 @@
 package cn.ncu.newmedia.backschool.controller;
 
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
+import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.UserService;
@@ -159,22 +160,23 @@ public class ActivityController {
      * 获取所有的活动
      * @return
      */
-    @RequestMapping(value = "/all",method = RequestMethod.GET)
+    @RequestMapping(value = "/all/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> listAllActivities(){
-        return activityService.listAllActivities();
+    public Page listAllActivities(@PathVariable("currPage")Integer currPage,
+                                  @PathVariable("pageSize")Integer pageSize){
+        return activityService.listAllActivities(currPage,pageSize);
     }
-
 
 
     /**
      * 显示所有正在进行的活动
      * @return
      */
-    @RequestMapping(value = "/all/underway-act",method = RequestMethod.GET)
+    @RequestMapping(value = "/all/underway-act/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> listAllUnderwayAct(){
-        return activityService.listAllUnderwayAct();
+    public Page listAllUnderwayAct(@PathVariable("currPage")Integer currPage,
+                                   @PathVariable("pageSize")Integer pageSize){
+        return activityService.listAllUnderwayAct(currPage,pageSize);
     }
 
 
@@ -183,10 +185,12 @@ public class ActivityController {
      * @param managerId
      * @return
      */
-    @RequestMapping(value = "/group/all/underway-act/{managerId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/group/{managerId}/all/underway-act/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> listGroupUnderwayAct(@PathVariable("managerId")Integer managerId){
-        return activityService.listGroupUnderwayAct(managerId);
+    public Page listGroupUnderwayAct(@PathVariable("managerId")Integer managerId,
+                                               @PathVariable("currPage")Integer currPage,
+                                               @PathVariable("pageSize")Integer pageSize){
+        return activityService.listGroupUnderwayAct(currPage,pageSize,managerId);
     }
 
 
@@ -200,6 +204,7 @@ public class ActivityController {
     public List<Activity> groupActivity(@PathVariable("managerId") Integer userId){
         return activityService.getGroupActivityList(userId);
     }
+
 
     /**
      * 搜索指定区域的活动

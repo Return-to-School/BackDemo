@@ -24,4 +24,8 @@ class BackSchoolApplicationTests {
         FolderDelUtils.deleteFolder(file);
     }
 
+    @Test
+    void testLamda(){
+    }
+
 }

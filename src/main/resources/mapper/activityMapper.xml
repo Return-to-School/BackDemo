@@ -60,7 +60,7 @@
     </select>
 
     <select id="listAll" resultMap="activityMap">
-        select * from activity;
+        select * from activity limit #{begin},#{num};
     </select>
 
     <select id="filterActivityByColumn" resultMap="activityMap">
@@ -73,15 +73,30 @@
     </select>
 
     <select id="listAllUnderwayAct" resultMap="activityMap">
-        select * from activity where now() between apply_start_time and feedback_start_time
+        select * from activity where now() between apply_start_time and feedback_start_time limit #{begin},#{num}
     </select>
 
     <select id="listGroupUnderwayAct" resultMap="activityMap">
         select * from user u,activity_manager am,activity a where u.user_id = am.user_id and
               a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() between apply_start_time and feedback_start_time
+        limit #{begin},#{num}
     </select>
 
     <select id="isManagedByGroup" resultType="int">
         select count(*) from activity_manager where activity_id = #{activityId} and user_id = #{userId}
     </select>
+
+    <select id="getTotalCnt" resultType="int">
+        select count(*) from activity;
+    </select>
+    
+    <select id="getUnderwayTolAct" resultType="int">
+        select count(*) from activity where now() between apply_start_time and feedback_start_time;
+    </select>
+    
+    <select id="getGroupUnderwayTolAct" resultType="int">
+        select count(*) from user u,activity_manager am,activity a where u.user_id = am.user_id and
+            a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() between apply_start_time and feedback_start_time
+    </select>
+
 </mapper>

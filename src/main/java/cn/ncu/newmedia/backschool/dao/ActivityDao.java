@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Repository
 @Mapper
-public interface ActivityDao {
+public interface ActivityDao{
 
     int insert(@Param("activity") Activity activity);
 
@@ -24,7 +24,9 @@ public interface ActivityDao {
 
     Activity getActivityById(@Param("activityId") Integer activityId);
 
-    List<Activity> listAll();
+    List<Activity> listAll(@Param("begin")Integer begin,@Param("num")Integer num);
+
+    int getTotalCnt();
 
     int delete(@Param("activityId") Integer activityId);
 
@@ -34,9 +36,13 @@ public interface ActivityDao {
 
     List<Activity> getActivityByGroupManagerId(@Param("userId") int userId);
 
-    List<Activity> listAllUnderwayAct();
+    List<Activity> listAllUnderwayAct(@Param("begin")Integer begin,@Param("num")Integer num);
 
-    List<Activity> listGroupUnderwayAct(@Param("managerId") int managerId);
+    int getUnderwayTolAct();
+
+    List<Activity> listGroupUnderwayAct(@Param("begin")Integer begin,@Param("num")Integer num,@Param("managerId") int managerId);
+
+    int getGroupUnderwayTolAct();
 
     int isManagedByGroup(@Param("activityId") Integer activityId,@Param("userId") String userId);
 
