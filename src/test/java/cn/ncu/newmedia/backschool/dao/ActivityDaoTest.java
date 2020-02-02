@@ -50,6 +50,6 @@ class ActivityDaoTest {
 
     @Test
     void testGetGroupActivityList(){
-        activityDao.getActivityByGroupManagerId(1).forEach(System.out::println);
+        activityDao.getActivitiesByGroupManagerId(currPage, pageSize, 1).forEach(System.out::println);
     }
 }

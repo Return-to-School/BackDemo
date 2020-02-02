@@ -64,12 +64,12 @@
     </select>
 
     <select id="filterActivityByColumn" resultMap="activityMap">
-        select * from activity where ${column} like concat(concat('%',#{key}),'%')
+        select * from activity where ${column} like concat(concat('%',#{key}),'%') limit #{begin},#{end}
     </select>
 
-    <select id="getActivityByGroupManagerId" resultMap="activityMap">
+    <select id="getActivitiesByGroupManagerId" resultMap="activityMap">
         select * from activity a,user u,activity_manager am where a.activity_id = am.activity_id
-        and u.user_id = am.user_id and u.user_id = #{userId}
+        and u.user_id = am.user_id and u.user_id = #{userId} limit #{begin},#{num}
     </select>
 
     <select id="listAllUnderwayAct" resultMap="activityMap">
@@ -90,13 +90,23 @@
         select count(*) from activity;
     </select>
     
-    <select id="getUnderwayTolAct" resultType="int">
+    <select id="getUnderwayTolCnt" resultType="int">
         select count(*) from activity where now() between apply_start_time and feedback_start_time;
     </select>
     
-    <select id="getGroupUnderwayTolAct" resultType="int">
+    <select id="getGroupUnderwayTolCnt" resultType="int">
         select count(*) from user u,activity_manager am,activity a where u.user_id = am.user_id and
             a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() between apply_start_time and feedback_start_time
     </select>
+
+    <select id="getGroupAllCnt" resultType="int">
+        select count(*) from activity a,user u,activity_manager am where a.activity_id = am.activity_id
+                                                              and u.user_id = am.user_id and u.user_id = #{userId}
+    </select>
+
+    <select id="filterActivityByColumnCnt" resultType="int">
+        select count(*) from activity where ${column} like concat(concat('%',#{key}),'%')
+    </select>
+
 
 </mapper>

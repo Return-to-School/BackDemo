@@ -1,7 +1,6 @@
 package cn.ncu.newmedia.backschool.service;
 
 import cn.ncu.newmedia.backschool.Utils.FolderDelUtils;
-import cn.ncu.newmedia.backschool.controller.ActivityController;
 import cn.ncu.newmedia.backschool.dao.ActivityDao;
 import cn.ncu.newmedia.backschool.dao.ApplyDao;
 import cn.ncu.newmedia.backschool.dao.FeedBackDao;
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * @author maoalong
@@ -106,8 +104,10 @@ public class ActivityService {
      * @param key
      * @return
      */
-    public List<Activity> filterActivityByLocation(String key) {
-        return activityDao.filterActivityByColumn("location",key);
+    public Page filterActivityByLocation(String key,int currPage,int pageSize) {
+        return PageService.getPage(currPage,pageSize,activityDao,
+                e->e.filterActivityByColumn("location",key,(currPage-1)*pageSize,pageSize),
+                e->e.filterActivityByColumnCnt("location",key));
     }
 
     /**
@@ -115,17 +115,22 @@ public class ActivityService {
      * @param key
      * @return
      */
-    public List<Activity> filterActivityByName(String key) {
-        return activityDao.filterActivityByColumn("activity_name",key);
+    public Page filterActivityByName(String key,int currPage,int pageSize) {
+        return PageService.getPage(currPage,pageSize,activityDao,
+                e->e.filterActivityByColumn("activity_name",key,(currPage-1)*pageSize,pageSize),
+                e->e.filterActivityByColumnCnt("activity_name",key));
     }
+
 
     /**
      * 分页获取管理员下的活动
      * @param userId
      * @return
      */
-    public List<Activity> getGroupActivityList(int userId) {
-        return activityDao.getActivityByGroupManagerId(userId);
+    public Page getGroupActivityList(int currPage,int pageSize,int userId) {
+        return PageService.getPage(currPage,pageSize,activityDao,
+                e->e.getActivitiesByGroupManagerId(currPage,pageSize,userId),
+                e->e.getGroupAllCnt());
     }
 
 
@@ -137,7 +142,7 @@ public class ActivityService {
      */
     public Page listAllUnderwayAct(Integer currPage,Integer pageSize) {
         return PageService.getPage(currPage,pageSize,activityDao,e->e.listAllUnderwayAct((currPage-1)*pageSize,pageSize),
-                e->e.getUnderwayTolAct());
+                e->e.getUnderwayTolCnt());
     }
 
     /**
@@ -150,7 +155,7 @@ public class ActivityService {
     public Page listGroupUnderwayAct(int currPage,int pageSize,int managerId) {
         return PageService.getPage(currPage,pageSize,activityDao,
                 e->e.listGroupUnderwayAct((currPage-1)*pageSize,pageSize,managerId),
-                e->e.getGroupUnderwayTolAct());
+                e->e.getGroupUnderwayTolCnt());
     }
 
     /**

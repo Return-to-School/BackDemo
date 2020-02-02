@@ -199,10 +199,12 @@ public class ActivityController {
      * @param userId
      * @return
      */
-    @RequestMapping(value = "/group/all/{managerId}",method = RequestMethod.GET)
+    @RequestMapping(value = "/group/{managerId}/all/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> groupActivity(@PathVariable("managerId") Integer userId){
-        return activityService.getGroupActivityList(userId);
+    public Page groupActivity(@PathVariable("managerId") Integer userId,
+                              @PathVariable("currPage")Integer currPage,
+                              @PathVariable("pageSize")Integer pageSize){
+        return activityService.getGroupActivityList(currPage,pageSize,userId);
     }
 
 
@@ -211,10 +213,12 @@ public class ActivityController {
      * @param key
      * @return
      */
-    @RequestMapping(value = "/search-by-loc",method = RequestMethod.GET)
+    @RequestMapping(value = "/search-by-loc/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> searchByLoc(@RequestParam("key")String key){
-        return activityService.filterActivityByLocation(key);
+    public Page searchByLoc(@RequestParam("key")String key,
+                                      @PathVariable("currPage")Integer currPage,
+                                      @PathVariable("pageSize")Integer pageSize){
+        return activityService.filterActivityByLocation(key,currPage,pageSize);
     }
 
 

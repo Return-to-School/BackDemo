@@ -16,35 +16,47 @@ import java.util.List;
 @Mapper
 public interface ActivityDao{
 
+    /*CRUD方法*/
     int insert(@Param("activity") Activity activity);
 
     int update(@Param("activity") Activity activity);
 
-    Activity getActivityByColumn(@Param("column") String column, @Param("value") String value);
-
     Activity getActivityById(@Param("activityId") Integer activityId);
-
-    List<Activity> listAll(@Param("begin")Integer begin,@Param("num")Integer num);
-
-    int getTotalCnt();
 
     int delete(@Param("activityId") Integer activityId);
 
-    int deleteManagerByActId(@Param("activityId")Integer activityId);
 
-    List<Activity> filterActivityByColumn(@Param("column")String column,@Param("key") String key);
+    /*获取数据库记录方法*/
+    int getTotalCnt();
+    int getGroupUnderwayTolCnt();
+    int getUnderwayTolCnt();
+    int getGroupAllCnt();
+    int filterActivityByColumnCnt(@Param("column")String column,@Param("key")Object key);
 
-    List<Activity> getActivityByGroupManagerId(@Param("userId") int userId);
+    /*通用获取单个实体的方法*/
+    Activity getActivityByColumn(@Param("column") String column, @Param("value") String value);
+
+
+    /*获取list*/
+    List<Activity> listAll(@Param("begin")Integer begin,@Param("num")Integer num);
+
+    List<Activity> filterActivityByColumn(@Param("column")String column,@Param("key") String key,
+                                          @Param("begin")int begin,@Param("num")int num);
+
+    List<Activity> getActivitiesByGroupManagerId(@Param("begin") int begin,@Param("num") int num, @Param("userId") int userId);
 
     List<Activity> listAllUnderwayAct(@Param("begin")Integer begin,@Param("num")Integer num);
 
-    int getUnderwayTolAct();
-
     List<Activity> listGroupUnderwayAct(@Param("begin")Integer begin,@Param("num")Integer num,@Param("managerId") int managerId);
 
-    int getGroupUnderwayTolAct();
+
+
+    /*管理员相关的方法*/
+    int deleteManagerByActId(@Param("activityId")Integer activityId);
 
     int isManagedByGroup(@Param("activityId") Integer activityId,@Param("userId") String userId);
+
+
 
 }
 
