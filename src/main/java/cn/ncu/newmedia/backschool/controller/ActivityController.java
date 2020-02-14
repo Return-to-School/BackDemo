@@ -74,14 +74,16 @@ public class ActivityController {
     }
 
 
+
     /**
      * 添加一个活动
      * @param activity
      * @return
      */
-    @RequestMapping(value = "",method = RequestMethod.POST)
+    @RequestMapping(value = "/{creatorId}",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> addActivity(@RequestBody Activity activity){
+    public Map<String,Object> addActivity(@RequestBody Activity activity,
+                                          @PathVariable("creatorId")int creatorId){
 
         activity.setCreateTime(new Date());
         /*去掉目录非法字符*/
@@ -94,7 +96,7 @@ public class ActivityController {
         activityFileDirector.mkdirs();
         feedBackFileDirector.mkdirs();
 
-        boolean success = activityService.saveActivity(activity);
+        boolean success = activityService.saveActivity(creatorId,activity);
 
         return MessageObject.dealMap(List.of("success"),List.of(success));
 
@@ -160,10 +162,10 @@ public class ActivityController {
      * 获取所有的活动
      * @return
      */
-    @RequestMapping(value = "/all/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
+    @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
-    public Page listAllActivities(@PathVariable("currPage")Integer currPage,
-                                  @PathVariable("pageSize")Integer pageSize){
+    public Page listAllActivities(@RequestParam("currPage")Integer currPage,
+                                  @RequestParam("pageSize")Integer pageSize){
         return activityService.listAllActivities(currPage,pageSize);
     }
 
@@ -172,10 +174,10 @@ public class ActivityController {
      * 显示所有正在进行的活动
      * @return
      */
-    @RequestMapping(value = "/all/underway-act/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
+    @RequestMapping(value = "/all/underway-act",method = RequestMethod.GET)
     @ResponseBody
-    public Page listAllUnderwayAct(@PathVariable("currPage")Integer currPage,
-                                   @PathVariable("pageSize")Integer pageSize){
+    public Page listAllUnderwayAct(@RequestParam("currPage")Integer currPage,
+                                   @RequestParam("pageSize")Integer pageSize){
         return activityService.listAllUnderwayAct(currPage,pageSize);
     }
 
@@ -185,11 +187,11 @@ public class ActivityController {
      * @param managerId
      * @return
      */
-    @RequestMapping(value = "/group/{managerId}/all/underway-act/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
+    @RequestMapping(value = "/group/{managerId}/all/underway-act",method = RequestMethod.GET)
     @ResponseBody
     public Page listGroupUnderwayAct(@PathVariable("managerId")Integer managerId,
-                                               @PathVariable("currPage")Integer currPage,
-                                               @PathVariable("pageSize")Integer pageSize){
+                                               @RequestParam("currPage")Integer currPage,
+                                               @RequestParam("pageSize")Integer pageSize){
         return activityService.listGroupUnderwayAct(currPage,pageSize,managerId);
     }
 
@@ -199,11 +201,11 @@ public class ActivityController {
      * @param userId
      * @return
      */
-    @RequestMapping(value = "/group/{managerId}/all/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
+    @RequestMapping(value = "/group/{managerId}/all",method = RequestMethod.GET)
     @ResponseBody
     public Page groupActivity(@PathVariable("managerId") Integer userId,
-                              @PathVariable("currPage")Integer currPage,
-                              @PathVariable("pageSize")Integer pageSize){
+                              @RequestParam("currPage")Integer currPage,
+                              @RequestParam("pageSize")Integer pageSize){
         return activityService.getGroupActivityList(currPage,pageSize,userId);
     }
 
@@ -213,24 +215,28 @@ public class ActivityController {
      * @param key
      * @return
      */
-    @RequestMapping(value = "/search-by-loc/current/{currPage}/page-size/{pageSize}",method = RequestMethod.GET)
+    @RequestMapping(value = "/search-by-loc",method = RequestMethod.GET)
     @ResponseBody
     public Page searchByLoc(@RequestParam("key")String key,
-                                      @PathVariable("currPage")Integer currPage,
-                                      @PathVariable("pageSize")Integer pageSize){
+                              @RequestParam("currPage")Integer currPage,
+                              @RequestParam("pageSize")Integer pageSize){
         return activityService.filterActivityByLocation(key,currPage,pageSize);
     }
 
 
     /**
-     * 搜索指定名称的活动
+     * 搜索指定名称的活动，搜索模式为模糊查询
      * @param key
      * @return
      */
     @RequestMapping(value = "/search-by-name",method = RequestMethod.GET)
     @ResponseBody
-    public List<Activity> searchByName(@RequestParam("key")String key){
-        return activityService.filterActivityByName(key);
+    public Page searchByName(@RequestParam("key")String key,
+                                       @RequestParam("currPage")Integer currPage,
+                                       @RequestParam("pageSize")Integer pageSize){
+        return activityService.filterActivityByName(key,currPage,pageSize);
     }
+
+
 
 }

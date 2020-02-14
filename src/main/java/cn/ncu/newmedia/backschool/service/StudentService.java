@@ -1,5 +1,6 @@
 package cn.ncu.newmedia.backschool.service;
 
+import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.dao.StudentDao;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,30 +19,67 @@ public class StudentService {
     @Autowired
     private StudentDao studentDao;
 
+    /**
+     * 添加一条学生的信息
+     * @param student
+     * @return
+     */
     @Transactional
     public boolean saveStudent(Student student) {
         return studentDao.insert(student)>0;
     }
 
+    /**
+     * 更新学生的信息
+     * @param student
+     * @return
+     */
     @Transactional
     public boolean updateStudent(Student student) {
         return studentDao.update(student)>0;
     }
 
+    /**
+     * 从基础数据库中验证身份证是否与学生的姓名匹配
+     * @param idCard
+     * @param name
+     * @return
+     */
     public boolean idCardHasMatch(String idCard, String name) {
         return studentDao.idCardHashMatch(idCard,name)>0;
     }
 
+    /**
+     *
+     * @param column
+     * @param value
+     * @return
+     */
     public Student getStudentByColumn(String column,Object value){
         return studentDao.getStudentByColumn(column,value);
     }
 
-    public List<Student> getStudentListInAct(int activityId) {
-        return studentDao.getStudentListInAct(activityId);
+    /**
+     * 分页获取参与活动的所有学生信息
+     * @param activityId
+     * @return
+     */
+    public Page getStudentListInAct(int activityId,int currPage,int pageSize) {
+        return PageService.getPage(currPage,pageSize,studentDao,
+                e->e.getStudentListInAct(activityId,(currPage-1)*pageSize,pageSize),
+                e->e.getCntInAct(activityId));
     }
 
-    public List<Student> listAll() {
-        return studentDao.listAll();
+    /**
+     * 分页获取所有的学生信息
+     * @param currPage
+     * @param pageSize
+     * @return
+     */
+    public Page listAll(int currPage, int pageSize) {
+        return PageService.getPage(currPage,pageSize,studentDao,
+                e->e.listAll((currPage-1)*pageSize,pageSize),
+                e->e.getAllCnt());
     }
 
 }

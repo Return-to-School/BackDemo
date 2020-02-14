@@ -45,11 +45,10 @@ class ActivityDaoTest {
 
     @Test
     void testFind(){
-        System.out.println(activityDao.getActivityByColumn("activity_id","1"));
+        System.out.println(activityDao.listAllUnderwayAct(0,3));
     }
 
     @Test
     void testGetGroupActivityList(){
-        activityDao.getActivitiesByGroupManagerId(currPage, pageSize, 1).forEach(System.out::println);
     }
 }

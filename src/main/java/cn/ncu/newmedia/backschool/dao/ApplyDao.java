@@ -15,7 +15,7 @@ public interface ApplyDao {
 
     int insert(@Param("apply") Apply apply);
 
-    List<Apply> listAll();
+    List<Apply> listAll(@Param("begin")int begin,@Param("num")int num);
 
     List<Apply> getAppliesByColumn(@Param("column")String column,@Param("value") Object value);
 
@@ -27,7 +27,24 @@ public interface ApplyDao {
 
     Apply getApplyById(@Param("applyId") int applyId);
 
-    List<ApplyVo> getApplyVoListByColumn(@Param("column")String column,
-                                       @Param("value")String value);
+    List<ApplyVo> getAppVoForSuper(@Param("column")String column,
+                                 @Param("value")String value,
+                                 @Param("begin")int begin,
+                                 @Param("num")int num);
+
+
+    Integer getApplyCnt();
+
+    List<Apply> getAppliesByActId(@Param("activityId")int activityId,
+                                  @Param("begin")int begin,
+                                  @Param("num")int num);
+
+    int getApplyCntInAct(@Param("activityId")int activityId);
+
+    Integer getAppVoForSuperCnt(@Param("column") String column, @Param("value") String value);
+
+
+    List<ApplyVo> getAppVoForGroup(@Param("column")String column,
+                                   @Param("value")String value);
 
 }

@@ -53,10 +53,6 @@ class StudentDaoTest {
         System.out.println(studentDao.idCardHashMatch("431121199907298790","along"));
     }
 
-    @Test
-    void testGetStdentInAct(){
-        studentDao.getStudentListInAct(1).forEach(System.out::println);
-    }
 
     @Test
     void testGetStudentById(){

@@ -1,12 +1,15 @@
 package cn.ncu.newmedia.backschool.controller;
 
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
+import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.pojo.User;
 import cn.ncu.newmedia.backschool.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.IncorrectCredentialsException;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,29 +49,27 @@ public class UserController {
     public Map<String,Object> validate(@RequestBody User user){
         Subject subject = SecurityUtils.getSubject();
 
-        String message = "";
+        String msg = "";
         boolean success = false;
         UsernamePasswordToken token = new UsernamePasswordToken(user.getAccount(),user.getPassword());
 
         try{
             subject.login(token);
-        }catch (AuthenticationException e){
-            message = e.getMessage();
-        }
-
-        if(subject.hasRole("user")){
-            message = "登录成功";
+            msg = "登录成功";
             success = true;
-        }else{
-            if(userService.hasUser(user.getAccount())){
-                message = "密码错误";
-            }else{
-                message = "用户名不存在";
-            }
+        }catch (UnknownAccountException e1){
+            msg = "用户不存在";
+        }catch (IncorrectCredentialsException e2){
+            msg = "密码错误";
+        }
+        catch (AuthenticationException e3){
+            msg = e3.getMessage();
+        }finally {
+            return MessageObject.dealMap(List.of("success","message"),List.of(success,msg));
         }
 
-        return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
     }
+
 
     /**
      * 获取所有的用户
@@ -76,8 +77,10 @@ public class UserController {
      */
     @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
-    public List<User> getAllUsers(){
-        return userService.getAll();
+    public Page getAllUsers(@RequestParam("currPage")int currPage,
+                            @RequestParam("pageSize")int pageSize){
+
+        return userService.getAll(currPage,pageSize);
     }
 
 
@@ -141,7 +144,7 @@ public class UserController {
 
         String message = "注册成功";
         boolean success = false;
-        User userInDb = userService.getUsersByColumn(user.getAccount());
+        User userInDb = userService.getUsersByAccount(user.getAccount());
         if(userInDb!=null){
             message = "用户名已存在";
             return MessageObject.dealMap(List.of("success","message"),List.of(success,message));

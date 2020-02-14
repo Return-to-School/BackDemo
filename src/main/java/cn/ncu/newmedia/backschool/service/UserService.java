@@ -36,7 +36,7 @@ public class UserService {
         return userDao.userExist(username)>0;
     }
 
-    public User getUsersByColumn(String account){
+    public User getUsersByAccount(String account){
         return userDao.getUserByAccount(account);
     }
 
@@ -52,8 +52,10 @@ public class UserService {
         return cnt;
     }
 
-    public List<User> getAll() {
-        return userDao.listAll();
+    public Page getAll(int currPage,int pageSize) {
+        return PageService.getPage(currPage,pageSize,userDao,
+                e->e.listAll((currPage-1)*pageSize,pageSize),
+                e->e.getAllCnt());
     }
 
     @Transactional

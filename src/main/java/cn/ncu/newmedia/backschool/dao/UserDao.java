@@ -21,11 +21,14 @@ public interface UserDao {
 
     List<User> getGroupManagerById(@Param("userId")int userId);
 
-    List<User> listAll();
+    List<User> listAll(@Param("begin")int begin,
+                       @Param("num")int num);
 
     int delete(@Param("userId") int userId);
 
     int deleteManager(int userId);
 
     int insert(@Param("user") User user);
+
+    Integer getAllCnt();
 }

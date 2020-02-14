@@ -47,9 +47,6 @@
         delete from activity where activity_id = #{activityId}
     </delete>
 
-    <delete id="deleteManagerByActId">
-        delete from activity_manager where activity_id = #{activityId}
-    </delete>
 
     <select id="getActivityByColumn" resultMap="activityMap">
         select * from activity where ${column} = #{value};
@@ -64,7 +61,7 @@
     </select>
 
     <select id="filterActivityByColumn" resultMap="activityMap">
-        select * from activity where ${column} like concat(concat('%',#{key}),'%') limit #{begin},#{end}
+        select * from activity where ${column} like concat(concat('%',#{key}),'%') limit #{begin},#{num}
     </select>
 
     <select id="getActivitiesByGroupManagerId" resultMap="activityMap">
@@ -73,30 +70,28 @@
     </select>
 
     <select id="listAllUnderwayAct" resultMap="activityMap">
-        select * from activity where now() between apply_start_time and feedback_start_time limit #{begin},#{num}
+        select * from activity where now() between apply_start_time and feedback_end_time limit #{begin},#{num}
     </select>
 
     <select id="listGroupUnderwayAct" resultMap="activityMap">
         select * from user u,activity_manager am,activity a where u.user_id = am.user_id and
-              a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() between apply_start_time and feedback_start_time
+              a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() between apply_start_time and feedback_end_time
         limit #{begin},#{num}
     </select>
 
-    <select id="isManagedByGroup" resultType="int">
-        select count(*) from activity_manager where activity_id = #{activityId} and user_id = #{userId}
-    </select>
+
 
     <select id="getTotalCnt" resultType="int">
         select count(*) from activity;
     </select>
     
     <select id="getUnderwayTolCnt" resultType="int">
-        select count(*) from activity where now() between apply_start_time and feedback_start_time;
+        select count(*) from activity where now() between apply_start_time and feedback_end_time;
     </select>
     
     <select id="getGroupUnderwayTolCnt" resultType="int">
         select count(*) from user u,activity_manager am,activity a where u.user_id = am.user_id and
-            a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() between apply_start_time and feedback_start_time
+            a.activity_id =  am.activity_id and u.user_id = #{userId} and now() between apply_start_time and feedback_end_time
     </select>
 
     <select id="getGroupAllCnt" resultType="int">

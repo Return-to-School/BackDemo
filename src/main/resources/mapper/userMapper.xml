@@ -39,7 +39,7 @@
     </select>
 
     <select id="listAll" resultMap="userMap">
-        select * from user;
+        select user_id,account from user limit #{begin},#{num}
     </select>
 
     <delete id="delete">
@@ -53,5 +53,9 @@
     <insert id="insert" useGeneratedKeys="true" keyProperty="user.id">
         insert into user values (#{user.id},#{user.account},#{user.password})
     </insert>
+
+    <select id="getAllCnt" resultType="int">
+        select count(*) from user
+    </select>
 
 </mapper>

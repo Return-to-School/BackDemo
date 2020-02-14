@@ -5,4 +5,12 @@
     <insert id="add">
         insert into activity_manager (user_id,activity_id) values (#{userId},#{activityId});
     </insert>
+
+    <select id="isManagedByGroup" resultType="int">
+        select count(*) from activity_manager where activity_id = #{activityId} and user_id = #{userId}
+    </select>
+
+    <delete id="deleteManagerByActId">
+        delete from activity_manager where activity_id = #{activityId}
+    </delete>
 </mapper>

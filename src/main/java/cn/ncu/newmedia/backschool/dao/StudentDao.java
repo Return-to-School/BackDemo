@@ -21,9 +21,16 @@ public interface StudentDao {
 
     int  delete(@Param("studentId") int studentId);
 
-    List<Student> getStudentListInAct(@Param("activityId") int activityId);
+    List<Student> getStudentListInAct(@Param("activityId") int activityId,
+                                      @Param("begin")int begin,
+                                      @Param("num")int num);
 
-    List<Student> listAll();
+    List<Student> listAll(@Param("begin")int begin,
+                          @Param("num")int num);
 
     List<Student> searchByColumn(@Param("column") String column,@Param("key")String key);
+
+    Integer getAllCnt();
+
+    Integer getCntInAct(int activityId);
 }

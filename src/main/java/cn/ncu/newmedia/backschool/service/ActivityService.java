@@ -1,10 +1,7 @@
 package cn.ncu.newmedia.backschool.service;
 
 import cn.ncu.newmedia.backschool.Utils.FolderDelUtils;
-import cn.ncu.newmedia.backschool.dao.ActivityDao;
-import cn.ncu.newmedia.backschool.dao.ApplyDao;
-import cn.ncu.newmedia.backschool.dao.FeedBackDao;
-import cn.ncu.newmedia.backschool.dao.Page;
+import cn.ncu.newmedia.backschool.dao.*;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +25,9 @@ public class ActivityService {
     private ActivityDao activityDao;
 
     @Autowired
+    private ActivityManagerDao activityManagerDao;
+
+    @Autowired
     private ApplyDao  applyDao;
 
     @Autowired
@@ -48,8 +48,10 @@ public class ActivityService {
      * @return
      */
     @Transactional
-    public boolean saveActivity(Activity activity) {
-        return activityDao.insert(activity)>0;
+    public boolean saveActivity(int creatorId,Activity activity) {
+        int cnt = activityDao.insert(activity);
+        cnt += activityManagerDao.add(creatorId,activity.getId());
+        return cnt==2;
     }
 
     /**
@@ -82,7 +84,7 @@ public class ActivityService {
     public boolean deleteActivity(int activityId) {
 
         /*删除活动的管理者*/
-        activityDao.deleteManagerByActId(activityId);
+        activityManagerDao.deleteManagerByActId(activityId);
 
         List<Apply> applyList = applyDao.getAppliesByColumn("activity_id",activityId);
 
@@ -130,7 +132,7 @@ public class ActivityService {
     public Page getGroupActivityList(int currPage,int pageSize,int userId) {
         return PageService.getPage(currPage,pageSize,activityDao,
                 e->e.getActivitiesByGroupManagerId(currPage,pageSize,userId),
-                e->e.getGroupAllCnt());
+                e->e.getGroupAllCnt(userId));
     }
 
 
@@ -155,8 +157,9 @@ public class ActivityService {
     public Page listGroupUnderwayAct(int currPage,int pageSize,int managerId) {
         return PageService.getPage(currPage,pageSize,activityDao,
                 e->e.listGroupUnderwayAct((currPage-1)*pageSize,pageSize,managerId),
-                e->e.getGroupUnderwayTolCnt());
+                e->e.getGroupUnderwayTolCnt(managerId));
     }
+
 
     /**
      * 通过活动的id验证该活动是不是被userid的用户所管理
@@ -165,7 +168,7 @@ public class ActivityService {
      * @return
      */
     public boolean isManagedByGroup(int activityId, String userId) {
-        return activityDao.isManagedByGroup(activityId,userId)>0;
+        return activityManagerDao.isManagedByGroup(activityId,userId)>0;
     }
 
 }

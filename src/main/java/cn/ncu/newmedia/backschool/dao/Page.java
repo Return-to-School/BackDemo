@@ -68,6 +68,8 @@ public class Page implements Serializable {
     }
 
 
+    public long getPageNo(){ return pageNo; }
+
     /**
      * 取当前页中的记录.
      */

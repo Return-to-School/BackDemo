@@ -51,11 +51,20 @@
 
     <select id="getStudentListInAct" resultMap="studentMap">
         select * from student s,apply a,activity ac where s.student_id = a.student_id
-          and a.activity_id = ac.activity_id and a.activity_id = #{activityId}
+          and a.activity_id = ac.activity_id and a.activity_id = #{activityId} limit #{begin},#{num}
     </select>
 
     <select id="listAll" resultMap="studentMap">
-        select * from student
+        select * from student limit #{begin},#{num}
+    </select>
+
+    <select id="getAllCnt" resultType="int">
+        select count(*) from student
+    </select>
+
+    <select id="getCntInAct" resultType="int">
+        select count(*) from student s,apply a,activity ac where s.student_id = a.student_id
+                                                      and a.activity_id = ac.activity_id and a.activity_id = #{activityId}
     </select>
 
     <select id="searchByColumn" resultMap="studentMap">

@@ -1,6 +1,7 @@
 package cn.ncu.newmedia.backschool.controller;
 
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
+import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.StudentService;
@@ -101,9 +102,11 @@ public class StudentController {
      */
     @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
-    public List<Student> listAll(){
-        return studentService.listAll();
+    public Page listAll(@RequestParam("currPage")int currPage,
+                        @RequestParam("pageSize")int pageSize){
+        return studentService.listAll(currPage,pageSize);
     }
+
 
 
     /**
@@ -113,7 +116,9 @@ public class StudentController {
      */
     @RequestMapping(value = "/student-in-act/{activityId}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Student> getStudentInAct(@PathVariable("activityId")Integer activityId){
-        return studentService.getStudentListInAct(activityId);
+    public Page getStudentInAct(@PathVariable("activityId")Integer activityId,
+                                @RequestParam("currPage")int currPage,
+                                @RequestParam("pageSize")int pageSize){
+        return studentService.getStudentListInAct(activityId,currPage,pageSize);
     }
 }

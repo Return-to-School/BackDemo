@@ -32,7 +32,7 @@ public class ExcelController {
      * @return
      */
     @RequestMapping(value = "/export",method = RequestMethod.POST)
-    public ModelAndView showParticipantListInExcel(@RequestBody DataModel dataModel){
+    public ModelAndView export(@RequestBody DataModel dataModel){
 
         ModelAndView mv = new ModelAndView();
 

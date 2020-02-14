@@ -28,9 +28,13 @@ public interface ActivityDao{
 
     /*获取数据库记录方法*/
     int getTotalCnt();
-    int getGroupUnderwayTolCnt();
+
+    int getGroupUnderwayTolCnt(@Param("userId")int userId);
+
     int getUnderwayTolCnt();
-    int getGroupAllCnt();
+
+    int getGroupAllCnt(@Param("userId")int userId);
+
     int filterActivityByColumnCnt(@Param("column")String column,@Param("key")Object key);
 
     /*通用获取单个实体的方法*/
@@ -50,11 +54,6 @@ public interface ActivityDao{
     List<Activity> listGroupUnderwayAct(@Param("begin")Integer begin,@Param("num")Integer num,@Param("managerId") int managerId);
 
 
-
-    /*管理员相关的方法*/
-    int deleteManagerByActId(@Param("activityId")Integer activityId);
-
-    int isManagedByGroup(@Param("activityId") Integer activityId,@Param("userId") String userId);
 
 
 

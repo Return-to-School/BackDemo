@@ -39,7 +39,52 @@
     </insert>
 
     <select id="listAll" resultMap="applyMap">
-        select * from apply;
+        select * from apply limit #{begin},#{num};
+    </select>
+
+    <select id="getAppliesByActId" resultMap="applyMap">
+        select * from apply where activity_id = #{activityId} limit #{begin},#{num}
+    </select>
+
+    <select id="getApplyCntInAct" resultType="int">
+        select count(*) from apply where activity_id = #{activityId}
+    </select>
+
+    <select id="getAppVoForSuperCnt" resultType="int">
+        select count(*) from (select * from (select apply.apply_id ap_apply_id,
+            apply.create_time ap_create_time,
+            apply_status,
+            apply.origin loc,
+            apply.high_school highSchool,
+            description,
+            student.student_id,
+            name,
+            gender,
+            student_card,
+            college,
+            class,
+            idCard,
+            qq,
+            bank_card,
+            phone,
+            email,
+            student.origin,
+            student.high_school,
+            user_id,
+            activity.activity_id,
+            activity_name,
+            apply_start_time,
+            apply_end_time,
+            feedback_start_time,
+            feedback_end_time,
+            creator,
+            activity.create_time create_time,
+            content,
+            activity_file_path,
+            location,
+            need_examine from student ,apply,activity where apply.student_id = student.student_id
+            and apply.activity_id = activity.activity_id ) a left join feedback on ap_apply_id = feedback.apply_id ) b where ${column} like concat('%',concat(#{value},'%'))
+
     </select>
 
     <select id="getAppliesByColumn" resultMap="applyMap">
@@ -63,7 +108,7 @@
         select * from apply where apply_id = #{applyId}
     </select>
 
-    <select id="getApplyVoListByColumn" resultMap="applyVoMap">
+    <select id="getAppVoForSuper" resultMap="applyVoMap">
         select * FROM (select * from (select apply.apply_id ap_apply_id,
                                              apply.create_time ap_create_time,
                                              apply_status,
@@ -96,7 +141,49 @@
                                              activity_file_path,
                                              location,
                                              need_examine from student ,apply,activity where apply.student_id = student.student_id
-                                                                                         and apply.activity_id = activity.activity_id ) a left join feedback on ap_apply_id = feedback.apply_id ) b where ${column} like concat('%',concat(#{value},'%'))
+                                                                                         and apply.activity_id = activity.activity_id ) a left join feedback
+                                              on ap_apply_id = feedback.apply_id ) b where ${column} like concat('%',concat(#{value},'%')) limit #{begin},#{num}
     </select>
 
+
+    <select id="getAppVoForGroup" resultMap="applyVoMap">
+        select * FROM (select * from (select apply.apply_id ap_apply_id,
+                                             apply.create_time ap_create_time,
+                                             apply_status,
+                                             apply.origin loc,
+                                             apply.high_school highSchool,
+                                             description,
+                                             student.student_id,
+                                             name,
+                                             gender,
+                                             student_card,
+                                             college,
+                                             class,
+                                             idCard,
+                                             qq,
+                                             bank_card,
+                                             phone,
+                                             email,
+                                             student.origin,
+                                             student.high_school,
+                                             user_id,
+                                             activity.activity_id,
+                                             activity_name,
+                                             apply_start_time,
+                                             apply_end_time,
+                                             feedback_start_time,
+                                             feedback_end_time,
+                                             creator,
+                                             activity.create_time create_time,
+                                             content,
+                                             activity_file_path,
+                                             location,
+                                             need_examine from student ,apply,activity where apply.student_id = student.student_id
+                                                                                         and apply.activity_id = activity.activity_id ) a left join feedback
+                                                                                                                                                    on ap_apply_id = feedback.apply_id ) b where ${column} like concat('%',concat(#{value},'%'));
+    </select>
+
+    <select id="getApplyCnt" resultType="int">
+        select count(*) from apply
+    </select>
 </mapper>

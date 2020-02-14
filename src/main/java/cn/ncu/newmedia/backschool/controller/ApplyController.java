@@ -3,6 +3,7 @@ package cn.ncu.newmedia.backschool.controller;
 import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.Utils.EnumUtils;
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
+import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.Student;
@@ -44,6 +45,13 @@ public class ApplyController {
 
     @Autowired
     private StudentService studentService;
+
+
+    private Map<String,String> groupManagerMap = Map.of("name","name",
+            "college","college","high-school","highSchool","status","apply_status");
+
+    private Map<String,String> superManagerMap = Map.of("province","loc","city","loc","county","loc",
+            "name","name", "college","college","high-school","highSchool","status","apply_status");
 
 
     /**
@@ -90,9 +98,12 @@ public class ApplyController {
      */
     @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
-    public List<Apply> getAllApply(){
-        return applyService.listAllApplies();
+    public Page getAllApply(@RequestParam("currPage")int currPage,
+                            @RequestParam("pageSize")int pageSize){
+        return applyService.listAllApplies(currPage,pageSize);
     }
+
+
 
 
     /**
@@ -102,9 +113,13 @@ public class ApplyController {
      */
     @RequestMapping(value = "/all/activity-id/{activityId}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Apply> getAllByActivityId(@PathVariable("activityId") int activityId){
-        return applyService.listAllByActivityId(activityId);
+    public Page getAllByActivityId(@PathVariable("activityId") int activityId,
+                                   @RequestParam("currPage")int currPage,
+                                   @RequestParam("pageSize")int pageSize){
+        return applyService.listAllByActivityId(activityId,currPage,pageSize);
     }
+
+
 
 
     /**
@@ -117,6 +132,8 @@ public class ApplyController {
     public List<Apply> getAllByStudentId(@PathVariable("studentId") int studentId){
         return applyService.listAllByStudentId(studentId);
     }
+
+
 
 
     /**
@@ -136,6 +153,8 @@ public class ApplyController {
     }
 
 
+
+
     /**
      * 超级管理员查询报名申请
      * @param column
@@ -145,11 +164,13 @@ public class ApplyController {
     @RequestMapping(value = "/search-for-super/{column}",method = RequestMethod.GET)
     @ResponseBody
     public Map<String,Object> searchForSuperManager(@PathVariable("column")String column,
-                                     @RequestParam("key")String key){
+                                                    @RequestParam("key")String key,
+                                                    @RequestParam("currPage")int currPage,
+                                                    @RequestParam("pageSize")int pageSize){
 
         String message = "查询成功";
         boolean success = true;
-        List<ApplyVo> applyVoList = new ArrayList<>();
+        Page page = new Page();
 
         column = column.trim().replaceAll(" ","");
         key = key.trim();
@@ -160,26 +181,18 @@ public class ApplyController {
         }else if(key.equals("")){
             message = "搜索的关键字不能为空";
             success = false;
-        }else if(column.equals("province")||column.equals("city")||column.equals("county")){
-            applyVoList = applyService.search("loc",key);
-        }else if(column.equals("name")){
-            applyVoList = applyService.search("name",key);
-        }else if(column.equals("college")){
-            applyVoList = applyService.search("college",key);
-        }else if(column.equals("high-school")){
-            applyVoList = applyService.search("highSchool",key);
-        }else if(column.equals("status")){
-            applyVoList = applyService.search("apply_status",key);
+        }else if(superManagerMap.containsKey(column)){
+            String columnInDb = superManagerMap.get(column);
+            page = applyService.search(columnInDb,key,currPage,pageSize);
         }else{
             message = "搜索字段错误";
             success = false;
         }
 
-
-
-        return MessageObject.dealMap(List.of("success","message","applyVoList"),List.of(success,message,applyVoList));
+        return MessageObject.dealMap(List.of("success","message","page"),List.of(success,message,page));
 
     }
+
 
 
     /**
@@ -192,18 +205,33 @@ public class ApplyController {
     @ResponseBody
     public Map<String,Object> searchForGroupManager(@PathVariable("column")String column,
                                                     @PathVariable("userId")String userId,
-                                                    @RequestParam("key")String key){
+                                                    @RequestParam("key")String key,
+                                                    @RequestParam("currPage")int currPage,
+                                                    @RequestParam("pageSize")int pageSize){
+
+        String message = "查询成功";
+        boolean success = true;
+        Page page = new Page();
 
         column = column.trim().replaceAll(" ","");
-        if(column.equals("province")||column.equals("city")){
-            return MessageObject.dealMap(List.of("success","message","applyVoList"),List.of(false,"宣传组管理员不能进行按区域搜索",new ArrayList<>()));
+        key = key.trim();
+
+        if(column.equals("")){
+            message = "搜索的列不能为空";
+            success = false;
+        }else if(key.equals("")){
+            message = "搜索的关键字不能为空";
+            success = false;
+        }else if(groupManagerMap.containsKey(column)){
+            String columnInDb = groupManagerMap.get(column);
+            page = applyService.searchForGroup(userId,columnInDb,key,currPage,pageSize);
         }else{
-            Map<String,Object> tmp = searchForSuperManager(column,key);
-            List<ApplyVo> applyVoList = (List<ApplyVo>)tmp.get("applyVoList");
-            /*筛选出管理员所管理的活动*/
-            tmp.put("applyVoList",applyVoList.stream().filter(e->activityService.isManagedByGroup(e.getActivity().getId(),userId)));
-            return tmp;
+            message = "搜索字段错误";
+            success = false;
         }
+
+        return MessageObject.dealMap(List.of("success","message","page"),List.of(success,message,page));
+
     }
 
 }

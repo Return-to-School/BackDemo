@@ -14,4 +14,10 @@ import org.springframework.stereotype.Repository;
 public interface ActivityManagerDao {
 
     int add(@Param("userId") int userId,@Param("activityId") int activityId);
+
+    int isManagedByGroup(@Param("activityId") Integer activityId,@Param("userId") String userId);
+
+    /*管理员相关的方法*/
+    int deleteManagerByActId(@Param("activityId")Integer activityId);
+
 }
