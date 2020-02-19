@@ -45,17 +45,4 @@ public class LocationController {
         return locationService.getCountiesByCityId(cityId);
     }
 
-    @RequestMapping(value = "/all-colleges",method = RequestMethod.GET)
-    @ResponseBody
-    public List<City> listAllColleges(){
-        return locationService.listAllColleges();
-    }
-
-    @RequestMapping(value = "/classes/{collegeId}",method = RequestMethod.GET)
-    @ResponseBody
-    public List<City> getClassesByCollegeId(@PathVariable("collegeId") int collegeId){
-        return locationService.getClassesByCollegeId(collegeId);
-    }
-
-
 }

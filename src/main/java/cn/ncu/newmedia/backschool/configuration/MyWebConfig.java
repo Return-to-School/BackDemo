@@ -14,6 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class MyWebConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry){
-        registry.addResourceHandler("/file/**").addResourceLocations("file:e:/所有文件/");
+        registry.addResourceHandler("/files/**").addResourceLocations("file:c:/形象大使回母校/");
     }
 }

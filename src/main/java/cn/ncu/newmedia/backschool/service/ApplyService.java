@@ -8,7 +8,6 @@ import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,8 +101,12 @@ public class ApplyService {
                 e->e.getAppVoForSuperCnt(column,value));
     }
 
+    public List<ApplyVo> search(String column, String value){
+        return applyDao.getAppVoListByCol(column,value);
+    }
+
     public Page searchForGroup(String userId, String column, String key,int currPage,int pageSize) {
-        List<ApplyVo> applyVoList = applyDao.getAppVoForGroup(column,key);
+        List<ApplyVo> applyVoList = applyDao.getAppVoListByCol(column,key);
         applyVoList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getId(),userId)==0);
 
         int totalCount = applyVoList.size();
@@ -111,5 +114,11 @@ public class ApplyService {
         int ed = st+pageSize-1>totalCount?totalCount:st+pageSize-1;
         applyVoList = applyVoList.subList(st,ed);
         return new Page(currPage,pageSize,totalCount,applyVoList);
+    }
+
+    public List searchForGroup(String userId, String column, String key){
+        List<ApplyVo> applyVoList = applyDao.getAppVoListByCol(column,key);
+        applyVoList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getId(),userId)==0);
+        return applyVoList;
     }
 }

@@ -146,7 +146,7 @@
     </select>
 
 
-    <select id="getAppVoForGroup" resultMap="applyVoMap">
+    <select id="getAppVoListByCol" resultMap="applyVoMap">
         select * FROM (select * from (select apply.apply_id ap_apply_id,
                                              apply.create_time ap_create_time,
                                              apply_status,

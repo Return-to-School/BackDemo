@@ -37,7 +37,7 @@
                                  where student_id = #{student.id};
     </update>
 
-    <select id="idCardHashMatch" resultType="int">
+    <select id="studentCardHashMatch" resultType="int">
         select count(*) from studentbase where name = #{name} and idCard = #{idCard};
     </select>
 

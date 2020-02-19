@@ -3,15 +3,11 @@ package cn.ncu.newmedia.backschool.controller;
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Student;
-import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.RequestToViewNameTranslator;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -70,16 +66,16 @@ public class StudentController {
 
 
     /**
-     * 验证身份证与本人姓名是否一致
+     * 验证学号与本人姓名是否一致
      * @param idCard
      * @param name
      * @return
      */
     @RequestMapping(value = "/verification",method = RequestMethod.GET)
     @ResponseBody
-    public Map<String,Object> identify(@RequestParam("idCard") String idCard,
+    public Map<String,Object> identify(@RequestParam("studentCard") String studentCard,
                                        @RequestParam("name")String name){
-        boolean success =  studentService.idCardHasMatch(idCard,name);
+        boolean success =  studentService.studentCardHasMatch(studentCard,name);
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
 
@@ -94,6 +90,7 @@ public class StudentController {
     public Student getStudent(@PathVariable("id")int userId){
         return studentService.getStudentByColumn("user_id",userId);
     }
+
 
 
     /**

@@ -34,7 +34,7 @@ import java.util.Map;
 @RequestMapping("/feedback")
 public class FeedbackController {
 
-    static final String FILEPATH = "e:/所有文件";
+    static final String FILEPATH = "c:/形象大使回母校";
 
     @Autowired
     private FeedBackService feedBackService;

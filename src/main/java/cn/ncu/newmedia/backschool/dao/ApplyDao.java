@@ -44,7 +44,8 @@ public interface ApplyDao {
     Integer getAppVoForSuperCnt(@Param("column") String column, @Param("value") String value);
 
 
-    List<ApplyVo> getAppVoForGroup(@Param("column")String column,
-                                   @Param("value")String value);
+    List<ApplyVo> getAppVoListByCol(@Param("column")String column,
+                                    @Param("value")String value);
+
 
 }

@@ -26,7 +26,7 @@ import java.util.Map;
 @RequestMapping("/activity")
 public class ActivityController {
 
-    static final String FILEPATH = "e:/所有文件";
+    static final String FILEPATH = "c:/形象大使回母校";
 
 
     @Autowired

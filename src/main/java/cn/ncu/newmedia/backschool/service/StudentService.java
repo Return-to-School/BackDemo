@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 /**
  * @author maoalong
  * @date 2020/1/12 22:30
@@ -41,12 +39,12 @@ public class StudentService {
 
     /**
      * 从基础数据库中验证身份证是否与学生的姓名匹配
-     * @param idCard
+     * @param studentCard
      * @param name
      * @return
      */
-    public boolean idCardHasMatch(String idCard, String name) {
-        return studentDao.idCardHashMatch(idCard,name)>0;
+    public boolean studentCardHasMatch(String studentCard, String name) {
+        return studentDao.studentCardHashMatch(studentCard,name)>0;
     }
 
     /**
