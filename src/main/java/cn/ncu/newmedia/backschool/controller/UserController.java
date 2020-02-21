@@ -39,6 +39,7 @@ public class UserController {
     public String showLoginPage(){return "login";}
 
 
+
     /**
      * 利用shiro进行登录验证
      * @param user
@@ -50,12 +51,15 @@ public class UserController {
         Subject subject = SecurityUtils.getSubject();
 
         String msg = "";
+        String userId = "-1";
         boolean success = false;
         UsernamePasswordToken token = new UsernamePasswordToken(user.getAccount(),user.getPassword());
 
         try{
             subject.login(token);
             msg = "登录成功";
+            user = userService.getUsersByAccount(user.getAccount());
+            userId = user.getId()+"";
             success = true;
         }catch (UnknownAccountException e1){
             msg = "用户不存在";
@@ -65,7 +69,7 @@ public class UserController {
         catch (AuthenticationException e3){
             msg = e3.getMessage();
         }finally {
-            return MessageObject.dealMap(List.of("success","message"),List.of(success,msg));
+            return MessageObject.dealMap(List.of("success","message","UserId"),List.of(success,msg,userId));
         }
 
     }
