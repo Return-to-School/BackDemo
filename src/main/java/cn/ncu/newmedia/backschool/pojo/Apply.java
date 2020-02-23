@@ -13,20 +13,47 @@ import java.util.Date;
 @Alias("Apply")
 public class Apply {
 
+    /**
+     * 申请id
+     */
     private int id;
 
+    /**
+     * 申请的创建时间
+     */
     private Date createTime;
 
+    /**
+     * 申请的状态
+     */
     private ApplyStatus status;
 
+    /**
+     * 学生的生源地
+     */
     private String origin;
 
+    /**
+     * 毕业高中
+     */
     private String highSchool;
 
+    /**
+     * 申请的描述
+     */
     private String description;
 
+
+    /**
+     * 申请学生的id
+     */
     private int studentId;
 
+
+    /**
+     * 申请活动的id
+     *
+     */
     private int activityId;
 
     public Apply() {

@@ -12,29 +12,55 @@ import java.util.Date;
  */
 @Alias("Activity")
 public class Activity implements Serializable {
+
+    /**
+     * 活动id
+     */
     private int id;
 
+
+    /**
+     * 活动名称
+     */
     private String name;
 
+
+    /**
+     * 活动开始申请的时间
+     */
     private Date applyStartTime;
 
+    /**
+     * 活动结束申请的时间
+     */
     private Date applyEndTime;
 
+    /*
+    *反馈开始的时间*/
     private Date feedbackStartTime;
 
+    /*反馈结束的时间*/
     private Date feedbackEndTime;
 
+    /*活动创建者的姓名*/
     private String creator;
 
+
+    /*活动的创建时间*/
     private Date createTime;
 
+    /*活动内容*/
     private String content;
 
+    /*活动资料的路径*/
     private String filePath;
 
+    /*活动的区域*/
     private String location;
 
+    /*是否需要审核*/
     private Boolean needExamine;
+
 
     public Activity() {
     }

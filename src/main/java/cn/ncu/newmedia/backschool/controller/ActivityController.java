@@ -86,6 +86,7 @@ public class ActivityController {
                                           @PathVariable("creatorId")int creatorId){
 
         activity.setCreateTime(new Date());
+
         /*去掉目录非法字符*/
         activity.setFilePath("/"+activity.getName().replaceAll("[<>\"|/:?*\\\\ ]",""));
 
@@ -183,6 +184,20 @@ public class ActivityController {
 
 
     /**
+     * 显示所有的历史活动
+     * @param currPage
+     * @param pageSize
+     * @return
+     */
+    @RequestMapping(value = "/history",method = RequestMethod.GET)
+    @ResponseBody
+    public Page listAllHistoryAct(@RequestParam("currPage") Integer currPage,
+                                  @RequestParam("pageSize")Integer pageSize){
+        return activityService.listAllHistoryAct(currPage,pageSize);
+    }
+
+
+    /**
      * 获取宣传组管理员下的所有正在进行的活动
      * @param managerId
      * @return
@@ -193,6 +208,22 @@ public class ActivityController {
                                                @RequestParam("currPage")Integer currPage,
                                                @RequestParam("pageSize")Integer pageSize){
         return activityService.listGroupUnderwayAct(currPage,pageSize,managerId);
+    }
+
+
+    /**
+     * 显示宣传组管理员的历史活动
+     * @param managerId
+     * @param currPage
+     * @param pageSize
+     * @return
+     */
+    @RequestMapping(value = "/group/history",method = RequestMethod.GET)
+    @ResponseBody
+    public Page listGroupHistoryAct(@RequestParam("managerId")Integer managerId,
+                                    @RequestParam("currPage")Integer currPage,
+                                    @RequestParam("pageSize")Integer pageSize){
+        return activityService.listGroupHistoryAct(currPage,pageSize,managerId);
     }
 
 

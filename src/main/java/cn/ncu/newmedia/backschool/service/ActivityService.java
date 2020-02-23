@@ -42,7 +42,7 @@ public class ActivityService {
         return activityDao.getActivityByColumn("activity_id",id+"");
     }
 
-    /**
+    /*
      * 添加一条数据
      * @param activity
      * @return
@@ -171,4 +171,28 @@ public class ActivityService {
         return activityManagerDao.isManagedByGroup(activityId,userId)>0;
     }
 
+
+    /**
+     * 获取所有的历史活动
+     * @param currPage
+     * @param pageSize
+     * @return
+     */
+    public Page listAllHistoryAct(Integer currPage, Integer pageSize) {
+        return PageService.getPage(currPage,pageSize,activityDao,
+                e->e.listAllHistoryAct((currPage-1)*pageSize,pageSize),
+                e->e.getHistoryActCnt());
+    }
+
+    /**
+     * 获取管理员的所有的历史活动
+     * @param currPage
+     * @param pageSize
+     * @return
+     */
+    public Page listGroupHistoryAct(Integer currPage, Integer pageSize,Integer managerId) {
+        return PageService.getPage(currPage,pageSize,activityDao,
+                e->e.listGroupHistoryAct((currPage-1)*pageSize,pageSize,managerId),
+                e->e.getGroupHistoryActCnt(managerId));
+    }
 }

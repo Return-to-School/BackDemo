@@ -15,31 +15,59 @@ public class Student implements Serializable {
 
     private int id;
 
+    /**
+     * 学生姓名
+     */
     private String name;
 
+
+    /**
+     * 学生的性别
+     */
     private SexEnum gender;
 
+
+    /**
+     * 学生的学号
+     */
     private String studentCard;
 
+
+    /**
+     * 学生所在学院
+     */
     private String college;
 
+    /**
+     * 班级名称
+     */
     private String classname;
 
+
+    /**
+     * 身份证
+     */
     private String idCard;
+
 
     private String qq;
 
+    /*银行卡*/
     private String bankCard;
 
+    /*电话*/
     private String phone;
 
+    /*邮箱*/
     private String email;
 
+    /*籍贯*/
     private String origin;
 
+    /*毕业高中*/
     private String highSchool;
 
-
+    /*账号的id*/
     private int user;
 
     public Student() {

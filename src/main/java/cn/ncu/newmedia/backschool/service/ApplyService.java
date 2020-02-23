@@ -32,6 +32,12 @@ public class ApplyService {
     @Autowired
     private ActivityManagerDao activityManagerDao;
 
+    /**
+     * 添加一个申请
+     * @param apply
+     * @param activity
+     * @return
+     */
     @Transactional
     public boolean apply(Apply apply, Activity activity) {
 
@@ -43,11 +49,19 @@ public class ApplyService {
             return false;
         }
 
+        /*将当前时间设置创建时间*/
         apply.setCreateTime(now);
 
         return  applyDao.insert(apply)>0;
     }
 
+
+    /**
+     * 获取所有的申请
+     * @param currPage
+     * @param pageSize
+     * @return
+     */
     public Page listAllApplies(int currPage, int pageSize) {
         return PageService.getPage(currPage,pageSize,applyDao,
                 e->e.listAll((currPage-1)*pageSize,pageSize),
@@ -67,12 +81,23 @@ public class ApplyService {
                 e -> e.getApplyCntInAct(activityId));
     }
 
+    /**
+     * 获取某个学生的所有的申请
+     * @param studentId
+     * @return
+     */
     public List<Apply> listAllByStudentId(int studentId){
         return applyDao.getAppliesByColumn("student_id",studentId);
     }
 
     public Apply getApplyById(int applyId){return applyDao.getApplyById(applyId);}
 
+    /**
+     * 管理员审核报名申请
+     * @param applyList
+     * @param status
+     * @return
+     */
     @Transactional
     public boolean examine(List<Apply> applyList, ApplyStatus status) {
 

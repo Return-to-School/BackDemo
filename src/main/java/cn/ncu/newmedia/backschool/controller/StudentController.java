@@ -38,6 +38,8 @@ public class StudentController {
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
 
+
+
     /**
      * 更新学生的个人信息
      * @param student
@@ -67,7 +69,7 @@ public class StudentController {
 
     /**
      * 验证学号与本人姓名是否一致
-     * @param idCard
+     * @param studentCard
      * @param name
      * @return
      */
@@ -78,6 +80,7 @@ public class StudentController {
         boolean success =  studentService.studentCardHasMatch(studentCard,name);
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
+
 
 
     /**

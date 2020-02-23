@@ -52,17 +52,29 @@ public class ApplyController {
     private StudentService studentService;
 
 
+    /*
+    * 宣传组管理员能够搜索的字段
+    * */
     private final Map<String,String> groupManagerMap = Map.of("name","name",
             "college","college","high-school","highSchool","status","apply_status");
 
+    /**
+     * 超级管理员能够搜索的字段
+     */
     private final Map<String,String> superManagerMap = Map.of("province","loc","city","loc","county","loc",
             "name","name", "college","college","high-school","highSchool","status","apply_status");
 
+
+    /**
+     * 到处的excel列表的表头
+     */
     private final String[] listHeader =  {"姓名","学号","学院","专业班级","地区","回访中学","报名状态","评价结果"};
 
 
+
     /**
-     * 学生申请报名参加活动
+     * 学生申请报名参加活动，报名必须在规定的时间范围内，
+     * 对于不需要审核的活动直接设置报名的状态为已通过
      * @param apply
      * @return
      */
@@ -96,6 +108,7 @@ public class ApplyController {
 
         return MessageObject.dealMap(List.of("success","message"),List.of(success,success?"提交申请成功":"提交申请失败"));
     }
+
 
 
 

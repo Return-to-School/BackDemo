@@ -35,9 +35,8 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @RequestMapping(value = "/login",method = RequestMethod.GET)
-    public String showLoginPage(){return "login";}
-
+//    @RequestMapping(value = "/login",method = RequestMethod.GET)
+//    public String showLoginPage(){return "login";}
 
 
     /**
@@ -111,6 +110,7 @@ public class UserController {
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
 
+
     /**
      * 删除用户
      * @param userId
@@ -135,6 +135,7 @@ public class UserController {
     public User getUserById(@PathVariable("userId")Integer userId){
         return userService.getUserById(userId);
     }
+
 
 
     /**

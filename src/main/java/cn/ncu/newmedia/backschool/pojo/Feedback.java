@@ -15,8 +15,15 @@ public class Feedback {
 
     private int apply;
 
+
+    /**
+     * 评价的级别
+     */
     private Level level;
 
+    /**
+     * 反馈文件路径
+     */
     private String filePath;
 
     public Feedback() {

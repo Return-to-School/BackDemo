@@ -54,8 +54,14 @@ public interface ActivityDao{
     List<Activity> listGroupUnderwayAct(@Param("begin")Integer begin,@Param("num")Integer num,@Param("managerId") int managerId);
 
 
+    List<Activity> listAllHistoryAct(@Param("begin")Integer begin,@Param("num") Integer num);
 
+    Integer getHistoryActCnt();
 
+    List<Activity> listGroupHistoryAct(@Param("begin")int begin,
+                                       @Param("num")int num,
+                                       @Param("managerId")int managerId);
 
+    Integer getGroupHistoryActCnt(@Param("managerId") Integer managerId);
 }
 

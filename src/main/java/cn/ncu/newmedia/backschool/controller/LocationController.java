@@ -27,18 +27,33 @@ public class LocationController {
     @Autowired
     private LocationService locationService;
 
+    /**
+     * 获取全国的所哟省份
+     * @return
+     */
     @RequestMapping(value = "/all-provinces",method = RequestMethod.GET)
     @ResponseBody
     public List<Province> listAllProvince(){
         return locationService.listAllProvinces();
     }
 
+    /**
+     * 通过省份的id获取该省份下的所有城市
+     * @param provinceId
+     * @return
+     */
     @RequestMapping(value = "/cities/{provinceId}",method = RequestMethod.GET)
     @ResponseBody
     public List<City> getCitiesByProvinceId(@PathVariable("provinceId") int provinceId){
         return locationService.getCitiesByProvinceId(provinceId);
     }
 
+
+    /**
+     * 通过城市的id获取该城市下的所有的县
+     * @param cityId
+     * @return
+     */
     @RequestMapping(value = "/counties/{cityId}",method = RequestMethod.GET)
     @ResponseBody
     public List<City> getCountiesByCityId(@PathVariable("cityId") int cityId){

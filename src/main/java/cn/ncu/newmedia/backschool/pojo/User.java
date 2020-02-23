@@ -18,6 +18,7 @@ public class User {
 
     private String password;
 
+    /*管理的活动*/
     private List<Activity> activities;
 
     public User() {

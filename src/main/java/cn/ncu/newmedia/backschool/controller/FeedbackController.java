@@ -49,6 +49,7 @@ public class FeedbackController {
     @Autowired
     private StudentService studentService;
 
+
     /**
      * 添加反馈信息
      * @param feedbackFiles
@@ -81,6 +82,7 @@ public class FeedbackController {
         String filePath = activity.getFilePath()+"/反馈文件/"+student.getName();
         File director = new File (FILEPATH +filePath);
 
+
         /*若之前存在反馈文件，需要先删除它*/
         Feedback feedback = feedBackService.getFeedBackByApplyId(applyId);
         if(feedback!=null) {
@@ -95,6 +97,7 @@ public class FeedbackController {
 
         List<File> fileList = new ArrayList<>();
         int flag = 0;
+
 
         /*使用时间戳标记，保存文件*/
         Date timestrap = new Date();
