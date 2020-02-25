@@ -19,10 +19,5 @@ class BackSchoolApplicationTests {
     @Test
     void contextLoads() {
     }
-
-    @Test
-    void test(){
-        System.out.println(activityService.listAllHistoryAct(1, 3));
-    }
-
+    
 }
