@@ -8,6 +8,7 @@ import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
+import cn.ncu.newmedia.backschool.pojo.vo.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,8 @@ public class ApplyService {
 
     @Autowired
     private ActivityManagerDao activityManagerDao;
+
+
 
     /**
      * 添加一个申请
@@ -81,6 +84,9 @@ public class ApplyService {
                 e -> e.getApplyCntInAct(activityId));
     }
 
+
+
+
     /**
      * 获取某个学生的所有的申请
      * @param studentId
@@ -90,7 +96,13 @@ public class ApplyService {
         return applyDao.getAppliesByColumn("student_id",studentId);
     }
 
+
+
+
     public Apply getApplyById(int applyId){return applyDao.getApplyById(applyId);}
+
+
+
 
     /**
      * 管理员审核报名申请
@@ -112,26 +124,35 @@ public class ApplyService {
         return true;
     }
 
+
+
     /**
      * 按页返回搜索结果
-     * @param column
-     * @param value
      * @param currPage
      * @param pageSize
      * @return
      */
-    public Page search(String column, String value,int currPage,int pageSize) {
+    public Page search(Keys keys,int currPage, int pageSize) {
         return PageService.getPage(currPage,pageSize,applyDao,
-                e->e.getAppVoForSuper(column,value,(currPage-1)*pageSize,pageSize),
-                e->e.getAppVoForSuperCnt(column,value));
+                e->e.getAppVoForSuper(keys,(currPage-1)*pageSize,pageSize),
+                e->e.getAppVoForSuperCnt(keys));
     }
 
-    public List<ApplyVo> search(String column, String value){
-        return applyDao.getAppVoListByCol(column,value);
+    public List<ApplyVo> search(Keys keys){
+        return applyDao.getAppVoListByKeys(keys);
     }
 
-    public Page searchForGroup(String userId, String column, String key,int currPage,int pageSize) {
-        List<ApplyVo> applyVoList = applyDao.getAppVoListByCol(column,key);
+
+    /**
+     * 分页获取宣传组管理员下的报名申请
+     * @param userId
+     * @param keys
+     * @param currPage
+     * @param pageSize
+     * @return
+     */
+    public Page searchForGroup(String userId,Keys keys,int currPage,int pageSize) {
+        List<ApplyVo> applyVoList = applyDao.getAppVoListByKeys(keys);
         applyVoList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getId(),userId)==0);
 
         int totalCount = applyVoList.size();
@@ -141,8 +162,15 @@ public class ApplyService {
         return new Page(currPage,pageSize,totalCount,applyVoList);
     }
 
-    public List searchForGroup(String userId, String column, String key){
-        List<ApplyVo> applyVoList = applyDao.getAppVoListByCol(column,key);
+
+    /**
+     * 不分页版本
+     * @param userId
+     * @param keys
+     * @return
+     */
+    public List searchForGroup(String userId, Keys keys){
+        List<ApplyVo> applyVoList = applyDao.getAppVoListByKeys(keys);
         applyVoList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getId(),userId)==0);
         return applyVoList;
     }

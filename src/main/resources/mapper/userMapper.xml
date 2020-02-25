@@ -7,14 +7,8 @@
         <id property="id" column="user_id" />
         <result property="password" column="password" />
         <result property="account" column="account" />
-    </resultMap>
-
-    <resultMap id="groupManagerMap" type="User">
-        <id property="id" column="user_id"></id>
-        <result property="password" column="password" />
-        <result property="account" column="account" />
-        <collection property="activities" column="activity_id" ofType="Activity"
-                    resultMap="cn.ncu.newmedia.backschool.dao.ActivityDao.activityMap" />
+        <result property="role" column="role" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
+        <result property="loc" column="group_loc" />
     </resultMap>
 
     <select id="getPasswordByAccount" resultType="String">
@@ -33,13 +27,9 @@
         select * from user where user_id = #{userId}
     </select>
 
-    <select id="getGroupManagerById" resultMap="groupManagerMap">
-        select * from user u,activity a,activity_manager am where
-          u.user_id = am.user_id and a.activity_id = am.activity_id and u.user_id = #{userId};
-    </select>
 
     <select id="listAll" resultMap="userMap">
-        select user_id,account from user limit #{begin},#{num}
+        select user_id,account,role,group_loc from user limit #{begin},#{num}
     </select>
 
     <delete id="delete">
@@ -56,6 +46,10 @@
 
     <select id="getAllCnt" resultType="int">
         select count(*) from user
+    </select>
+
+    <select id="getGroupManagerByLoc" resultMap="userMap">
+        select * from user where group_loc = #{loc}
     </select>
 
 </mapper>

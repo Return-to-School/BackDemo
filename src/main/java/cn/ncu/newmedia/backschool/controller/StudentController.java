@@ -29,14 +29,14 @@ public class StudentController {
      * @param student
      * @return
      */
-    @RequestMapping(value = "",method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String,Object> addProfile(@RequestBody Student student){
-
-        boolean success = studentService.saveStudent(student);
-
-        return MessageObject.dealMap(List.of("success"),List.of(success));
-    }
+//    @RequestMapping(value = "",method = RequestMethod.POST)
+//    @ResponseBody
+//    public Map<String,Object> addProfile(@RequestBody Student student){
+//
+//        boolean success = studentService.saveStudent(student);
+//
+//        return MessageObject.dealMap(List.of("success"),List.of(success));
+//    }
 
 
 
@@ -56,12 +56,8 @@ public class StudentController {
 
         String message = "更新成功";
         student.setId(id);
-        if((boolean)identify(student.getIdCard(),student.getName()).get("success")){
-            success = studentService.updateStudent(student);
-            if(!success) message = "更新失败";
-        }else{
-            message = "学生姓名与身份证不匹配";
-        }
+        success = studentService.updateStudent(student);
+        if(!success) message = "更新失败";
 
         return MessageObject.dealMap(List.of("success","message"), List.of(success,message));
     }

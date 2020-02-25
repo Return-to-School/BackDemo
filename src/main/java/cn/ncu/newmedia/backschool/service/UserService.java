@@ -40,17 +40,17 @@ public class UserService {
         return userDao.getUserByAccount(account);
     }
 
-    @Transactional
-    public int addGroupManager(User user) {
-        if (user.getActivities()==null)
-            return 0;
-
-        int cnt = 0;
-        for (Activity activity:user.getActivities()) {
-            cnt +=activityManagerDao.add(user.getId(),activity.getId());
-        }
-        return cnt;
-    }
+//    @Transactional
+//    public int addGroupManager(User user) {
+//        if (user.getActivities()==null)
+//            return 0;
+//
+//        int cnt = 0;
+//        for (Activity activity:user.getActivities()) {
+//            cnt +=activityManagerDao.add(user.getId(),activity.getId());
+//        }
+//        return cnt;
+//    }
 
     public Page getAll(int currPage,int pageSize) {
         return PageService.getPage(currPage,pageSize,userDao,
@@ -96,7 +96,15 @@ public class UserService {
         return userDao.insert(user)>0;
     }
 
+
+
     public User getUserById(Integer userId) {
         return userDao.getUserById(userId);
+    }
+
+
+
+    public User getGroupByLoc(String loc) {
+        return userDao.getGroupManagerByLoc(loc);
     }
 }

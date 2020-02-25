@@ -87,28 +87,33 @@ public class UserController {
     }
 
 
+
+
+
     /**
      * 将用户指定为宣传组管理员
      * @param userId
      * @param activityList
      * @return
      */
-    @RequestMapping(value = "/group-manager/{userId}",method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> addGroupManager(@PathVariable("userId") int userId,
-                                               @RequestBody List<Activity> activityList){
+//    @RequestMapping(value = "/group-manager/{userId}",method = RequestMethod.POST)
+//    @ResponseBody
+//    public Map<String, Object> addGroupManager(@PathVariable("userId") int userId,
+//                                               @RequestBody List<Activity> activityList){
+//
+//        User user = userService.getUserById(userId);
+//
+//        if(user==null){
+//            return MessageObject.dealMap(List.of("success","message"),List.of(false,"用户不存在"));
+//        }
+//
+//        user.setActivities(activityList);
+//        boolean success = userService.addGroupManager(user)==user.getActivities().size();
+//
+//        return MessageObject.dealMap(List.of("success"),List.of(success));
+//    }
 
-        User user = userService.getUserById(userId);
 
-        if(user==null){
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"用户不存在"));
-        }
-
-        user.setActivities(activityList);
-        boolean success = userService.addGroupManager(user)==user.getActivities().size();
-
-        return MessageObject.dealMap(List.of("success"),List.of(success));
-    }
 
 
     /**
@@ -135,6 +140,8 @@ public class UserController {
     public User getUserById(@PathVariable("userId")Integer userId){
         return userService.getUserById(userId);
     }
+
+
 
 
 

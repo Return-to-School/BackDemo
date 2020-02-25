@@ -51,40 +51,57 @@
     </select>
 
     <select id="getAppVoForSuperCnt" resultType="int">
-        select count(*) from (select * from (select apply.apply_id ap_apply_id,
-            apply.create_time ap_create_time,
-            apply_status,
-            apply.origin loc,
-            apply.high_school highSchool,
-            description,
-            student.student_id,
-            name,
-            gender,
-            student_card,
-            college,
-            class,
-            idCard,
-            qq,
-            bank_card,
-            phone,
-            email,
-            student.origin,
-            student.high_school,
-            user_id,
-            activity.activity_id,
-            activity_name,
-            apply_start_time,
-            apply_end_time,
-            feedback_start_time,
-            feedback_end_time,
-            creator,
-            activity.create_time create_time,
-            content,
-            activity_file_path,
-            location,
-            need_examine from student ,apply,activity where apply.student_id = student.student_id
-            and apply.activity_id = activity.activity_id ) a left join feedback on ap_apply_id = feedback.apply_id ) b where ${column} like concat('%',concat(#{value},'%'))
-
+        select count(*) FROM (select * from (select apply.apply_id ap_apply_id,
+        apply.create_time ap_create_time,
+        apply_status,
+        apply.origin loc,
+        apply.high_school highSchool,
+        description,
+        student.student_id,
+        name,
+        gender,
+        student_card,
+        college,
+        class,
+        idCard,
+        qq,
+        bank_card,
+        phone,
+        email,
+        student.origin,
+        student.high_school,
+        user_id,
+        activity.activity_id,
+        activity_name,
+        apply_start_time,
+        apply_end_time,
+        feedback_start_time,
+        feedback_end_time,
+        creator,
+        activity.create_time create_time,
+        content,
+        activity_file_path,
+        location,
+        need_examine from student ,apply,activity where apply.student_id = student.student_id
+        and apply.activity_id = activity.activity_id ) a left join feedback
+        on ap_apply_id = feedback.apply_id ) b
+        <where>
+            <if test="keys.studentName!=null">
+                name = #{keys.studentName}
+            </if>
+            <if test="keys.location!=null">
+                and loc like concat('%',concat(#{keys.location},'%'))
+            </if>
+            <if test = "keys.college!=null">
+                and college = #{keys.college}
+            </if>
+            <if test = "keys.highSchool !=null">
+                and highSchool = #{keys.highSchool}
+            </if>
+            <if test = "keys.applyStatus !=null">
+                and apply_status = #{keys.applyStatus.code}
+            </if>
+        </where>
     </select>
 
     <select id="getAppliesByColumn" resultMap="applyMap">
@@ -142,11 +159,28 @@
                                              location,
                                              need_examine from student ,apply,activity where apply.student_id = student.student_id
                                                                                          and apply.activity_id = activity.activity_id ) a left join feedback
-                                              on ap_apply_id = feedback.apply_id ) b where ${column} like concat('%',concat(#{value},'%')) limit #{begin},#{num}
+                                              on ap_apply_id = feedback.apply_id ) b
+            <where>
+                <if test="keys.studentName!=null">
+                    name = #{keys.studentName}
+                </if>
+                <if test="keys.location!=null">
+                    and loc like concat('%',concat(#{keys.location},'%'))
+                </if>
+                <if test = "keys.college!=null">
+                    and college = #{keys.college}
+                </if>
+                <if test = "keys.highSchool !=null">
+                    and highSchool = #{keys.highSchool}
+                </if>
+                <if test = "keys.applyStatus !=null">
+                    and apply_status = #{keys.applyStatus.code}
+                </if>
+            </where>  limit #{begin},#{num}
     </select>
 
 
-    <select id="getAppVoListByCol" resultMap="applyVoMap">
+    <select id="getAppVoListByKeys" resultMap="applyVoMap">
         select * FROM (select * from (select apply.apply_id ap_apply_id,
                                              apply.create_time ap_create_time,
                                              apply_status,
@@ -180,7 +214,25 @@
                                              location,
                                              need_examine from student ,apply,activity where apply.student_id = student.student_id
                                                                                          and apply.activity_id = activity.activity_id ) a left join feedback
-                                                                                                                                                    on ap_apply_id = feedback.apply_id ) b where ${column} like concat('%',concat(#{value},'%'));
+                                                                                                                                                    on ap_apply_id = feedback.apply_id ) b
+        <where>
+            <if test="keys.studentName!=null">
+                name = #{keys.studentName}
+            </if>
+            <if test="keys.location!=null">
+                and loc like concat('%',concat(#{keys.location},'%'))
+            </if>
+            <if test = "keys.college!=null">
+                and college = #{keys.college}
+            </if>
+            <if test = "keys.highSchool !=null">
+                and highSchool = #{keys.highSchool}
+            </if>
+            <if test = "keys.applyStatus !=null">
+                and apply_status = #{keys.applyStatus.code}
+            </if>
+        </where>
+
     </select>
 
     <select id="getApplyCnt" resultType="int">

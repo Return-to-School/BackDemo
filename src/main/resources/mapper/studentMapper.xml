@@ -21,8 +21,7 @@
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="student.id">
-        insert into student values (#{student.id},#{student.name},#{student.gender.code},
-                                   #{student.studentCard},#{student.college},#{student.classname},
+        insert into student (idCard,qq,bank_card,phone,email,origin,high_school,user_id)values (
                                    #{student.idCard},#{student.qq},#{student.bankCard},
                                    #{student.phone},#{student.email},#{student.origin},
                                    #{student.highSchool},#{student.user})

@@ -1,9 +1,11 @@
 package cn.ncu.newmedia.backschool.service;
 
+import cn.ncu.newmedia.backschool.Enumeration.RoleEnum;
 import cn.ncu.newmedia.backschool.Utils.FolderDelUtils;
 import cn.ncu.newmedia.backschool.dao.*;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
+import cn.ncu.newmedia.backschool.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,9 @@ public class ActivityService {
     @Autowired
     private FeedBackDao feedBackDao;
 
+    @Autowired
+    private UserService userService;
+
     /**
      * 通过id获取活动
      * @param id
@@ -42,17 +47,39 @@ public class ActivityService {
         return activityDao.getActivityByColumn("activity_id",id+"");
     }
 
+
+
+
+
     /*
-     * 添加一条数据
+     * 添加活动并直接保存其管理员
      * @param activity
      * @return
      */
     @Transactional
-    public boolean saveActivity(int creatorId,Activity activity) {
-        int cnt = activityDao.insert(activity);
-        cnt += activityManagerDao.add(creatorId,activity.getId());
-        return cnt==2;
+    public boolean saveActivity(int userId,Activity activity) {
+
+        /*验证管理员是不是在自己的地区创建活动*/
+        String loc = activity.getLocation();
+        String province = loc.substring(0,loc.indexOf("-"));
+
+
+        User manager =  userService.getUserById(userId);
+
+        if(manager.getRole() == RoleEnum.SUPERMANAGER||
+                (manager.getRole() == RoleEnum.GROUPMANAGER&&manager.getLoc().equals(province))){
+
+            int cnt = activityDao.insert(activity);
+            cnt += activityManagerDao.add(manager.getId(),activity.getId());
+            return cnt==2;
+        }
+
+        return false;
+
+
     }
+
+
 
     /**
      * 更新一条数据
@@ -64,6 +91,8 @@ public class ActivityService {
         return activityDao.update(activity)>0;
     }
 
+
+
     /**
      * 通过分页获取活动
      * @param currPage
@@ -74,6 +103,8 @@ public class ActivityService {
         return PageService.getPage(currPage,pageSize,activityDao,
                 e -> e.listAll((currPage-1)*pageSize,pageSize),e->e.getTotalCnt());
     }
+
+
 
     /**
      * 删除一个活动

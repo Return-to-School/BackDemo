@@ -19,8 +19,6 @@ public interface UserDao {
 
     User getUserByAccount(@Param("account")String account);
 
-    List<User> getGroupManagerById(@Param("userId")int userId);
-
     List<User> listAll(@Param("begin")int begin,
                        @Param("num")int num);
 
@@ -31,4 +29,6 @@ public interface UserDao {
     int insert(@Param("user") User user);
 
     Integer getAllCnt();
+
+    User getGroupManagerByLoc(@Param("loc") String loc);
 }

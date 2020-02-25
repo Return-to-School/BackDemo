@@ -1,5 +1,6 @@
 package cn.ncu.newmedia.backschool.pojo;
 
+import cn.ncu.newmedia.backschool.Enumeration.RoleEnum;
 import org.apache.ibatis.type.Alias;
 
 import java.util.List;
@@ -18,9 +19,11 @@ public class User {
 
     private String password;
 
-    /*管理的活动*/
-    private List<Activity> activities;
+    private RoleEnum role;
 
+    private String loc;
+
+    private List<Activity> activities;
     public User() {
     }
 
@@ -56,13 +59,31 @@ public class User {
         this.activities = activities;
     }
 
+
+    public RoleEnum getRole() {
+        return role;
+    }
+
+    public void setRole(RoleEnum role) {
+        this.role = role;
+    }
+
+    public String getLoc() {
+        return loc;
+    }
+
+    public void setLoc(String loc) {
+        this.loc = loc;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", account='" + account + '\'' +
                 ", password='" + password + '\'' +
-                ", activities=" + (activities==null?"null":activities.toString())+
+                ", role = "+ role.getDesc()+
+                ", loc = "+ loc+
                 '}';
     }
 }

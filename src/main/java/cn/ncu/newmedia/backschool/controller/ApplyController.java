@@ -10,6 +10,7 @@ import cn.ncu.newmedia.backschool.pojo.Feedback;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
 import cn.ncu.newmedia.backschool.pojo.vo.DataModel;
+import cn.ncu.newmedia.backschool.pojo.vo.Keys;
 import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.ExcelExportService;
@@ -52,19 +53,6 @@ public class ApplyController {
     private StudentService studentService;
 
 
-    /*
-    * 宣传组管理员能够搜索的字段
-    * */
-    private final Map<String,String> groupManagerMap = Map.of("name","name",
-            "college","college","high-school","highSchool","status","apply_status");
-
-    /**
-     * 超级管理员能够搜索的字段
-     */
-    private final Map<String,String> superManagerMap = Map.of("province","loc","city","loc","county","loc",
-            "name","name", "college","college","high-school","highSchool","status","apply_status");
-
-
     /**
      * 到处的excel列表的表头
      */
@@ -82,10 +70,10 @@ public class ApplyController {
     @ResponseBody
     public Map<String,Object> apply(@RequestBody Apply apply){
 
-        /*判断是否存在该学生*/
+        /*判断是否存在该学生的账号*/
         Student student = studentService.getStudentByColumn("student_id",apply.getStudentId());
 
-        if(student==null){
+        if(student.getUser()==0){
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"请完善个人资料"));
         }
 
@@ -100,13 +88,14 @@ public class ApplyController {
             apply.setStatus(ApplyStatus.AGREE);
 
         boolean success = false;
+
         try{
             success = applyService.apply(apply,activity);
         } catch (Exception e){
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"该活动已经申请"));
         }
 
-        return MessageObject.dealMap(List.of("success","message"),List.of(success,success?"提交申请成功":"提交申请失败"));
+        return MessageObject.dealMap(List.of("success","message"),List.of(success,success?"提交申请成功":"请在规定时间范围内提交申请"));
     }
 
 
@@ -173,65 +162,36 @@ public class ApplyController {
     }
 
 
-
-
     /**
-     * 超级管理员查询报名申请
-     * @param column
-     * @param key
+     * 超级管理员查询申请，搜索字段封装在keys中
+     * @param keys
+     * @param currPage
+     * @param pageSize
      * @return
      */
-    @RequestMapping(value = "/search-for-super/{column}",method = RequestMethod.GET)
+    @RequestMapping(value = "/search-for-super",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> searchForSuperManager(@PathVariable("column")String column,
-                                                    @RequestParam("key")String key,
-                                                    @RequestParam("currPage")int currPage,
-                                                    @RequestParam("pageSize")int pageSize){
+    public Page searchForSuperManager(@RequestBody Keys keys,
+                                    @RequestParam("currPage")int currPage,
+                                    @RequestParam("pageSize")int pageSize){
 
-        String message = "查询成功";
-        boolean success = true;
-        Page page = new Page();
-
-        column = column.trim().replaceAll(" ","");
-        key = key.trim();
-
-        if(column.equals("")){
-            message = "搜索的列不能为空";
-            success = false;
-        }else if(key.equals("")){
-            message = "搜索的关键字不能为空";
-            success = false;
-        }else if(superManagerMap.containsKey(column)){
-            String columnInDb = superManagerMap.get(column);
-            page = applyService.search(columnInDb,key,currPage,pageSize);
-        }else{
-            message = "搜索字段错误";
-            success = false;
-        }
-
-        return MessageObject.dealMap(List.of("success","message","page"),List.of(success,message,page));
-
+        return  applyService.search(keys,currPage,pageSize);
     }
+
+
+    
 
     /**
      * 超级管理员导出信息，管理员可以通过省、市、姓名、学院、回访中学、状态等信息查询导出
-     * @param column
      * @param key
      * @return
      */
-    @RequestMapping(value = "/export-for-super/{column}",method = RequestMethod.GET)
-    public ModelAndView exportForSuperManager(@PathVariable("column")String column,
-                                              @RequestParam("key")String key){
+    @RequestMapping(value = "/export-for-super",method = RequestMethod.POST)
+    public ModelAndView exportForSuperManager(@RequestBody Keys key){
 
         List<ApplyVo> applyVoList = new ArrayList<>();
 
-        column = column.trim().replaceAll(" ","");
-        key = key.trim();
-
-        if(superManagerMap.containsKey(column)){
-            String columnInDb = superManagerMap.get(column);
-            applyVoList.addAll(applyService.search(columnInDb,key));
-        }
+        applyVoList.addAll(applyService.search(key));
 
         return export(applyVoList);
     }
@@ -239,72 +199,32 @@ public class ApplyController {
 
 
 
-
-
-
     /**
      * 宣传组管理员查询报名申请，宣传组管理员可以通过姓名、学院、回访中学、状态等信息进行查询及导出。
-     * @param column
-     * @param key
-     * @return
      */
-    @RequestMapping(value = "/search-for-group/{userId}/{column}",method = RequestMethod.GET)
+    @RequestMapping(value = "/search-for-group/{userId}",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> searchForGroupManager(@PathVariable("column")String column,
-                                                    @PathVariable("userId")String userId,
-                                                    @RequestParam("key")String key,
+    public Page searchForGroupManager(@PathVariable("userId")String userId,
+                                                    @RequestBody Keys keys,
                                                     @RequestParam("currPage")int currPage,
                                                     @RequestParam("pageSize")int pageSize){
 
-        String message = "查询成功";
-        boolean success = true;
-        Page page = new Page();
-
-        column = column.trim().replaceAll(" ","");
-        key = key.trim();
-
-        if(column.equals("")){
-            message = "搜索的列不能为空";
-            success = false;
-        }else if(key.equals("")){
-            message = "搜索的关键字不能为空";
-            success = false;
-        }else if(groupManagerMap.containsKey(column)){
-            String columnInDb = groupManagerMap.get(column);
-            page = applyService.searchForGroup(userId,columnInDb,key,currPage,pageSize);
-        }else{
-            message = "搜索字段错误";
-            success = false;
-        }
-
-        return MessageObject.dealMap(List.of("success","message","page"),List.of(success,message,page));
-
+        return applyService.searchForGroup(userId,keys,currPage,pageSize);
     }
 
 
 
     /**
      * excel导出宣传组管理员的查询数据，宣传组管理员只能用姓名、学院、回访中学、状态查询导出
-     * @param column
-     * @param userId
-     * @param key
-     * @return
      */
-    @RequestMapping(value = "/export-for-group/{userId}/{column}",method = RequestMethod.GET)
-    public ModelAndView exportForGroupManager(@PathVariable("column")String column,
-                                               @PathVariable("userId")String userId,
-                                               @RequestParam("key")String key){
+    @RequestMapping(value = "/export-for-group/{userId}",method = RequestMethod.POST)
+    public ModelAndView exportForGroupManager(@PathVariable("userId")String userId,
+                                               @RequestBody Keys keys){
 
 
         List<ApplyVo> applyVoList = new ArrayList<>();
 
-        column = column.trim().replaceAll(" ","");
-        key = key.trim();
-
-        if(groupManagerMap.containsKey(column)){
-            String columnInDb = groupManagerMap.get(column);
-            applyVoList.addAll(applyService.searchForGroup(userId,columnInDb,key));
-        }
+        applyVoList.addAll(applyService.searchForGroup(userId,keys));
         return export(applyVoList);
     }
 

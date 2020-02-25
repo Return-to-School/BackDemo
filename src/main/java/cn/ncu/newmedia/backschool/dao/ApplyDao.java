@@ -3,6 +3,7 @@ package cn.ncu.newmedia.backschool.dao;
 import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
+import cn.ncu.newmedia.backschool.pojo.vo.Keys;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -27,8 +28,7 @@ public interface ApplyDao {
 
     Apply getApplyById(@Param("applyId") int applyId);
 
-    List<ApplyVo> getAppVoForSuper(@Param("column")String column,
-                                 @Param("value")String value,
+    List<ApplyVo> getAppVoForSuper(@Param("keys") Keys keys,
                                  @Param("begin")int begin,
                                  @Param("num")int num);
 
@@ -41,11 +41,10 @@ public interface ApplyDao {
 
     int getApplyCntInAct(@Param("activityId")int activityId);
 
-    Integer getAppVoForSuperCnt(@Param("column") String column, @Param("value") String value);
+    Integer getAppVoForSuperCnt(@Param("keys")Keys keys);
 
 
-    List<ApplyVo> getAppVoListByCol(@Param("column")String column,
-                                    @Param("value")String value);
+    List<ApplyVo> getAppVoListByKeys(@Param("keys")Keys keys);
 
 
 }

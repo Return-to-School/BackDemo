@@ -35,6 +35,9 @@ public class ActivityController {
     @Autowired
     private UserService userService;
 
+
+
+
     /**
      * 活动资料上传
      * @param activityId
@@ -75,15 +78,17 @@ public class ActivityController {
 
 
 
+
+
     /**
      * 添加一个活动
      * @param activity
      * @return
      */
-    @RequestMapping(value = "/{creatorId}",method = RequestMethod.POST)
+    @RequestMapping(value = "/{userId}",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> addActivity(@RequestBody Activity activity,
-                                          @PathVariable("creatorId")int creatorId){
+    public Map<String,Object> addActivity(@PathVariable("userId")int userId,
+                                          @RequestBody Activity activity){
 
         activity.setCreateTime(new Date());
 
@@ -97,11 +102,14 @@ public class ActivityController {
         activityFileDirector.mkdirs();
         feedBackFileDirector.mkdirs();
 
-        boolean success = activityService.saveActivity(creatorId,activity);
+        boolean success = activityService.saveActivity(userId,activity);
 
         return MessageObject.dealMap(List.of("success"),List.of(success));
 
     }
+
+
+
 
 
     /**
@@ -143,6 +151,9 @@ public class ActivityController {
 
 
 
+
+
+
     /**
      * 删除一个活动
      * @param activityId
@@ -157,6 +168,8 @@ public class ActivityController {
 
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
+
+
 
 
     /**
@@ -183,6 +196,9 @@ public class ActivityController {
     }
 
 
+
+
+
     /**
      * 显示所有的历史活动
      * @param currPage
@@ -195,6 +211,9 @@ public class ActivityController {
                                   @RequestParam("pageSize")Integer pageSize){
         return activityService.listAllHistoryAct(currPage,pageSize);
     }
+
+
+
 
 
     /**
@@ -211,6 +230,10 @@ public class ActivityController {
     }
 
 
+
+
+
+
     /**
      * 显示宣传组管理员的历史活动
      * @param managerId
@@ -225,6 +248,8 @@ public class ActivityController {
                                     @RequestParam("pageSize")Integer pageSize){
         return activityService.listGroupHistoryAct(currPage,pageSize,managerId);
     }
+
+
 
 
     /**

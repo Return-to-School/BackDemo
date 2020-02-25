@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/2/19 22:21:44                           */
+/* Created on:     2020/2/25 20:06:40                           */
 /*==============================================================*/
 
 
@@ -25,8 +25,6 @@ drop table if exists province;
 drop table if exists student;
 
 drop table if exists user;
-
-drop table if exists user_role;
 
 /*==============================================================*/
 /* Table: activity                                              */
@@ -166,7 +164,7 @@ create table student
 (
   student_id           int not null auto_increment comment '学生表id',
   name                 varchar(32) not null comment '学生姓名',
-  gender               tinyint not null comment '学生性别,0表女，1表男',
+  gender               varchar(2) not null comment '学生性别,0表女，1表男',
   college              varchar(32) not null comment '学院',
   class                varchar(32) not null comment '班级',
   idCard               varchar(32) comment '身份证',
@@ -192,23 +190,13 @@ create table user
   user_id              int not null auto_increment comment '用户id',
   account              varchar(16) not null comment '账号',
   password             varchar(16) not null comment '密码',
+  role                 tinyint not null comment '用户角色',
+  group_loc            varchar(32) comment '管理地区',
   primary key (user_id),
   unique key AK_Key_2 (password)
 );
 
 alter table user comment '用户账号信息表';
-
-/*==============================================================*/
-/* Table: user_role                                             */
-/*==============================================================*/
-create table user_role
-(
-  role                 varchar(16) not null comment '用户角色，student，super_rmanager，group_manager',
-  account              varchar(16) not null,
-  primary key (role, account)
-);
-
-alter table user_role comment '用户角色表';
 
 alter table activity_manager add constraint FK_Reference_11 foreign key (activity_id)
   references activity (activity_id) on delete restrict on update restrict;
