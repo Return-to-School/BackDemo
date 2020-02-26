@@ -21,23 +21,24 @@
     </resultMap>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="student.id">
-        insert into student (idCard,qq,bank_card,phone,email,origin,high_school,user_id)values (
-                                   #{student.idCard},#{student.qq},#{student.bankCard},
-                                   #{student.phone},#{student.email},#{student.origin},
-                                   #{student.highSchool},#{student.user})
+        insert into student (student_id, name, gender, college, class, student_card) values
+                            (#{student.id},#{student.name},#{student.gender.code},#{student.college},#{student.classname},#{student.studentCard})
     </insert>
 
     <update id="update">
-        update student set name = #{student.name},gender = #{student.gender.code},
-                                 student_card = #{student.studentCard},college = #{student.college},
-                                 class = #{student.classname},idCard = #{student.idCard},qq = #{student.qq},
-                                 bank_card = #{student.bankCard},phone = #{student.phone},
-                                 email = #{student.email},origin = #{student.origin}
-                                 where student_id = #{student.id};
+        update student set   idCard = #{student.idCard},qq = #{student.qq},
+                             bank_card = #{student.bankCard},phone = #{student.phone},
+                             email = #{student.email},origin = #{student.origin},
+                             high_school = #{student.highSchool}
+                             where student_id = #{student.id};
     </update>
 
-    <select id="studentCardHashMatch" resultType="int">
-        select count(*) from studentbase where name = #{name} and idCard = #{idCard};
+    <update id="updateUserId">
+        update student set user_id = #{userId} where student_card = #{studentCard}
+    </update>
+
+    <select id="studentCardHasMatchName" resultType="int">
+        select count(*) from student where name = #{name} and student_card = #{studentCard};
     </select>
 
     <select id="getStudentByColumn" resultMap="studentMap">

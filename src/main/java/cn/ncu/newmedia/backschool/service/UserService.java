@@ -92,8 +92,12 @@ public class UserService {
     }
 
     @Transactional
-    public boolean addUser(User user) {
-        return userDao.insert(user)>0;
+    public boolean addUser(String studentCard,User user) {
+
+        int cnt = userDao.insert(user);
+        cnt += studentDao.updateUserId(user.getId(),studentCard);
+        return cnt==2;
+
     }
 
 

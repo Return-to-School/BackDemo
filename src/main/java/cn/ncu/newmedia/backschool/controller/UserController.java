@@ -2,9 +2,9 @@ package cn.ncu.newmedia.backschool.controller;
 
 import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.dao.Page;
-import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.pojo.User;
+import cn.ncu.newmedia.backschool.service.StudentService;
 import cn.ncu.newmedia.backschool.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -14,13 +14,10 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 
 /**
@@ -34,6 +31,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private StudentService studentService;
 
 //    @RequestMapping(value = "/login",method = RequestMethod.GET)
 //    public String showLoginPage(){return "login";}
@@ -130,6 +130,8 @@ public class UserController {
 
     }
 
+    
+
     /**
      * 获取一个用户
      * @param userId
@@ -152,16 +154,34 @@ public class UserController {
      */
     @RequestMapping(value = "",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> register(@RequestBody User user){
+    public Map<String,Object> register(@RequestBody User user,@RequestParam("name")String name,
+                                       @RequestParam("studentCard")String studentCard){
 
         String message = "注册成功";
         boolean success = false;
+
         User userInDb = userService.getUsersByAccount(user.getAccount());
+
         if(userInDb!=null){
             message = "用户名已存在";
             return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
         }
-        success = userService.addUser(user);
+
+        Student student = studentService.getStudentByColumn("student_card",studentCard);
+
+        if(student==null){
+            return Map.of("success",false,"message","学号不存在");
+        }
+
+        if(!student.getName().equals(name)){
+            return Map.of("success",success,"message","学号与姓名不匹配");
+        }
+
+        if(student.getUser()!=0){
+            return Map.of("success",false,"message","学生已经注册账号");
+        }
+
+        success = userService.addUser(studentCard,user);
         return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
     }
 

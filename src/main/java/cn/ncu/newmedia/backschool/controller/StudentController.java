@@ -73,7 +73,7 @@ public class StudentController {
     @ResponseBody
     public Map<String,Object> identify(@RequestParam("studentCard") String studentCard,
                                        @RequestParam("name")String name){
-        boolean success =  studentService.studentCardHasMatch(studentCard,name);
+        boolean success =  studentService.verifyNameAndCard(studentCard,name);
         return MessageObject.dealMap(List.of("success"),List.of(success));
     }
 

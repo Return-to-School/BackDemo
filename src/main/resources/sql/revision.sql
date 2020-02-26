@@ -18,7 +18,7 @@ insert into user value(5,"tianjin","12345678Aa",0,"天津");
 
 insert into user value(6,"hebei","12345678Aa",0,"河北省");
 
-insert into user value(7,"shanxi","12345678Aa",0,"山西省");
+insert into user value(7,"shanxi0","12345678Aa",0,"山西省");
 
 insert into user value(8,"neimenggu","12345678Aa",0,"内蒙古自治区");
 
@@ -64,7 +64,7 @@ insert into user value(28,"yunnan","12345678Aa",0,"云南省");
 
 insert into user value(29,"xizang","12345678Aa",0,"西藏自治区");
 
-insert into user value(30,"shanxi","12345678Aa",0,"陕西省");
+insert into user value(30,"shanxi1","12345678Aa",0,"陕西省");
 
 insert into user value(31,"gansu","12345678Aa",0,"甘肃省");
 

@@ -1,8 +1,13 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/2/25 20:06:40                           */
+/* Created on:     2020/2/25 20:51:53                           */
 /*==============================================================*/
 
+drop database if exists backschooldb;
+
+create database backschooldb;
+
+use backschooldb;
 
 drop table if exists activity;
 
@@ -44,7 +49,8 @@ create table activity
   location             varchar(64) not null,
   need_examine         tinyint not null default 0 comment '是否需要审核',
   primary key (activity_id)
-);
+)
+  charset = UTF8;
 
 alter table activity comment '活动表';
 
@@ -58,7 +64,8 @@ create table activity_manager
   user_id              int not null comment '用户id',
   primary key (activity_manager_id),
   unique key AK_Key_2 (activity_id, user_id)
-);
+)
+  charset = UTF8;
 
 /*==============================================================*/
 /* Table: apply                                                 */
@@ -75,7 +82,8 @@ create table apply
   activity_id          int not null,
   primary key (apply_id),
   unique key AK_Key_2 (student_id, activity_id)
-);
+)
+  charset = UTF8;
 
 alter table apply comment '报名申请表';
 
@@ -88,7 +96,8 @@ create table city
   city_name            varchar(32) not null,
   province_id          int not null comment '省行政厅id，外键',
   primary key (city_id)
-);
+)
+  charset = UTF8;
 
 alter table city comment '地级行政区表';
 
@@ -101,7 +110,8 @@ create table class
   class_name           varchar(32) not null comment '班级名称',
   college_id           int not null comment '学院id，外键',
   primary key (class_id)
-);
+)
+  charset = UTF8;
 
 alter table class comment '基础数据库表，班级信息';
 
@@ -113,7 +123,8 @@ create table college
   college_id           int not null auto_increment comment '学院id',
   college_name         varchar(32) not null comment '学院名称',
   primary key (college_id)
-);
+)
+  charset = UTF8;
 
 alter table college comment '基础数据库表，学院信息';
 
@@ -126,7 +137,8 @@ create table county
   county_name          varchar(32) not null comment '县级行政厅名称',
   city_id              int not null comment '地级行政厅id',
   primary key (county_id)
-);
+)
+  charset = UTF8;
 
 alter table county comment '县级行政区表';
 
@@ -141,7 +153,8 @@ create table feedback
   feedback_file_path   varchar(256) not null comment '反馈文件路径',
   primary key (feedback_id),
   unique key AK_Key_2 (apply_id)
-);
+)
+  charset = UTF8;
 
 alter table feedback comment '反馈表';
 
@@ -153,7 +166,8 @@ create table province
   province_id          int not null auto_increment comment '省行政厅id',
   province_name        varchar(32) not null comment '省行政厅名称',
   primary key (province_id)
-);
+)
+  charset = UTF8;
 
 alter table province comment '省行政厅表';
 
@@ -178,7 +192,8 @@ create table student
   student_card         varchar(32) not null comment '学生的学号',
   primary key (student_id),
   unique key AK_Key_2 (user_id)
-);
+)
+  charset = UTF8;
 
 alter table student comment '学生表';
 
@@ -193,8 +208,9 @@ create table user
   role                 tinyint not null comment '用户角色',
   group_loc            varchar(32) comment '管理地区',
   primary key (user_id),
-  unique key AK_Key_2 (password)
-);
+  unique key AK_Key_2 (account)
+)
+  charset = UTF8;
 
 alter table user comment '用户账号信息表';
 

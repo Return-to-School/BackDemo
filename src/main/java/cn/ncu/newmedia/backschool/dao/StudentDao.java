@@ -15,7 +15,7 @@ public interface StudentDao {
 
     int update(@Param("student") Student student);
 
-    int studentCardHashMatch(@Param("idCard") String idCard, @Param("name") String name);
+    int studentCardHasMatchName(@Param("studentCard") String studentCard, @Param("name") String name);
 
     Student getStudentByColumn(@Param("column") String column, @Param("value") Object value);
 
@@ -33,4 +33,7 @@ public interface StudentDao {
     Integer getAllCnt();
 
     Integer getCntInAct(int activityId);
+
+    int updateUserId(@Param("userId")int userId,
+                     @Param("studentCard")String studentCard);
 }

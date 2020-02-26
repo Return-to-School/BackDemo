@@ -27,6 +27,8 @@ public class StudentService {
         return studentDao.insert(student)>0;
     }
 
+
+
     /**
      * 更新学生的信息
      * @param student
@@ -43,8 +45,8 @@ public class StudentService {
      * @param name
      * @return
      */
-    public boolean studentCardHasMatch(String studentCard, String name) {
-        return studentDao.studentCardHashMatch(studentCard,name)>0;
+    public boolean verifyNameAndCard(String studentCard, String name) {
+        return studentDao.studentCardHasMatchName(studentCard,name)>0;
     }
 
     /**

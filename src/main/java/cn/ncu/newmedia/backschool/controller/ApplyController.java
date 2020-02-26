@@ -73,7 +73,10 @@ public class ApplyController {
         /*判断是否存在该学生的账号*/
         Student student = studentService.getStudentByColumn("student_id",apply.getStudentId());
 
-        if(student.getUser()==0){
+        if(student.getIdCard()==null||
+        student.getQq()==null||student.getBankCard()==null||
+        student.getPhone()==null||student.getEmail()==null||
+        student.getOrigin()==null||student.getHighSchool()==null){
             return MessageObject.dealMap(List.of("success","message"),List.of(false,"请完善个人资料"));
         }
 

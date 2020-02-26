@@ -41,7 +41,7 @@
     </delete>
 
     <insert id="insert" useGeneratedKeys="true" keyProperty="user.id">
-        insert into user values (#{user.id},#{user.account},#{user.password})
+        insert into user (user_id, account, password, role, group_loc) values (#{user.id},#{user.account},#{user.password},2,null)
     </insert>
 
     <select id="getAllCnt" resultType="int">
