@@ -226,4 +226,8 @@ public class ActivityService {
                 e->e.listGroupHistoryAct((currPage-1)*pageSize,pageSize,managerId),
                 e->e.getGroupHistoryActCnt(managerId));
     }
+
+    public Activity getActivityByName(String name) {
+        return activityDao.getActivityByColumn("activity_name",name);
+    }
 }

@@ -4,7 +4,6 @@ import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.Enumeration.Level;
 import cn.ncu.newmedia.backschool.Utils.EnumUtils;
 import cn.ncu.newmedia.backschool.Utils.FolderDelUtils;
-import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.Feedback;
@@ -20,10 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author maoalong
@@ -65,21 +61,24 @@ public class FeedbackController {
 
         Apply apply = applyService.getApplyById(applyId);
 
+        if(apply==null){
+            return Map.of("success",false,"message","申请不存在");
+        }
         /*先对申请状态进行判断，若审核未通过、或者还未被申请则不允许进行反馈*/
-        if(apply.getStatus()== ApplyStatus.NOTEXAMINE){
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"未审核"));
+        else if(apply.getStatus()== ApplyStatus.NOTEXAMINE){
+            return Map.of("success",false,"message","未审核");
         }else if(apply.getStatus()==ApplyStatus.DISAGREE){
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"审核不通过"));
+            return Map.of("success",false,"message","审核不通过");
         }
 
         if(feedbackFiles.size()==0){
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"请选择需要上传反馈文件"));
+            return Map.of("success",false,"message","请选择需要上传反馈文件");
         }
 
-        /*活动的文件路径+学生姓名=学生反馈文件路径*/
+        /*活动的文件路径+id-学生姓名=学生反馈文件路径*/
         Student student = studentService.getStudentByColumn("student_id",apply.getStudentId());
         Activity activity = activityService.getActivityById(apply.getActivityId());
-        String filePath = activity.getFilePath()+"/反馈文件/"+student.getName();
+        String filePath = activity.getFilePath()+"/反馈文件/"+student.getId()+"-"+student.getName();
         File director = new File (FILEPATH +filePath);
 
 
@@ -117,7 +116,7 @@ public class FeedbackController {
         }
 
         if(flag>0){
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"文件上传错误"));
+            return Map.of("success",false,"message","文件上传错误");
         }
 
         Feedback feedBack = new Feedback();
@@ -134,7 +133,38 @@ public class FeedbackController {
             message = "请在反馈起始时间范围内上传文件";
         }
 
-        return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
+        return Map.of("success",success,"message",message);
     }
 
+
+    /**
+     * 获取反馈的文件
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/{id}/filenames",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getFilenames(@PathVariable("id")int id){
+
+        String msg = "";
+        List<String> filenames = new ArrayList<>();
+
+        Feedback feedback = feedBackService.getFeedBackById(id);
+
+        boolean success = false;
+
+        if(feedback==null){
+            msg = "反馈不存在";
+        }else{
+
+            String filePath = feedback.getFilePath();
+
+            File director = new File(FILEPATH+filePath);
+            filenames.addAll(Arrays.asList(director.list()));
+            msg = "获取成功";
+            success = true;
+        }
+
+        return Map.of("success",success,"message",msg,"filenames",filenames);
+    }
 }

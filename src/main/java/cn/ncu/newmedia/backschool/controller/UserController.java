@@ -1,6 +1,5 @@
 package cn.ncu.newmedia.backschool.controller;
 
-import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.pojo.User;
@@ -68,7 +67,7 @@ public class UserController {
         catch (AuthenticationException e3){
             msg = e3.getMessage();
         }finally {
-            return MessageObject.dealMap(List.of("success","message","UserId"),List.of(success,msg,userId));
+            return Map.of("success",success,"message",msg,"UserId",userId);
         }
 
     }
@@ -126,7 +125,7 @@ public class UserController {
     public Map<String,Object> deleteUser(@PathVariable("userId")Integer userId){
 
         boolean success = userService.deleteUser(userId);
-        return MessageObject.dealMap(List.of("success"),List.of(success));
+        return Map.of("success",success);
 
     }
 
@@ -154,35 +153,34 @@ public class UserController {
      */
     @RequestMapping(value = "",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> register(@RequestBody User user,@RequestParam("name")String name,
-                                       @RequestParam("studentCard")String studentCard){
+    public Map<String,Object> register(@RequestBody User user,@RequestParam("name")String name){
 
         String message = "注册成功";
         boolean success = false;
+        String studentCard = user.getAccount();//用学生的学号作为账户
 
-        User userInDb = userService.getUsersByAccount(user.getAccount());
+        User userInDb = userService.getUsersByAccount(studentCard);
 
         if(userInDb!=null){
-            message = "用户名已存在";
-            return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
+            message = "学生已经用该学号注册了";
+            return Map.of("success",success,"message",message);
         }
 
         Student student = studentService.getStudentByColumn("student_card",studentCard);
 
+        //比对基础数据库，验证是否存在该学号
         if(student==null){
             return Map.of("success",false,"message","学号不存在");
         }
 
+        //验证学号和本人姓名是否一致
         if(!student.getName().equals(name)){
             return Map.of("success",success,"message","学号与姓名不匹配");
         }
 
-        if(student.getUser()!=0){
-            return Map.of("success",false,"message","学生已经注册账号");
-        }
 
-        success = userService.addUser(studentCard,user);
-        return MessageObject.dealMap(List.of("success","message"),List.of(success,message));
+        success = userService.addUser(user);
+        return Map.of("success",success,"message",message);
     }
 
 }

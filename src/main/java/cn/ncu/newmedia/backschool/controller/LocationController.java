@@ -1,6 +1,5 @@
 package cn.ncu.newmedia.backschool.controller;
 
-import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.pojo.vo.City;
 import cn.ncu.newmedia.backschool.pojo.vo.Province;
 import cn.ncu.newmedia.backschool.service.LocationService;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author maoalong

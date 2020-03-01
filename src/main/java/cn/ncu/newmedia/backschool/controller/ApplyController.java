@@ -2,35 +2,27 @@ package cn.ncu.newmedia.backschool.controller;
 
 import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.Utils.EnumUtils;
-import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.Feedback;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
-import cn.ncu.newmedia.backschool.pojo.vo.DataModel;
 import cn.ncu.newmedia.backschool.pojo.vo.Keys;
 import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.ExcelExportService;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import cn.ncu.newmedia.backschool.view.ExcelView;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -77,12 +69,13 @@ public class ApplyController {
         student.getQq()==null||student.getBankCard()==null||
         student.getPhone()==null||student.getEmail()==null||
         student.getOrigin()==null||student.getHighSchool()==null){
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"请完善个人资料"));
+            return Map.of("success",false,"message","请完善个人资料");
         }
+
 
         Activity activity = activityService.getActivityById(apply.getActivityId());
         if(activity==null)
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"活动不存在"));
+            return Map.of("success",false,"message","活动不存在");
 
         /*判断申请是否需要审核*/
         if(activity.getNeedExamine())
@@ -95,10 +88,10 @@ public class ApplyController {
         try{
             success = applyService.apply(apply,activity);
         } catch (Exception e){
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"该活动已经申请"));
+            return Map.of("success",false,"message","该活动已经申请");
         }
 
-        return MessageObject.dealMap(List.of("success","message"),List.of(success,success?"提交申请成功":"请在规定时间范围内提交申请"));
+        return Map.of("success",success,"message",success?"提交申请成功":"请在规定时间范围内提交申请");
     }
 
 
@@ -160,7 +153,7 @@ public class ApplyController {
 
         ApplyStatus status = EnumUtils.getEnumByCode(ApplyStatus.class,statusCode);
         boolean success = applyService.examine(applyList,status);
-        return MessageObject.dealMap(List.of("success"),List.of(success));
+        return Map.of("success",success);
 
     }
 

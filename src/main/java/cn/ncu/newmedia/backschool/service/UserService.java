@@ -92,10 +92,11 @@ public class UserService {
     }
 
     @Transactional
-    public boolean addUser(String studentCard,User user) {
+    public boolean addUser(User user) {
 
-        int cnt = userDao.insert(user);
-        cnt += studentDao.updateUserId(user.getId(),studentCard);
+        int cnt = userDao.insert(user);//保存该用户
+
+        cnt += studentDao.updateUserId(user.getId(),user.getAccount());//根据学号（用户账号)更新基础数据库中的外键userid
         return cnt==2;
 
     }

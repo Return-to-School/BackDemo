@@ -1,6 +1,5 @@
 package cn.ncu.newmedia.backschool.controller;
 
-import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.service.ActivityService;
@@ -12,10 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author maoalong
@@ -69,11 +65,11 @@ public class ActivityController {
             }catch (IOException e1){
                 e1.printStackTrace();
                 fileList.forEach(e2->e2.delete());
-                return MessageObject.dealMap(List.of("success","message"),List.of(false,"文件上传错误"));
+                return Map.of("success",false,"message","文件上传错误");
             }
         }
 
-        return MessageObject.dealMap(List.of("success","message"),List.of(true,"文件上传成功"));
+        return Map.of("success",true,"message","文件上传成功");
     }
 
 
@@ -92,6 +88,11 @@ public class ActivityController {
 
         activity.setCreateTime(new Date());
 
+        Activity tmp = activityService.getActivityByName(activity.getName());
+        if(tmp!=null){
+            return Map.of("success",false,"message","活动名已存在");
+        }
+
         /*去掉目录非法字符*/
         activity.setFilePath("/"+activity.getName().replaceAll("[<>\"|/:?*\\\\ ]",""));
 
@@ -104,10 +105,41 @@ public class ActivityController {
 
         boolean success = activityService.saveActivity(userId,activity);
 
-        return MessageObject.dealMap(List.of("success"),List.of(success));
+        return Map.of("success",success);
 
     }
 
+
+    /**
+     * 获取活动下的文件名
+     * @param activityId
+     * @return
+     */
+    @RequestMapping(value = "/{activityId}/filenames",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object> getFilenames(@PathVariable("activityId")Integer activityId){
+
+        String msg = "";
+        List<String> filenames = new ArrayList<>();
+
+        Activity activity = activityService.getActivityById(activityId);
+
+        boolean success = false;
+
+        if(activity==null){
+            msg = "活动不存在";
+        }else{
+
+            String filePath = activity.getFilePath()+"/活动资料";
+
+            File director = new File(FILEPATH+filePath);
+            filenames.addAll(Arrays.asList(director.list()));
+            msg = "获取成功";
+            success = true;
+        }
+
+        return Map.of("success",success,"message",msg,"filenames",filenames);
+    }
 
 
 
@@ -125,9 +157,9 @@ public class ActivityController {
         Activity activityOld = activityService.getActivityById(id);
 
         if(activityOld==null){
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"活动不存在"));
+            return Map.of("success",false,"message","活动不存在");
         }else if(activityOld.getId()!=activity.getId()){
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"传入id与对象id不一致"));
+            return Map.of("success",false,"message","传入id与对象id不一致");
         }
 
         activity.setFilePath("/"+activity.getName());
@@ -142,10 +174,10 @@ public class ActivityController {
                 activityFileDirector.renameTo(new File(FILEPATH+activity.getFilePath()));
             }
 
-            return MessageObject.dealMap(List.of("success"),List.of(success));
+            return Map.of("success",success);
         }
 
-        return MessageObject.dealMap(List.of("success"),List.of(false));
+        return Map.of("success",false);
 
     }
 
@@ -166,7 +198,7 @@ public class ActivityController {
 
         boolean success = activityService.deleteActivity(activityId);
 
-        return MessageObject.dealMap(List.of("success"),List.of(success));
+        return Map.of("success",success);
     }
 
 

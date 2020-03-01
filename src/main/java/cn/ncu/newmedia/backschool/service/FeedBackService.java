@@ -39,4 +39,8 @@ public class FeedBackService {
     public int delete(int feedbackId) {
         return feedBackDao.delete(feedbackId);
     }
+
+    public Feedback getFeedBackById(int id) {
+        return feedBackDao.getFeedbackById(id);
+    }
 }

@@ -1,6 +1,5 @@
 package cn.ncu.newmedia.backschool.controller;
 
-import cn.ncu.newmedia.backschool.Utils.MessageObject;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.service.StudentService;
@@ -52,14 +51,14 @@ public class StudentController {
         boolean success = false;
         Student studentOld = studentService.getStudentByColumn("student_id",id);
         if(studentOld==null)
-            return MessageObject.dealMap(List.of("success","message"),List.of(false,"学生信息不存在"));
+            return Map.of("success",false,"message","学生信息不存在");
 
         String message = "更新成功";
         student.setId(id);
         success = studentService.updateStudent(student);
         if(!success) message = "更新失败";
 
-        return MessageObject.dealMap(List.of("success","message"), List.of(success,message));
+        return Map.of("success",success,"message",message);
     }
 
 
@@ -73,8 +72,10 @@ public class StudentController {
     @ResponseBody
     public Map<String,Object> identify(@RequestParam("studentCard") String studentCard,
                                        @RequestParam("name")String name){
+
         boolean success =  studentService.verifyNameAndCard(studentCard,name);
-        return MessageObject.dealMap(List.of("success"),List.of(success));
+        return Map.of("success",success);
+
     }
 
 
