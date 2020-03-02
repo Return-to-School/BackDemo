@@ -50,14 +50,12 @@ public class FeedbackController {
      * 添加反馈信息
      * @param feedbackFiles
      * @param applyId
-     * @param level
      * @return
      */
-    @RequestMapping(value = "/{applyId}/level/{level}",method = RequestMethod.POST)
+    @RequestMapping(value = "/{applyId}",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> sendFeedback(@RequestParam("feedbackFiles") List<MultipartFile> feedbackFiles,
-                                           @PathVariable("applyId") int applyId,
-                                           @PathVariable("level") int level){
+                                           @PathVariable("applyId") int applyId){
 
         Apply apply = applyService.getApplyById(applyId);
 
@@ -121,7 +119,7 @@ public class FeedbackController {
 
         Feedback feedBack = new Feedback();
         feedBack.setApply(applyId);
-        feedBack.setLevel(EnumUtils.getEnumByCode(Level.class,level));
+
         feedBack.setFilePath(filePath);
         boolean success = feedBackService.saveFeedback(activity,feedBack);
 
@@ -167,4 +165,36 @@ public class FeedbackController {
 
         return Map.of("success",success,"message",msg,"filenames",filenames);
     }
+
+
+    /**
+     * 管理员评价反馈
+     * @param id
+     * @param level
+     * @return
+     */
+    @RequestMapping(value = "/{id}",method = RequestMethod.GET)
+    @ResponseBody
+    public Map<String,Object>  setLevel(@PathVariable("id")int id,
+                                        @RequestParam("level")int level){
+
+        Feedback feedback = feedBackService.getFeedBackById(id);
+
+        String msg = "评价成功";
+        boolean success = false;
+        if(feedback==null){
+            msg = "反馈不存在";
+            return Map.of("success",success,"message",msg);
+        }
+
+
+        Level levelEnum = EnumUtils.getEnumByCode(Level.class,level);
+
+        feedback.setLevel(levelEnum);
+        success = feedBackService.update(feedback);
+
+        if(!success) msg = "评价失败";
+        return Map.of("success",success,"message",msg);
+    }
+
 }

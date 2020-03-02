@@ -9,6 +9,12 @@ create database backschooldb;
 
 use backschooldb;
 
+/*==============================================================*/
+/* DBMS name:      MySQL 5.0                                    */
+/* Created on:     2020/3/2 21:52:22                            */
+/*==============================================================*/
+
+
 drop table if exists activity;
 
 drop table if exists activity_manager;
@@ -48,7 +54,8 @@ create table activity
   activity_file_path   varchar(256) comment '活动的材料文件路径',
   location             varchar(64) not null,
   need_examine         tinyint not null default 0 comment '是否需要审核',
-  primary key (activity_id)
+  primary key (activity_id),
+  unique key AK_Key_2 (activity_name)
 )
   charset = UTF8;
 
@@ -149,7 +156,7 @@ create table feedback
 (
   feedback_id          int not null auto_increment comment '反馈表id',
   apply_id             int not null comment '申请表id',
-  level                tinyint not null default 0 comment '评价等级，0表示不合格,1表示合格，2表示优秀',
+  level                tinyint default 0 comment '评价等级，0表示不合格,1表示合格，2表示优秀',
   feedback_file_path   varchar(256) not null comment '反馈文件路径',
   primary key (feedback_id),
   unique key AK_Key_2 (apply_id)
@@ -191,6 +198,7 @@ create table student
   user_id              int,
   student_card         varchar(32) not null comment '学生的学号',
   primary key (student_id),
+  unique key AK_Key_3 (student_card),
   unique key AK_Key_2 (user_id)
 )
   charset = UTF8;
@@ -205,8 +213,8 @@ create table user
   user_id              int not null auto_increment comment '用户id',
   account              varchar(16) not null comment '账号',
   password             varchar(16) not null comment '密码',
-  role                 tinyint not null comment '用户角色',
-  group_loc            varchar(32) comment '管理地区',
+  role                 tinyint not null default 2 comment '用户角色',
+  group_loc            varchar(32) character set utf8 comment '管理地区',
   primary key (user_id),
   unique key AK_Key_2 (account)
 )

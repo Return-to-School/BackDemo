@@ -47,4 +47,9 @@ public interface ApplyDao {
     List<ApplyVo> getAppVoListByKeys(@Param("keys")Keys keys);
 
 
+    List<ApplyVo> getPassStudentApply(@Param("activityId") int activityId,
+                                      @Param("begin") int begin,
+                                      @Param("num") int pageSize);
+
+    Integer getPassStudentCnt(@Param("activityId") int activityId);
 }

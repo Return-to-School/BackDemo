@@ -230,4 +230,10 @@ public class ActivityService {
     public Activity getActivityByName(String name) {
         return activityDao.getActivityByColumn("activity_name",name);
     }
+
+    public Page getPassStudentApply(int activityId, int currPage, int pageSize) {
+        return PageService.getPage(currPage,pageSize,applyDao,
+                e->e.getPassStudentApply(activityId,(currPage-1)*pageSize,pageSize),
+                e->e.getPassStudentCnt(activityId));
+    }
 }

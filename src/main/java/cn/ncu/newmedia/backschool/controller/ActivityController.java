@@ -245,6 +245,22 @@ public class ActivityController {
     }
 
 
+    /**
+     * 获取活动下所有通过审核的学生申请
+     * @param activityId
+     * @param currPage
+     * @param pageSize
+     * @return
+     */
+    @RequestMapping(value = "/{id}/apply-pass",method = RequestMethod.GET)
+    @ResponseBody
+    public Page getApplyPassStudentList(@PathVariable("id")int activityId,
+                                        @RequestParam("currPage")int currPage,
+                                        @RequestParam("pageSize")int pageSize){
+        return activityService.getPassStudentApply(activityId,currPage,pageSize);
+    }
+
+
 
 
 

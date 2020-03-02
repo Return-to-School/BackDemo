@@ -43,4 +43,9 @@ public class FeedBackService {
     public Feedback getFeedBackById(int id) {
         return feedBackDao.getFeedbackById(id);
     }
+
+    @Transactional
+    public boolean update(Feedback feedback) {
+        return feedBackDao.update(feedback)>0;
+    }
 }

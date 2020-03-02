@@ -14,6 +14,11 @@
                                      #{feedback.level.code},#{feedback.filePath});
     </insert>
 
+    <update id="update">
+        update feedback set apply_id = #{apply}, feedback_file_path = #{filePath},
+                            level = #{level.code} where feedback_id = #{id}
+    </update>
+
     <select id="getFeedbackByColumn" resultMap="feedbackMap">
         select * from feedback where ${column} = #{value}
     </select>
