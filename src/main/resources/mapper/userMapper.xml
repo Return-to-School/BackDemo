@@ -44,6 +44,10 @@
         insert into user (user_id, account, password, role, group_loc) values (#{user.id},#{user.account},#{user.password},2,null)
     </insert>
 
+    <update id="update">
+        update user set password = #{password} where user_id = #{id}
+    </update>
+
     <select id="getAllCnt" resultType="int">
         select count(*) from user
     </select>

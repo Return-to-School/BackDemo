@@ -29,8 +29,6 @@ public class UserService {
     @Autowired
     private FeedBackDao feedBackDao;
 
-    @Autowired
-    private ActivityManagerDao activityManagerDao;
 
     public boolean hasUser (String username){
         return userDao.userExist(username)>0;
@@ -111,5 +109,10 @@ public class UserService {
 
     public User getGroupByLoc(String loc) {
         return userDao.getGroupManagerByLoc(loc);
+    }
+
+    @Transactional
+    public boolean changePassword(User user) {
+        return userDao.update(user)>0;
     }
 }

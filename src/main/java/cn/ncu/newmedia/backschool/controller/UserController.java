@@ -183,5 +183,31 @@ public class UserController {
         return Map.of("success",success,"message",message);
     }
 
+
+
+    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
+    @ResponseBody
+    public Map<String,Object> updateUser(@PathVariable("id")int userId,@RequestBody User user){
+
+
+        if(user.getId()!=userId){
+            return Map.of("success",false,"message","id不一致");
+        }
+
+        User userTmp = userService.getUserById(userId);
+
+        if(userTmp==null){
+            return Map.of("success",false,"message","用户不存在");
+        }
+
+        try{
+            userService.changePassword(user);
+        }catch (Exception e){
+            return Map.of("success",false,"message",e.getMessage());
+        }
+
+        return Map.of("success",true,"message","修改成功");
+    }
+
 }
 

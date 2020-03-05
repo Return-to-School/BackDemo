@@ -31,4 +31,6 @@ public interface UserDao {
     Integer getAllCnt();
 
     User getGroupManagerByLoc(@Param("loc") String loc);
+
+    int update(User user);
 }
