@@ -215,6 +215,7 @@ public class ActivityService {
                 e->e.getHistoryActCnt());
     }
 
+
     /**
      * 获取管理员的所有的历史活动
      * @param currPage
@@ -227,13 +228,14 @@ public class ActivityService {
                 e->e.getGroupHistoryActCnt(managerId));
     }
 
+    /**
+     * 通过活动的名称进行查询
+     * @param name
+     * @return
+     */
     public Activity getActivityByName(String name) {
         return activityDao.getActivityByColumn("activity_name",name);
     }
 
-    public Page getPassStudentApply(int activityId, int currPage, int pageSize) {
-        return PageService.getPage(currPage,pageSize,applyDao,
-                e->e.getPassStudentApply(activityId,(currPage-1)*pageSize,pageSize),
-                e->e.getPassStudentCnt(activityId));
-    }
+
 }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @JSONType(serializeEnumAsJavaBean = true)
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum ApplyStatus implements BaseEnum{
+
     NOTEXAMINE(0,"未审核"),
     AGREE(1,"通过"),
     DISAGREE(2,"未通过");

@@ -63,5 +63,6 @@ public interface ActivityDao{
                                        @Param("managerId")int managerId);
 
     Integer getGroupHistoryActCnt(@Param("managerId") Integer managerId);
+
 }
 

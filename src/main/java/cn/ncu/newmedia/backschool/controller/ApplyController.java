@@ -288,4 +288,14 @@ public class ApplyController {
         });
     }
 
+
+    /*
+    * 通过活动的id和学生的id获取学生的申请信息
+    * */
+    @RequestMapping(value = "/activity/{activityId}/student/{studentId}",method = RequestMethod.GET)
+    @ResponseBody
+    public Apply getApplyByActIdAndSdtId(@PathVariable("activityId")int activityId,
+                                         @PathVariable("studentId")int studentId){
+        return applyService.getApplyByActIdAndSdtId(activityId,studentId);
+    }
 }

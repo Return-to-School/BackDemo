@@ -3,6 +3,7 @@ package cn.ncu.newmedia.backschool.controller;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.service.ActivityService;
+import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,7 +30,7 @@ public class ActivityController {
     private ActivityService activityService;
 
     @Autowired
-    private UserService userService;
+    private ApplyService applyService;
 
 
 
@@ -257,7 +258,7 @@ public class ActivityController {
     public Page getApplyPassStudentList(@PathVariable("id")int activityId,
                                         @RequestParam("currPage")int currPage,
                                         @RequestParam("pageSize")int pageSize){
-        return activityService.getPassStudentApply(activityId,currPage,pageSize);
+        return applyService.getPassStudentApply(activityId,currPage,pageSize);
     }
 
 
@@ -340,7 +341,6 @@ public class ActivityController {
                                        @RequestParam("pageSize")Integer pageSize){
         return activityService.filterActivityByName(key,currPage,pageSize);
     }
-
 
 
 }

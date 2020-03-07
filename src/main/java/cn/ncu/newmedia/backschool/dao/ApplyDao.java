@@ -52,4 +52,7 @@ public interface ApplyDao {
                                       @Param("num") int pageSize);
 
     Integer getPassStudentCnt(@Param("activityId") int activityId);
+
+    Apply getApply(@Param("activityId") int activityId,
+                   @Param("studentId")int studentId);
 }

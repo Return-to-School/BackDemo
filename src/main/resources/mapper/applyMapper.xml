@@ -317,4 +317,8 @@
     </select>
 
 
+    <select id="getApply" resultMap="applyMap">
+        select * from apply where student_id = #{studentId} and activity_id = #{activityId}
+    </select>
+
 </mapper>

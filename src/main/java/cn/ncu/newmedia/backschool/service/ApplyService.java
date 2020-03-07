@@ -174,4 +174,15 @@ public class ApplyService {
         applyVoList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getId(),userId)==0);
         return applyVoList;
     }
+
+    /*获取某个活动下通过审核的学生申请列表*/
+    public Page getPassStudentApply(int activityId, int currPage, int pageSize) {
+        return PageService.getPage(currPage,pageSize,applyDao,
+                e->e.getPassStudentApply(activityId,(currPage-1)*pageSize,pageSize),
+                e->e.getPassStudentCnt(activityId));
+    }
+
+    public Apply getApplyByActIdAndSdtId(int activityId, int studentId) {
+        return applyDao.getApply(activityId,studentId);
+    }
 }
