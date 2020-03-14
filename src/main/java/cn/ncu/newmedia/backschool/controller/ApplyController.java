@@ -69,13 +69,13 @@ public class ApplyController {
         student.getQq()==null||student.getBankCard()==null||
         student.getPhone()==null||student.getEmail()==null||
         student.getOrigin()==null||student.getHighSchool()==null){
-            return Map.of("success",false,"message","请完善个人资料");
+            return Map.of("success",false,"message","请完善个人资料","applyId",-1);
         }
 
 
         Activity activity = activityService.getActivityById(apply.getActivityId());
         if(activity==null)
-            return Map.of("success",false,"message","活动不存在");
+            return Map.of("success",false,"message","活动不存在","applyId",-1);
 
         /*判断申请是否需要审核*/
         if(activity.getNeedExamine())
@@ -88,10 +88,17 @@ public class ApplyController {
         try{
             success = applyService.apply(apply,activity);
         } catch (Exception e){
-            return Map.of("success",false,"message","该活动已经申请");
+            return Map.of("success",false,"message","该活动已经申请","applyId",-1);
         }
 
-        return Map.of("success",success,"message",success?"提交申请成功":"请在规定时间范围内提交申请");
+        String msg = "请在规定时间范围内提交申请";
+        int id = -1;
+        if(success){
+            msg = "提交申请成功";
+            id = apply.getId();
+        }
+
+        return Map.of("success",success,"message",msg,"applyId",id);
     }
 
 

@@ -91,8 +91,9 @@ public class ActivityController {
 
         Activity tmp = activityService.getActivityByName(activity.getName());
         if(tmp!=null){
-            return Map.of("success",false,"message","活动名已存在");
+            return Map.of("success",false,"message","活动名已存在","activityId",-1);
         }
+
 
         /*去掉目录非法字符*/
         activity.setFilePath("/"+activity.getName().replaceAll("[<>\"|/:?*\\\\ ]",""));
@@ -105,8 +106,9 @@ public class ActivityController {
         feedBackFileDirector.mkdirs();
 
         boolean success = activityService.saveActivity(userId,activity);
+        int id = success?activity.getId():-1;
 
-        return Map.of("success",success);
+        return Map.of("success",success,"activityId",id);
 
     }
 
