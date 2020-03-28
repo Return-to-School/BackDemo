@@ -1,13 +1,22 @@
 package cn.ncu.newmedia.backschool.controller;
 
+import cn.ncu.newmedia.backschool.Enumeration.ReturnCode;
 import cn.ncu.newmedia.backschool.dao.Page;
+import cn.ncu.newmedia.backschool.pojo.Activity;
+import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.Student;
+import cn.ncu.newmedia.backschool.service.ActivityService;
+import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.StudentService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,78 +26,98 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/student")
+@Slf4j
 public class StudentController {
 
     @Autowired
     private StudentService studentService;
 
+    @Autowired
+    private ActivityService activityService;
 
-    /**
-     * 添加一个学生信息
-     * @param student
-     * @return
-     */
-//    @RequestMapping(value = "",method = RequestMethod.POST)
-//    @ResponseBody
-//    public Map<String,Object> addProfile(@RequestBody Student student){
-//
-//        boolean success = studentService.saveStudent(student);
-//
-//        return MessageObject.dealMap(List.of("success"),List.of(success));
-//    }
+    @Autowired
+    private ApplyService applyService;
 
 
 
     /**
-     * 更新学生的个人信息
+     * 移动端，完善学生的个人信息
      * @param student
      * @return
      */
     @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
     @ResponseBody
-    public Map<String,Object> updateProfile(@PathVariable("id")Integer id,@RequestBody Student student) {
+    public Map<String,Object> updateProfile(@PathVariable("id")String id,@RequestBody Student student) {
 
         boolean success = false;
         Student studentOld = studentService.getStudentByColumn("student_id",id);
-        if(studentOld==null)
-            return Map.of("success",false,"message","学生信息不存在");
 
-        String message = "更新成功";
-        student.setId(id);
-        success = studentService.updateStudent(student);
-        if(!success) message = "更新失败";
+        /*判断下基础数据库是否有该学生的记录*/
+        if(studentOld==null){
+            log.error("学生信息不存在，无法进行完善=>id:"+id);
+            return Map.of("success",false,"msg", ReturnCode.NODATA.getDesc(),
+                    "code",ReturnCode.NODATA.getCode());
+        }else if(!studentOld.getName().equals(student.getName())){
+            /*学号姓名不匹配*/
+            return Map.of("success",false,"msg",ReturnCode.ID_NOT_MATCH_NAME.getDesc(),
+                    "code",ReturnCode.ID_NOT_MATCH_NAME.getCode());
+        }
 
-        return Map.of("success",success,"message",message);
+
+        ReturnCode code = ReturnCode.SUCCESS;
+
+        /*判断参数是否完整*/
+        if(student.getQq()==null||student.getBankCard()==null||
+                student.getPhone()==null||student.getEmail()==null||
+                student.getOrigin()==null||student.getHighSchool()==null||
+        student.getIdCard()==null){
+
+            code = ReturnCode.PARAMS_ERROR;
+        }else{
+            /*验证身份证*/
+            if(!studentService.checkIdCard(student.getIdCard())){
+                log.warn("身份证校验失败=>"+student.getIdCard());
+                code = ReturnCode.IDCARD_ERROR;
+            }else{
+                studentOld.setQq(student.getQq());
+                studentOld.setEmail(student.getEmail());
+                studentOld.setHighSchool(student.getHighSchool());
+                studentOld.setOrigin(student.getOrigin());
+                studentOld.setBankCard(student.getBankCard());
+                studentOld.setPhone(student.getPhone());
+                studentOld.setIdCard(student.getIdCard());
+                success = studentService.updateStudent(studentOld);
+
+                if(!success) code = ReturnCode.FAILED;
+            }
+
+        }
+
+
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc());
     }
 
 
-    /**
-     * 验证学号与本人姓名是否一致
-     * @param studentCard
-     * @param name
-     * @return
-     */
-    @RequestMapping(value = "/verification",method = RequestMethod.GET)
-    @ResponseBody
-    public Map<String,Object> identify(@RequestParam("studentCard") String studentCard,
-                                       @RequestParam("name")String name){
-
-        boolean success =  studentService.verifyNameAndCard(studentCard,name);
-        return Map.of("success",success);
-
-    }
-
 
 
     /**
-     * 获取指定学生信息
-     * @param userId
+     * 移动端，获取指定学生信息
+     * @param studentId
      * @return
      */
-    @RequestMapping(value = "/{id}",method = RequestMethod.GET)
+    @RequestMapping(value = "/{studentId}",method = RequestMethod.GET)
     @ResponseBody
-    public Student getStudent(@PathVariable("id")int userId){
-        return studentService.getStudentByColumn("user_id",userId);
+    public Map getStudent(@PathVariable("studentId")String studentId){
+
+        Student student = studentService.getStudentByColumn("student_id",studentId);
+
+        ReturnCode code = ReturnCode.SUCCESS;
+        boolean success = true;
+        if(student==null){
+            code = ReturnCode.NODATA;
+            success = false;
+        }
+        return Map.of("success",success,"msg",code.getDesc(),"code",code.getCode(),"data",student);
     }
 
 
@@ -107,15 +136,42 @@ public class StudentController {
 
 
     /**
-     * 获取参与活动的所有学生信息
+     * pc端获取参与某个活动的所有学生信息
      * @param activityId
      * @return
      */
     @RequestMapping(value = "/student-in-act/{activityId}",method = RequestMethod.GET)
     @ResponseBody
-    public Page getStudentInAct(@PathVariable("activityId")Integer activityId,
-                                @RequestParam("currPage")int currPage,
-                                @RequestParam("pageSize")int pageSize){
-        return studentService.getStudentListInAct(activityId,currPage,pageSize);
+    public Object getStudentInAct(@PathVariable("activityId")Integer activityId){
+
+        Activity activity = activityService.getActivityById(activityId);
+
+        ReturnCode code = ReturnCode.SUCCESS;
+        boolean success = true;
+
+        if(activity==null){
+            code = ReturnCode.NODATA;
+            success = false;
+            return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"data",null);
+        }
+
+        activity.setApplyList(applyService.listAllByActivityId(activityId));
+
+        JSONArray applyArray = new JSONArray();
+        for (Apply o : activity.getApplyList()) {
+            JSONObject applyObj = JSONObject.parseObject(JSON.toJSONString(o, SerializerFeature.WriteMapNullValue));
+            Student student = studentService.getStudentByColumn("student_id",
+                    applyObj.get("studentId"));
+            applyObj.put("student",student);
+            applyObj.remove("studentId");
+            applyArray.add(applyObj);
+        }
+
+        JSONObject activityObj = JSONObject.parseObject(JSON.toJSONString(activity));
+        activityObj.replace("applyList",applyArray);
+
+        return Map.of("success",success,"msg",code.getDesc(),"code",code.getCode(),
+                "data",activityObj);
     }
+
 }

@@ -1,9 +1,11 @@
 package cn.ncu.newmedia.backschool.pojo;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import org.apache.ibatis.type.Alias;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author maoalong
@@ -16,7 +18,7 @@ public class Activity implements Serializable {
     /**
      * 活动id
      */
-    private int id;
+    private int activityId;
 
 
     /**
@@ -28,18 +30,22 @@ public class Activity implements Serializable {
     /**
      * 活动开始申请的时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date applyStartTime;
 
     /**
      * 活动结束申请的时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date applyEndTime;
 
     /*
     *反馈开始的时间*/
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date feedbackStartTime;
 
     /*反馈结束的时间*/
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date feedbackEndTime;
 
     /*活动创建者的姓名*/
@@ -47,6 +53,7 @@ public class Activity implements Serializable {
 
 
     /*活动的创建时间*/
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /*活动内容*/
@@ -61,16 +68,19 @@ public class Activity implements Serializable {
     /*是否需要审核*/
     private Boolean needExamine;
 
+    /*所有的申请*/
+    private List<Apply> applyList;
+
 
     public Activity() {
     }
 
-    public int getId() {
-        return id;
+    public int getActivityId() {
+        return activityId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setActivityId(int activityId) {
+        this.activityId = activityId;
     }
 
     public String getName() {
@@ -162,10 +172,18 @@ public class Activity implements Serializable {
     }
 
 
+    public List<Apply> getApplyList() {
+        return applyList;
+    }
+
+    public void setApplyList(List<Apply> applyList) {
+        this.applyList = applyList;
+    }
+
     @Override
     public String toString() {
         return "Activity{" +
-                "id=" + id +
+                "activityId=" + activityId +
                 ", name='" + name + '\'' +
                 ", applyStartTime=" + applyStartTime +
                 ", applyEndTime=" + applyEndTime +
@@ -177,6 +195,8 @@ public class Activity implements Serializable {
                 ", filePath='" + filePath + '\'' +
                 ", location='" + location + '\'' +
                 ", needExamine=" + needExamine +
+                ", applyList=" + applyList +
                 '}';
     }
+
 }

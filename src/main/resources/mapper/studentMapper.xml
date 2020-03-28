@@ -4,10 +4,9 @@
 <mapper namespace="cn.ncu.newmedia.backschool.dao.StudentDao">
 
     <resultMap id="studentMap" type="Student">
-        <id property="id" column="student_id" />
+        <id property="studentId" column="student_id" />
         <result property="name" column="name" />
         <result property="gender" column="gender" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
-        <result property="studentCard" column="student_card"/>
         <result property="college" column="college" />
         <result property="classname" column="class" />
         <result property="idCard" column="idCard" />
@@ -17,28 +16,27 @@
         <result property="email" column="email" />
         <result property="origin" column="origin" />
         <result property="highSchool" column="high_school" />
-        <result property="user" column="user_id" />
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="student.id">
-        insert into student (student_id, name, gender, college, class, student_card) values
-                            (#{student.id},#{student.name},#{student.gender.code},#{student.college},#{student.classname},#{student.studentCard})
+
+    <insert id="insert">
+        insert into student (student_id, name, gender, college, class) values
+                            (#{student.studentId},#{student.name},#{student.gender.code},#{student.college},#{student.classname})
     </insert>
+
 
     <update id="update">
         update student set   idCard = #{student.idCard},qq = #{student.qq},
                              bank_card = #{student.bankCard},phone = #{student.phone},
                              email = #{student.email},origin = #{student.origin},
                              high_school = #{student.highSchool}
-                             where student_id = #{student.id};
+                             where student_id = #{student.studentId};
     </update>
 
-    <update id="updateUserId">
-        update student set user_id = #{userId} where student_card = #{studentCard}
-    </update>
 
-    <select id="studentCardHasMatchName" resultType="int">
-        select count(*) from student where name = #{name} and student_card = #{studentCard};
+
+    <select id="studentIdHasMatchName" resultType="int">
+        select count(*) from student where name = #{name} and student_id = #{studentId};
     </select>
 
     <select id="getStudentByColumn" resultMap="studentMap">
@@ -51,21 +49,14 @@
 
     <select id="getStudentListInAct" resultMap="studentMap">
         select * from student s,apply a,activity ac where s.student_id = a.student_id
-          and a.activity_id = ac.activity_id and a.activity_id = #{activityId} limit #{begin},#{num}
+          and a.activity_id = ac.activity_id and a.activity_id = #{activityId}
     </select>
 
     <select id="listAll" resultMap="studentMap">
-        select * from student limit #{begin},#{num}
+        select * from student
     </select>
 
-    <select id="getAllCnt" resultType="int">
-        select count(*) from student
-    </select>
 
-    <select id="getCntInAct" resultType="int">
-        select count(*) from student s,apply a,activity ac where s.student_id = a.student_id
-                                                      and a.activity_id = ac.activity_id and a.activity_id = #{activityId}
-    </select>
 
     <select id="searchByColumn" resultMap="studentMap">
         select * from student where ${column} like concat('%',concat(#{key},'%'))

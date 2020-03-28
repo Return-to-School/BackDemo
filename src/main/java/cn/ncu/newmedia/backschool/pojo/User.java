@@ -13,9 +13,7 @@ import java.util.List;
 @Alias("User")
 public class User {
 
-    private int id;
-
-    private String account;
+    private String userId;
 
     private String password;
 
@@ -23,25 +21,19 @@ public class User {
 
     private String loc;
 
-    private List<Activity> activities;
+
+
     public User() {
     }
 
-    public int getId() {
-        return id;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
 
     public String getPassword() {
         return password;
@@ -49,14 +41,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public List<Activity> getActivities() {
-        return activities;
-    }
-
-    public void setActivities(List<Activity> activities) {
-        this.activities = activities;
     }
 
 
@@ -79,8 +63,7 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", account='" + account + '\'' +
+                "userId=" + userId +
                 ", password='" + password + '\'' +
                 ", role = "+ role.getDesc()+
                 ", loc = "+ loc+

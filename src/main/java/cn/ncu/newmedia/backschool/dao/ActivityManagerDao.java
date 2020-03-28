@@ -13,11 +13,29 @@ import org.springframework.stereotype.Repository;
 @Mapper
 public interface ActivityManagerDao {
 
-    int add(@Param("userId") int userId,@Param("activityId") int activityId);
+    /**
+     * 添加一条管理映射关系
+     * @param userId
+     * @param activityId
+     * @return
+     */
+    int add(@Param("userId") String userId,@Param("activityId") int activityId);
 
+
+    /**
+     * 判断这个活动是不是被管理员管理的
+     * @param activityId
+     * @param userId
+     * @return
+     */
     int isManagedByGroup(@Param("activityId") Integer activityId,@Param("userId") String userId);
 
-    /*管理员相关的方法*/
+
+    /**
+     * 删除映射关系
+     * @param activityId
+     * @return
+     */
     int deleteManagerByActId(@Param("activityId")Integer activityId);
 
 }

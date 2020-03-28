@@ -1,8 +1,8 @@
 package cn.ncu.newmedia.backschool.service;
 
 import cn.ncu.newmedia.backschool.dao.LocationDao;
-import cn.ncu.newmedia.backschool.pojo.vo.City;
-import cn.ncu.newmedia.backschool.pojo.vo.Province;
+import cn.ncu.newmedia.backschool.pojo.location.City;
+import cn.ncu.newmedia.backschool.pojo.location.Province;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class LocationService {
         return locationDao.listAllProvinces();
     }
 
-    public List<City> getCitiesByProvinceId(int provinceId) {
+    public List<City> getCitiesByProvinceId(String provinceId) {
         return locationDao.getCitiesByProvinceId(provinceId);
     }
 
@@ -30,7 +30,7 @@ public class LocationService {
         return locationDao.listAllColleges();
     }
 
-    public List<City> getCountiesByCityId(int cityId) {
+    public List<City> getCountiesByCityId(String cityId) {
         return locationDao.getCountiesByCityId(cityId);
     }
 

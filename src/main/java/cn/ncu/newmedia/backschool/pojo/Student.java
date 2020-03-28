@@ -1,6 +1,8 @@
 package cn.ncu.newmedia.backschool.pojo;
 
 import cn.ncu.newmedia.backschool.Enumeration.SexEnum;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import org.apache.ibatis.type.Alias;
 
 import java.io.Serializable;
@@ -13,7 +15,8 @@ import java.io.Serializable;
 @Alias("Student")
 public class Student implements Serializable {
 
-    private int id;
+    /*学号*/
+    private String studentId;
 
     /**
      * 学生姓名
@@ -24,13 +27,9 @@ public class Student implements Serializable {
     /**
      * 学生的性别
      */
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private SexEnum gender;
 
-
-    /**
-     * 学生的学号
-     */
-    private String studentCard;
 
 
     /**
@@ -67,18 +66,16 @@ public class Student implements Serializable {
     /*毕业高中*/
     private String highSchool;
 
-    /*账号的id*/
-    private int user;
 
     public Student() {
     }
 
-    public int getId() {
-        return id;
+    public String getStudentId() {
+        return studentId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
     }
 
     public String getName() {
@@ -95,14 +92,6 @@ public class Student implements Serializable {
 
     public void setGender(SexEnum gender) {
         this.gender = gender;
-    }
-
-    public String getStudentCard() {
-        return studentCard;
-    }
-
-    public void setStudentCard(String studentCard) {
-        this.studentCard = studentCard;
     }
 
     public String getCollege() {
@@ -177,21 +166,12 @@ public class Student implements Serializable {
         this.highSchool = highSchool;
     }
 
-    public int getUser() {
-        return user;
-    }
-
-    public void setUser(int user) {
-        this.user = user;
-    }
-
     @Override
     public String toString() {
         return "Student{" +
-                "id=" + id +
+                "studentId='" + studentId + '\'' +
                 ", name='" + name + '\'' +
                 ", gender=" + gender +
-                ", studentCard='" + studentCard + '\'' +
                 ", college='" + college + '\'' +
                 ", classname='" + classname + '\'' +
                 ", idCard='" + idCard + '\'' +
@@ -201,7 +181,6 @@ public class Student implements Serializable {
                 ", email='" + email + '\'' +
                 ", origin='" + origin + '\'' +
                 ", highSchool='" + highSchool + '\'' +
-                ", user=" + user +
                 '}';
     }
 }

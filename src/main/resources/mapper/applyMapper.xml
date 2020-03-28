@@ -4,23 +4,21 @@
 <mapper namespace="cn.ncu.newmedia.backschool.dao.ApplyDao">
 
     <resultMap id="applyMap" type="Apply">
-        <id property="id" column="apply_id" />
-        <result property="createTime" column="create_time" />
+        <id property="applyId" column="apply_id" />
+        <result property="createTime" column="apply_create_time" />
         <result property="status" column="apply_status" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler" />
-        <result property="origin" column="origin" />
-        <result property="highSchool" column="high_school" />
         <result property="description" column="description" />
         <result property="studentId" column="student_id" />
         <result property="activityId" column="activity_id" />
+        <association property="feedback" column="feedback_id" javaType="Feedback"
+                     select="cn.ncu.newmedia.backschool.dao.FeedBackDao.getFeedbackById" />
     </resultMap>
 
     <!--这个map为了前端的查询导出功能-->
-    <resultMap id="applyVoMap" type="ApplyVo">
-        <id property="id" column="ap_apply_id" />
-        <result property="createTime" column="ap_create_time" />
+    <resultMap id="applyVoPCMap" type="ApplyVoPC">
+        <id property="applyId" column="apply_id" />
+        <result property="createTime" column="apply_create_time" />
         <result property="status" column="apply_status" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
-        <result property="origin" column="loc" />
-        <result property="highSchool" column="highSchool" />
         <result property="description" column="description" />
         <association property="student" column="student_id"
                      javaType="Student"
@@ -31,81 +29,25 @@
                      select="cn.ncu.newmedia.backschool.dao.FeedBackDao.getFeedbackById" />
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="apply.id">
-        insert into apply values (#{apply.id},#{apply.createTime},
-                                  #{apply.status.code},#{apply.origin},
-                                  #{apply.highSchool},#{apply.description},
-                                  #{apply.studentId},#{apply.activityId})
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="apply.applyId">
+        insert into apply values (#{apply.applyId},#{apply.createTime},
+                                  #{apply.status.code},#{apply.description},
+                                  #{apply.activityId},#{apply.studentId})
     </insert>
 
     <select id="listAll" resultMap="applyMap">
-        select * from apply limit #{begin},#{num};
+        select * from apply left join feedback f on apply.apply_id = f.apply_id
     </select>
 
     <select id="getAppliesByActId" resultMap="applyMap">
-        select * from apply where activity_id = #{activityId} limit #{begin},#{num}
+        select * from apply left join feedback f on apply.apply_id = f.apply_id where activity_id = #{activityId}
     </select>
 
-    <select id="getApplyCntInAct" resultType="int">
-        select count(*) from apply where activity_id = #{activityId}
-    </select>
 
-    <select id="getAppVoForSuperCnt" resultType="int">
-        select count(*) FROM (select * from (select apply.apply_id ap_apply_id,
-        apply.create_time ap_create_time,
-        apply_status,
-        apply.origin loc,
-        apply.high_school highSchool,
-        description,
-        student.student_id,
-        name,
-        gender,
-        student_card,
-        college,
-        class,
-        idCard,
-        qq,
-        bank_card,
-        phone,
-        email,
-        student.origin,
-        student.high_school,
-        user_id,
-        activity.activity_id,
-        activity_name,
-        apply_start_time,
-        apply_end_time,
-        feedback_start_time,
-        feedback_end_time,
-        creator,
-        activity.create_time create_time,
-        content,
-        activity_file_path,
-        location,
-        need_examine from student ,apply,activity where apply.student_id = student.student_id
-        and apply.activity_id = activity.activity_id ) a left join feedback
-        on ap_apply_id = feedback.apply_id ) b
-        <where>
-            <if test="keys.studentName!=null">
-                name = #{keys.studentName}
-            </if>
-            <if test="keys.location!=null">
-                and loc like concat('%',concat(#{keys.location},'%'))
-            </if>
-            <if test = "keys.college!=null">
-                and college = #{keys.college}
-            </if>
-            <if test = "keys.highSchool !=null">
-                and highSchool = #{keys.highSchool}
-            </if>
-            <if test = "keys.applyStatus !=null">
-                and apply_status = #{keys.applyStatus.code}
-            </if>
-        </where>
-    </select>
 
     <select id="getAppliesByColumn" resultMap="applyMap">
-        select * from apply where ${column} = #{value}
+        select * from apply left join feedback f on apply.apply_id = f.apply_id where ${column} = #{value}
     </select>
 
     <update id="changeApplyStatus">
@@ -122,111 +64,52 @@
 
 
     <select id="getApplyById" resultMap="applyMap">
-        select * from apply where apply_id = #{applyId}
-    </select>
-
-    <select id="getAppVoForSuper" resultMap="applyVoMap">
-        select * FROM (select * from (select apply.apply_id ap_apply_id,
-                                             apply.create_time ap_create_time,
-                                             apply_status,
-                                             apply.origin loc,
-                                             apply.high_school highSchool,
-                                             description,
-                                             student.student_id,
-                                             name,
-                                             gender,
-                                             student_card,
-                                             college,
-                                             class,
-                                             idCard,
-                                             qq,
-                                             bank_card,
-                                             phone,
-                                             email,
-                                             student.origin,
-                                             student.high_school,
-                                             user_id,
-                                             activity.activity_id,
-                                             activity_name,
-                                             apply_start_time,
-                                             apply_end_time,
-                                             feedback_start_time,
-                                             feedback_end_time,
-                                             creator,
-                                             activity.create_time create_time,
-                                             content,
-                                             activity_file_path,
-                                             location,
-                                             need_examine from student ,apply,activity where apply.student_id = student.student_id
-                                                                                         and apply.activity_id = activity.activity_id ) a left join feedback
-                                              on ap_apply_id = feedback.apply_id ) b
-            <where>
-                <if test="keys.studentName!=null">
-                    name = #{keys.studentName}
-                </if>
-                <if test="keys.location!=null">
-                    and loc like concat('%',concat(#{keys.location},'%'))
-                </if>
-                <if test = "keys.college!=null">
-                    and college = #{keys.college}
-                </if>
-                <if test = "keys.highSchool !=null">
-                    and highSchool = #{keys.highSchool}
-                </if>
-                <if test = "keys.applyStatus !=null">
-                    and apply_status = #{keys.applyStatus.code}
-                </if>
-            </where>  limit #{begin},#{num}
+        select * from apply left join feedback f on apply.apply_id = f.apply_id where apply.apply_id = #{applyId}
     </select>
 
 
-    <select id="getAppVoListByKeys" resultMap="applyVoMap">
-        select * FROM (select * from (select apply.apply_id ap_apply_id,
-                                             apply.create_time ap_create_time,
-                                             apply_status,
-                                             apply.origin loc,
-                                             apply.high_school highSchool,
-                                             description,
-                                             student.student_id,
-                                             name,
-                                             gender,
-                                             student_card,
-                                             college,
-                                             class,
-                                             idCard,
-                                             qq,
-                                             bank_card,
-                                             phone,
-                                             email,
-                                             student.origin,
-                                             student.high_school,
-                                             user_id,
-                                             activity.activity_id,
-                                             activity_name,
-                                             apply_start_time,
-                                             apply_end_time,
-                                             feedback_start_time,
-                                             feedback_end_time,
-                                             creator,
-                                             activity.create_time create_time,
-                                             content,
-                                             activity_file_path,
-                                             location,
-                                             need_examine from student ,apply,activity where apply.student_id = student.student_id
-                                                                                         and apply.activity_id = activity.activity_id ) a left join feedback
-                                                                                                                                                    on ap_apply_id = feedback.apply_id ) b
+    <select id="getAppVoListByKeys" resultMap="applyVoPCMap">
+        select * from (select s.student_id,
+        name, gender,
+        college,
+        class,
+        idCard,
+        qq,
+        bank_card,
+        phone,
+        email,
+        origin,
+        high_school,
+        ap.apply_id,
+        apply_create_time,
+        apply_status,
+        description,
+        ac.activity_id,
+        activity_name,
+        apply_start_time,
+        apply_end_time,
+        feedback_start_time,
+        feedback_end_time,
+        creator,
+        activity_create_time,
+        content,
+        activity_file_path,
+        location,
+        need_examine FROM student s,apply ap,activity ac where s.student_id = ap.student_id and
+        ap.activity_id = ac.activity_id) a left join feedback f on a.apply_id = f.apply_id
+
         <where>
             <if test="keys.studentName!=null">
                 name = #{keys.studentName}
             </if>
             <if test="keys.location!=null">
-                and loc like concat('%',concat(#{keys.location},'%'))
+                and location like concat('%',concat(#{keys.location},'%'))
             </if>
             <if test = "keys.college!=null">
                 and college = #{keys.college}
             </if>
             <if test = "keys.highSchool !=null">
-                and highSchool = #{keys.highSchool}
+                and high_school = #{keys.highSchool}
             </if>
             <if test = "keys.applyStatus !=null">
                 and apply_status = #{keys.applyStatus.code}
@@ -235,90 +118,45 @@
 
     </select>
 
-    <select id="getApplyCnt" resultType="int">
-        select count(*) from apply
-    </select>
 
 
-    <select id="getPassStudentApply" resultMap="applyVoMap">
-        select * FROM (select * from (select apply.apply_id ap_apply_id,
-                                             apply.create_time ap_create_time,
-                                             apply_status,
-                                             apply.origin loc,
-                                             apply.high_school highSchool,
-                                             description,
-                                             student.student_id,
-                                             name,
-                                             gender,
-                                             student_card,
-                                             college,
-                                             class,
-                                             idCard,
-                                             qq,
-                                             bank_card,
-                                             phone,
-                                             email,
-                                             student.origin,
-                                             student.high_school,
-                                             user_id,
-                                             activity.activity_id,
-                                             activity_name,
-                                             apply_start_time,
-                                             apply_end_time,
-                                             feedback_start_time,
-                                             feedback_end_time,
-                                             creator,
-                                             activity.create_time create_time,
-                                             content,
-                                             activity_file_path,
-                                             location,
-                                             need_examine from student ,apply,activity where apply.student_id = student.student_id
-                                                                                         and apply.activity_id = activity.activity_id ) a left join feedback
-                                                                                                                                                    on ap_apply_id = feedback.apply_id ) b
-        where apply_status = 1 and activity_id = #{activityId} limit #{begin},#{num}
-    </select>
-
-    <select id="getPassStudentCnt" resultType="int">
-        select count(*) FROM (select * from (select apply.apply_id ap_apply_id,
-                                             apply.create_time ap_create_time,
-                                             apply_status,
-                                             apply.origin loc,
-                                             apply.high_school highSchool,
-                                             description,
-                                             student.student_id,
-                                             name,
-                                             gender,
-                                             student_card,
-                                             college,
-                                             class,
-                                             idCard,
-                                             qq,
-                                             bank_card,
-                                             phone,
-                                             email,
-                                             student.origin,
-                                             student.high_school,
-                                             user_id,
-                                             activity.activity_id,
-                                             activity_name,
-                                             apply_start_time,
-                                             apply_end_time,
-                                             feedback_start_time,
-                                             feedback_end_time,
-                                             creator,
-                                             activity.create_time create_time,
-                                             content,
-                                             activity_file_path,
-                                             location,
-                                             need_examine from student ,apply,activity where apply.student_id = student.student_id
-                                                                                         and apply.activity_id = activity.activity_id ) a left join feedback
-                                                                                                                                                    on ap_apply_id = feedback.apply_id ) b
+    <select id="getPassStudentApply" resultMap="applyVoPCMap">
+        select * from (select s.student_id,
+                              name, gender,
+                              college,
+                              class,
+                              idCard,
+                              qq,
+                              bank_card,
+                              phone,
+                              email,
+                              origin,
+                              high_school,
+                              ap.apply_id,
+                              apply_create_time,
+                              apply_status,
+                              description,
+                              ac.activity_id,
+                              activity_name,
+                              apply_start_time,
+                              apply_end_time,
+                              feedback_start_time,
+                              feedback_end_time,
+                              creator,
+                              activity_create_time,
+                              content,
+                              activity_file_path,
+                              location,
+                              need_examine FROM student s,apply ap,activity ac where s.student_id = ap.student_id and
+                           ap.activity_id = ac.activity_id) a left join feedback f on a.apply_id = f.apply_id
         where apply_status = 1 and activity_id = #{activityId}
     </select>
 
 
-    <select id="getApply" resultMap="applyMap">
-        select * from apply where student_id = #{studentId} and activity_id = #{activityId}
+
+
+    <select id="getApplyByAidAndSid" resultMap="applyMap">
+        select * from apply left join feedback f on apply.apply_id = f.apply_id where student_id = #{studentId} and activity_id = #{activityId}
     </select>
 
 </mapper>

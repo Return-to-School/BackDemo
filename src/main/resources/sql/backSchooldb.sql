@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/3/14 14:42:29                           */
+/* Created on:     2020/3/28 16:36:06                           */
 /*==============================================================*/
 
 
@@ -11,10 +11,6 @@ drop table if exists activity_manager;
 drop table if exists apply;
 
 drop table if exists city;
-
-drop table if exists class;
-
-drop table if exists college;
 
 drop table if exists county;
 
@@ -38,7 +34,7 @@ create table activity
    feedback_start_time  datetime not null comment '反馈开始时间',
    feedback_end_time    datetime not null comment '反馈结束时间',
    creator              varchar(16) not null comment '活动创建者',
-   create_time          datetime not null comment '活动创建时间',
+   activity_create_time datetime not null comment '活动创建时间',
    content              longtext not null comment '活动内容',
    activity_file_path   varchar(256) comment '活动的材料文件路径',
    location             varchar(64) not null,
@@ -57,7 +53,7 @@ create table activity_manager
 (
    activity_manager_id  int not null auto_increment comment '活动管理表id',
    activity_id          int not null comment '活动id',
-   user_id              int not null comment '用户id',
+   user_id              varchar(32) not null comment '用户id',
    primary key (activity_manager_id),
    unique key AK_Key_2 (activity_id, user_id)
 )
@@ -69,15 +65,12 @@ charset = UTF8;
 create table apply
 (
    apply_id             int not null auto_increment comment '申请表id',
-   create_time          datetime not null comment '申请时间',
+   apply_create_time    datetime not null comment '申请时间',
    apply_status         tinyint not null default 0 comment '申请状态，0未审核，1通过，2不通过',
-   origin               varchar(64) not null comment '学生生源地',
-   high_school          varchar(32) not null comment '回访学校',
    description          text not null comment '个人简介',
-   student_id           int not null,
    activity_id          int not null,
-   primary key (apply_id),
-   unique key AK_Key_2 (student_id, activity_id)
+   student_id           varchar(32) not null comment '学生的学号',
+   primary key (apply_id)
 )
 charset = UTF8;
 
@@ -96,33 +89,6 @@ create table city
 charset = UTF8;
 
 alter table city comment '地级行政区表';
-
-/*==============================================================*/
-/* Table: class                                                 */
-/*==============================================================*/
-create table class
-(
-   class_id             int not null auto_increment comment '班级id',
-   class_name           varchar(32) not null comment '班级名称',
-   college_id           int not null comment '学院id，外键',
-   primary key (class_id)
-)
-charset = UTF8;
-
-alter table class comment '基础数据库表，班级信息';
-
-/*==============================================================*/
-/* Table: college                                               */
-/*==============================================================*/
-create table college
-(
-   college_id           int not null auto_increment comment '学院id',
-   college_name         varchar(32) not null comment '学院名称',
-   primary key (college_id)
-)
-charset = UTF8;
-
-alter table college comment '基础数据库表，学院信息';
 
 /*==============================================================*/
 /* Table: county                                                */
@@ -145,7 +111,7 @@ create table feedback
 (
    feedback_id          int not null auto_increment comment '反馈表id',
    apply_id             int not null comment '申请表id',
-   level                tinyint default 0 comment '评价等级，0表示不合格,1表示合格，2表示优秀',
+   level                tinyint not null default 3 comment '评价等级，0表示不合格,1表示合格，2表示优秀，3表示未处理',
    feedback_file_path   varchar(256) not null comment '反馈文件路径',
    primary key (feedback_id),
    unique key AK_Key_2 (apply_id)
@@ -172,7 +138,6 @@ alter table province comment '省行政厅表';
 /*==============================================================*/
 create table student
 (
-   student_id           int not null auto_increment comment '学生表id',
    name                 varchar(32) not null comment '学生姓名',
    gender               varchar(2) not null comment '学生性别,0表女，1表男',
    college              varchar(32) not null comment '学院',
@@ -184,11 +149,8 @@ create table student
    email                varchar(320),
    origin               varchar(64) comment '学生生源地',
    high_school          varchar(32) comment '毕业高中',
-   user_id              int,
-   student_card         varchar(32) not null comment '学生的学号',
-   primary key (student_id),
-   unique key AK_Key_3 (student_card),
-   unique key AK_Key_2 (user_id)
+   student_id           varchar(32) not null comment '学生的学号',
+   primary key (student_id)
 )
 charset = UTF8;
 
@@ -199,13 +161,11 @@ alter table student comment '学生表';
 /*==============================================================*/
 create table user
 (
-   user_id              int not null auto_increment comment '用户id',
-   account              varchar(16) not null comment '账号',
+   user_id              varchar(32) not null comment '用户id',
    password             varchar(16) not null comment '密码',
    role                 tinyint not null default 2 comment '用户角色',
    group_loc            varchar(32) character set utf8 comment '管理地区',
-   primary key (user_id),
-   unique key AK_Key_2 (account)
+   primary key (user_id)
 )
 charset = UTF8;
 
@@ -226,15 +186,9 @@ alter table apply add constraint FK_Reference_3 foreign key (student_id)
 alter table city add constraint FK_Reference_8 foreign key (province_id)
       references province (province_id) on delete restrict on update restrict;
 
-alter table class add constraint FK_Reference_7 foreign key (college_id)
-      references college (college_id) on delete restrict on update restrict;
-
 alter table county add constraint FK_Reference_9 foreign key (city_id)
       references city (city_id) on delete restrict on update restrict;
 
 alter table feedback add constraint FK_feedback_apply foreign key (apply_id)
       references apply (apply_id) on delete restrict on update restrict;
-
-alter table student add constraint FK_Reference_10 foreign key (user_id)
-      references user (user_id) on delete restrict on update restrict;
 

@@ -1,6 +1,8 @@
 package cn.ncu.newmedia.backschool.pojo;
 
 import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import org.apache.ibatis.type.Alias;
 
 import java.util.Date;
@@ -16,27 +18,20 @@ public class Apply {
     /**
      * 申请id
      */
-    private int id;
+    private int applyId;
 
     /**
      * 申请的创建时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
      * 申请的状态
      */
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private ApplyStatus status;
 
-    /**
-     * 学生的生源地
-     */
-    private String origin;
-
-    /**
-     * 毕业高中
-     */
-    private String highSchool;
 
     /**
      * 申请的描述
@@ -47,7 +42,7 @@ public class Apply {
     /**
      * 申请学生的id
      */
-    private int studentId;
+    private String studentId;
 
 
     /**
@@ -56,15 +51,18 @@ public class Apply {
      */
     private int activityId;
 
+
+    private Feedback feedback;
+
     public Apply() {
     }
 
-    public int getId() {
-        return id;
+    public int getApplyId() {
+        return applyId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setApplyId(int applyId) {
+        this.applyId = applyId;
     }
 
     public Date getCreateTime() {
@@ -83,22 +81,6 @@ public class Apply {
         this.status = status;
     }
 
-    public String getOrigin() {
-        return origin;
-    }
-
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-
-    public String getHighSchool() {
-        return highSchool;
-    }
-
-    public void setHighSchool(String highSchool) {
-        this.highSchool = highSchool;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -107,11 +89,11 @@ public class Apply {
         this.description = description;
     }
 
-    public int getStudentId() {
+    public String getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(int studentId) {
+    public void setStudentId(String studentId) {
         this.studentId = studentId;
     }
 
@@ -123,17 +105,24 @@ public class Apply {
         this.activityId = activityId;
     }
 
+    public Feedback getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(Feedback feedback) {
+        this.feedback = feedback;
+    }
+
     @Override
     public String toString() {
         return "Apply{" +
-                "id=" + id +
+                "applyId=" + applyId +
                 ", createTime=" + createTime +
                 ", status=" + status +
-                ", origin='" + origin + '\'' +
-                ", highSchool='" + highSchool + '\'' +
                 ", description='" + description + '\'' +
                 ", studentId=" + studentId +
                 ", activityId=" + activityId +
+                ", feedback=" + feedback +
                 '}';
     }
 }

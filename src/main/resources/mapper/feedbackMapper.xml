@@ -3,20 +3,20 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.ncu.newmedia.backschool.dao.FeedBackDao">
     <resultMap id="feedbackMap" type="Feedback">
-        <id property="id" column="feedback_id" />
+        <id property="feedbackId" column="feedback_id" />
         <result property="apply" column="apply_id" />
         <result property="level" column="level" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
         <result property="filePath" column="feedback_file_path" />
     </resultMap>
 
-    <insert id="save" useGeneratedKeys="true" keyProperty="feedback.id">
-        insert into feedback values (#{feedback.id},#{feedback.apply},
+    <insert id="save" useGeneratedKeys="true" keyProperty="feedback.feedbackId">
+        insert into feedback values (#{feedback.feedbackId},#{feedback.apply},
                                      #{feedback.level.code},#{feedback.filePath});
     </insert>
 
     <update id="update">
         update feedback set apply_id = #{apply}, feedback_file_path = #{filePath},
-                            level = #{level.code} where feedback_id = #{id}
+                            level = #{level.code} where feedback_id = #{feedbackId}
     </update>
 
     <select id="getFeedbackByColumn" resultMap="feedbackMap">

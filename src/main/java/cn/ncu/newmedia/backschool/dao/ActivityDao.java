@@ -18,51 +18,45 @@ public interface ActivityDao{
 
     /*CRUD方法*/
     int insert(@Param("activity") Activity activity);
-
     int update(@Param("activity") Activity activity);
-
     Activity getActivityById(@Param("activityId") Integer activityId);
-
     int delete(@Param("activityId") Integer activityId);
 
 
-    /*获取数据库记录方法*/
-    int getTotalCnt();
-
-    int getGroupUnderwayTolCnt(@Param("userId")int userId);
-
-    int getUnderwayTolCnt();
-
-    int getGroupAllCnt(@Param("userId")int userId);
-
-    int filterActivityByColumnCnt(@Param("column")String column,@Param("key")Object key);
 
     /*通用获取单个实体的方法*/
     Activity getActivityByColumn(@Param("column") String column, @Param("value") String value);
 
 
     /*获取list*/
-    List<Activity> listAll(@Param("begin")Integer begin,@Param("num")Integer num);
+    List<Activity> listAll();
 
-    List<Activity> filterActivityByColumn(@Param("column")String column,@Param("key") String key,
-                                          @Param("begin")int begin,@Param("num")int num);
+    List<Activity> filterActivityByColumn(@Param("column")String column,@Param("key") String key);
 
-    List<Activity> getActivitiesByGroupManagerId(@Param("begin") int begin,@Param("num") int num, @Param("userId") int userId);
+    List<Activity> getActivitiesByGroupManagerId(@Param("userId") int userId);
 
-    List<Activity> listAllUnderwayAct(@Param("begin")Integer begin,@Param("num")Integer num);
+    /**
+     * 获取所有正在进行的活动
+     * @return
+     */
+    List<Activity> listAllUnderwayAct();
 
-    List<Activity> listGroupUnderwayAct(@Param("begin")Integer begin,@Param("num")Integer num,@Param("managerId") int managerId);
+
+    /*获取宣传组管理员下所有正在进行的活动
+    * */
+    List<Activity> listGroupUnderwayAct(@Param("managerId") int managerId);
+
+    /*获取所有的历史活动
+    * */
+    List<Activity> listAllHistoryAct();
 
 
-    List<Activity> listAllHistoryAct(@Param("begin")Integer begin,@Param("num") Integer num);
+    /*获取宣传组管理员的所有正在进行的活动
+    * */
+    List<Activity> listGroupHistoryAct(@Param("managerId")String managerId);
 
-    Integer getHistoryActCnt();
 
-    List<Activity> listGroupHistoryAct(@Param("begin")int begin,
-                                       @Param("num")int num,
-                                       @Param("managerId")int managerId);
-
-    Integer getGroupHistoryActCnt(@Param("managerId") Integer managerId);
-
+    /*全局模糊查询*/
+    List<Activity> search(@Param("key") String key);
 }
 

@@ -1,19 +1,21 @@
 package cn.ncu.newmedia.backschool.controller;
 
 import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
+import cn.ncu.newmedia.backschool.Enumeration.ReturnCode;
 import cn.ncu.newmedia.backschool.Utils.EnumUtils;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.Feedback;
 import cn.ncu.newmedia.backschool.pojo.Student;
-import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
-import cn.ncu.newmedia.backschool.pojo.vo.Keys;
+import cn.ncu.newmedia.backschool.pojo.vo.pc.ApplyVoPC;
+import cn.ncu.newmedia.backschool.pojo.vo.pc.Keys;
 import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.ExcelExportService;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import cn.ncu.newmedia.backschool.view.ExcelView;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("/apply")
+@Slf4j
 public class ApplyController {
 
 
@@ -48,7 +51,7 @@ public class ApplyController {
     /**
      * 到处的excel列表的表头
      */
-    private final String[] listHeader =  {"姓名","学号","学院","专业班级","地区","回访中学","报名状态","评价结果"};
+    private final String[] listHeader =  {"姓名","学号","学院","专业班级","籍贯","活动地区","回访中学","报名状态","评价结果"};
 
 
 
@@ -65,17 +68,29 @@ public class ApplyController {
         /*判断是否存在该学生的账号*/
         Student student = studentService.getStudentByColumn("student_id",apply.getStudentId());
 
-        if(student.getIdCard()==null||
-        student.getQq()==null||student.getBankCard()==null||
+        if(student==null){
+            log.warn("学生不存在=>id:"+apply.getStudentId());
+            return Map.of("success",false,"code",ReturnCode.NODATA.getCode(),"msg", ReturnCode.NODATA.getDesc(),"applyId",-1);
+        }
+
+        /*判断资料是否已经完善*/
+        if(student.getQq()==null||student.getBankCard()==null||
         student.getPhone()==null||student.getEmail()==null||
-        student.getOrigin()==null||student.getHighSchool()==null){
-            return Map.of("success",false,"message","请完善个人资料","applyId",-1);
+        student.getOrigin()==null||student.getHighSchool()==null||
+        student.getIdCard()==null){
+            log.warn("学生资料信息未完善=>id:"+student.getStudentId());
+            return Map.of("success",false,"code",ReturnCode.NO_PROFILE.getCode(),
+                    "msg",ReturnCode.NO_PROFILE.getDesc(),"applyId",-1);
         }
 
 
         Activity activity = activityService.getActivityById(apply.getActivityId());
-        if(activity==null)
-            return Map.of("success",false,"message","活动不存在","applyId",-1);
+        if(activity==null){
+            log.warn("报名参加的活动不存在=>id:"+apply.getApplyId());
+            return Map.of("success",false,"code",ReturnCode.NODATA.getCode(),
+                    "msg",ReturnCode.NODATA.getDesc(),"applyId",-1);
+        }
+
 
         /*判断申请是否需要审核*/
         if(activity.getNeedExamine())
@@ -88,17 +103,18 @@ public class ApplyController {
         try{
             success = applyService.apply(apply,activity);
         } catch (Exception e){
-            return Map.of("success",false,"message","该活动已经申请","applyId",-1);
+            return Map.of("success",false,"code",ReturnCode.FAILED.getCode(),
+                    "msg",e.getMessage(),"applyId",-1);
         }
 
-        String msg = "请在规定时间范围内提交申请";
         int id = -1;
+        ReturnCode code = ReturnCode.TIME_ERROR;
         if(success){
-            msg = "提交申请成功";
-            id = apply.getId();
+            code = ReturnCode.SUCCESS;
+            id = apply.getApplyId();
         }
 
-        return Map.of("success",success,"message",msg,"applyId",id);
+        return Map.of("success",success,"msg",code.getDesc(),"code",code.getCode(),"applyId",id);
     }
 
 
@@ -118,20 +134,6 @@ public class ApplyController {
 
 
 
-    /**
-     * 获取某个活动的所有申请
-     * @param activityId
-     * @return
-     */
-    @RequestMapping(value = "/all/activity-id/{activityId}",method = RequestMethod.GET)
-    @ResponseBody
-    public Page getAllByActivityId(@PathVariable("activityId") int activityId,
-                                   @RequestParam("currPage")int currPage,
-                                   @RequestParam("pageSize")int pageSize){
-        return applyService.listAllByActivityId(activityId,currPage,pageSize);
-    }
-
-
 
 
     /**
@@ -141,8 +143,9 @@ public class ApplyController {
      */
     @RequestMapping(value = "/all/student-id/{studentId}",method = RequestMethod.GET)
     @ResponseBody
-    public List<Apply> getAllByStudentId(@PathVariable("studentId") int studentId){
-        return applyService.listAllByStudentId(studentId);
+    public Map getAllByStudentId(@PathVariable("studentId") String studentId){
+        return Map.of("success",true,"code",ReturnCode.SUCCESS.getCode(),
+                "msg",ReturnCode.SUCCESS.getDesc(),"data",applyService.listAllByStudentId(studentId));
     }
 
 
@@ -159,10 +162,12 @@ public class ApplyController {
     public Map<String,Object> examine(@RequestBody List<Apply> applyList,@PathVariable("status") int statusCode){
 
         ApplyStatus status = EnumUtils.getEnumByCode(ApplyStatus.class,statusCode);
-        boolean success = applyService.examine(applyList,status);
-        return Map.of("success",success);
-
+        applyService.examine(applyList,status);
+        return Map.of("success",true,"code",ReturnCode.SUCCESS.getCode(),
+                "msg",ReturnCode.SUCCESS.getDesc());
     }
+
+
 
 
     /**
@@ -192,11 +197,11 @@ public class ApplyController {
     @RequestMapping(value = "/export-for-super",method = RequestMethod.POST)
     public ModelAndView exportForSuperManager(@RequestBody Keys key){
 
-        List<ApplyVo> applyVoList = new ArrayList<>();
+        List<ApplyVoPC> applyVoPCList = new ArrayList<>();
 
-        applyVoList.addAll(applyService.search(key));
+        applyVoPCList.addAll(applyService.search(key));
 
-        return export(applyVoList);
+        return export(applyVoPCList);
     }
 
 
@@ -225,10 +230,10 @@ public class ApplyController {
                                                @RequestBody Keys keys){
 
 
-        List<ApplyVo> applyVoList = new ArrayList<>();
+        List<ApplyVoPC> applyVoPCList = new ArrayList<>();
 
-        applyVoList.addAll(applyService.searchForGroup(userId,keys));
-        return export(applyVoList);
+        applyVoPCList.addAll(applyService.searchForGroup(userId,keys));
+        return export(applyVoPCList);
     }
 
 
@@ -243,7 +248,7 @@ public class ApplyController {
 
         View view = new ExcelView(exportApplyExcelService());
         mv.setView(view);
-        mv.addObject("applyVoList",applyVoList);
+        mv.addObject("applyVoPCList",applyVoList);
         return mv;
     }
 
@@ -256,36 +261,37 @@ public class ApplyController {
             try{
 
                 response.setHeader("Content-Disposition","attachment; filename="+
-                        new String("列表.xlsx".getBytes(),"iso8859-1"));
+                        new String("活动报名列表.xlsx".getBytes(),"iso8859-1"));
                 response.setContentType("application/vnd.ms-excel");
 
-                HSSFSheet sheet = (HSSFSheet)workbook.createSheet("applyVo");
+                HSSFSheet sheet = (HSSFSheet)workbook.createSheet("applyVoPC");
                 int rowNum = 0;
                 HSSFRow header = sheet.createRow(rowNum++);
 
-                List<ApplyVo> applyVoList = (List < ApplyVo >) map.get("applyVoList");
+                List<ApplyVoPC> applyVoPCList = (List <ApplyVoPC>) map.get("applyVoPCList");
 
                 /*创建表头*/
                 for(int i = 0; i<listHeader.length; i++) {
                     header.createCell(i).setCellValue(listHeader[i]);
                 }
 
-                for(int i=0;i<applyVoList.size();i++) {
+                for(int i = 0; i< applyVoPCList.size(); i++) {
 
                     HSSFRow row = sheet.createRow(rowNum++);
-                    ApplyVo applyVo = applyVoList.get(i);
+                    ApplyVoPC applyVoPc = applyVoPCList.get(i);
 
                     /*写入数据*/
-                    row.createCell(0).setCellValue(applyVo.getStudent().getName());
-                    row.createCell(1).setCellValue(applyVo.getStudent().getStudentCard());
-                    row.createCell(2).setCellValue(applyVo.getStudent().getCollege());
-                    row.createCell(3).setCellValue(applyVo.getStudent().getClassname());
-                    row.createCell(4).setCellValue(applyVo.getOrigin());
-                    row.createCell(5).setCellValue(applyVo.getHighSchool());
-                    row.createCell(6).setCellValue(applyVo.getStatus().getDesc());
+                    row.createCell(0).setCellValue(applyVoPc.getStudent().getName());
+                    row.createCell(1).setCellValue(applyVoPc.getStudent().getStudentId());
+                    row.createCell(2).setCellValue(applyVoPc.getStudent().getCollege());
+                    row.createCell(3).setCellValue(applyVoPc.getStudent().getClassname());
+                    row.createCell(4).setCellValue(applyVoPc.getStudent().getOrigin());
+                    row.createCell(5).setCellValue(applyVoPc.getActivity().getLocation());
+                    row.createCell(6).setCellValue(applyVoPc.getStudent().getHighSchool());
+                    row.createCell(7).setCellValue(applyVoPc.getStatus().getDesc());
 
-                    Feedback feedback = applyVo.getFeedback();
-                    row.createCell(7).setCellValue(feedback==null?"未提交":feedback.getLevel().getDesc());
+                    Feedback feedback = applyVoPc.getFeedback();
+                    row.createCell(8).setCellValue(feedback==null?"未提交":feedback.getLevel().getDesc());
 
                 }
 
@@ -301,8 +307,13 @@ public class ApplyController {
     * */
     @RequestMapping(value = "/activity/{activityId}/student/{studentId}",method = RequestMethod.GET)
     @ResponseBody
-    public Apply getApplyByActIdAndSdtId(@PathVariable("activityId")int activityId,
-                                         @PathVariable("studentId")int studentId){
-        return applyService.getApplyByActIdAndSdtId(activityId,studentId);
+    public Map getApplyByActIdAndSdtId(@PathVariable("activityId")int activityId,
+                                         @PathVariable("studentId")String studentId){
+        return Map.of("success",true,"code",ReturnCode.SUCCESS.getCode(),
+                "msg",ReturnCode.SUCCESS.getDesc(),"data",
+                applyService.getApplyByActIdAndSdtId(activityId,studentId));
+
     }
+
+
 }

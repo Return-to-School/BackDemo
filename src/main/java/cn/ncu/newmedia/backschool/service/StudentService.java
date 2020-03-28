@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author maoalong
  * @date 2020/1/12 22:30
@@ -16,6 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class StudentService {
     @Autowired
     private StudentDao studentDao;
+
+
+    private final char[] codes = {'1', '0' ,'X', '9', '8', '7', '6', '5', '4', '3', '2'};
+    private final int[] weight = {7,9,10, 5 ,8 ,4 ,2 ,1 ,6 ,3 ,7, 9, 10, 5, 8, 4, 2};
 
     /**
      * 添加一条学生的信息
@@ -46,7 +52,7 @@ public class StudentService {
      * @return
      */
     public boolean verifyNameAndCard(String studentCard, String name) {
-        return studentDao.studentCardHasMatchName(studentCard,name)>0;
+        return studentDao.studentIdHasMatchName(studentCard,name)>0;
     }
 
     /**
@@ -64,10 +70,8 @@ public class StudentService {
      * @param activityId
      * @return
      */
-    public Page getStudentListInAct(int activityId,int currPage,int pageSize) {
-        return PageService.getPage(currPage,pageSize,studentDao,
-                e->e.getStudentListInAct(activityId,(currPage-1)*pageSize,pageSize),
-                e->e.getCntInAct(activityId));
+    public List<Student> getStudentListInAct(int activityId) {
+        return studentDao.getStudentListInAct(activityId);
     }
 
     /**
@@ -78,8 +82,17 @@ public class StudentService {
      */
     public Page listAll(int currPage, int pageSize) {
         return PageService.getPage(currPage,pageSize,studentDao,
-                e->e.listAll((currPage-1)*pageSize,pageSize),
-                e->e.getAllCnt());
+                e->e.listAll());
     }
 
+    /*身份证校验*/
+    public boolean checkIdCard(String idCard) {
+        int sum = 0;
+        for(int i = 0;i<idCard.length()-1;i++){
+            sum+=(idCard.charAt(i)-'0')*weight[i];
+        }
+
+        char code = codes[sum%11];
+        return code ==idCard.charAt(idCard.length()-1);
+    }
 }

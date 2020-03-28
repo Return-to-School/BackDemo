@@ -2,6 +2,7 @@ package cn.ncu.newmedia.backschool.controller;
 
 import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.Enumeration.Level;
+import cn.ncu.newmedia.backschool.Enumeration.ReturnCode;
 import cn.ncu.newmedia.backschool.Utils.EnumUtils;
 import cn.ncu.newmedia.backschool.Utils.FolderDelUtils;
 import cn.ncu.newmedia.backschool.pojo.Activity;
@@ -59,31 +60,35 @@ public class FeedbackController {
 
         Apply apply = applyService.getApplyById(applyId);
 
+        /*如果用户没有完善个人资料的话，则无法创建申请，
+        因此可以直接判断apply来间接判断student信息是否完善*/
         if(apply==null){
-            return Map.of("success",false,"message","申请不存在");
+            return Map.of("success",false,"code", ReturnCode.NODATA.getCode(),
+                    "msg",ReturnCode.NODATA.getDesc());
         }
+
         /*先对申请状态进行判断，若审核未通过、或者还未被申请则不允许进行反馈*/
         else if(apply.getStatus()== ApplyStatus.NOTEXAMINE){
-            return Map.of("success",false,"message","未审核");
+            return Map.of("success",false,"code",ReturnCode.FAILED.getCode(),"msg","未审核");
         }else if(apply.getStatus()==ApplyStatus.DISAGREE){
-            return Map.of("success",false,"message","审核不通过");
+            return Map.of("success",false,"code",ReturnCode.FAILED.getCode(),"msg","审核不通过");
         }
 
         if(feedbackFiles.size()==0){
-            return Map.of("success",false,"message","请选择需要上传反馈文件");
+            return Map.of("success",false,"code",ReturnCode.FAILED.getCode(),"msg","请选择需要上传反馈文件");
         }
 
         /*活动的文件路径+id-学生姓名=学生反馈文件路径*/
         Student student = studentService.getStudentByColumn("student_id",apply.getStudentId());
         Activity activity = activityService.getActivityById(apply.getActivityId());
-        String filePath = activity.getFilePath()+"/反馈文件/"+student.getId()+"-"+student.getName();
+        String filePath = activity.getFilePath()+"/反馈文件/"+student.getStudentId()+"-"+student.getName();
         File director = new File (FILEPATH +filePath);
 
 
         /*若之前存在反馈文件，需要先删除它*/
         Feedback feedback = feedBackService.getFeedBackByApplyId(applyId);
         if(feedback!=null) {
-            feedBackService.delete(feedback.getId());
+            feedBackService.delete(feedback.getFeedbackId());
         }
         if(director.exists())
             FolderDelUtils.deleteFileInFolder(director);
@@ -114,29 +119,31 @@ public class FeedbackController {
         }
 
         if(flag>0){
-            return Map.of("success",false,"message","文件上传错误");
+            return Map.of("success",false,"code",ReturnCode.FAILED.getCode(),
+                    "msg","文件上传错误");
         }
 
         Feedback feedBack = new Feedback();
         feedBack.setApply(applyId);
+        feedBack.setLevel(Level.UNPROCESSED);
 
         feedBack.setFilePath(filePath);
         boolean success = feedBackService.saveFeedback(activity,feedBack);
 
-        String message = "文件上传成功";
+        ReturnCode code = ReturnCode.SUCCESS;
 
         /*添加反馈失败，回滚*/
         if(!success){
             fileList.forEach(e->e.delete());
-            message = "请在反馈起始时间范围内上传文件";
+            code = ReturnCode.TIME_ERROR;
         }
 
-        return Map.of("success",success,"message",message);
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc());
     }
 
 
     /**
-     * 获取反馈的文件
+     * 获取反馈的文件名
      * @param id
      * @return
      */
@@ -144,7 +151,7 @@ public class FeedbackController {
     @ResponseBody
     public Map<String,Object> getFilenames(@PathVariable("id")int id){
 
-        String msg = "";
+        ReturnCode code ;
         List<String> filenames = new ArrayList<>();
 
         Feedback feedback = feedBackService.getFeedBackById(id);
@@ -152,19 +159,21 @@ public class FeedbackController {
         boolean success = false;
 
         if(feedback==null){
-            msg = "反馈不存在";
+            code = ReturnCode.NODATA;;
         }else{
 
             String filePath = feedback.getFilePath();
 
             File director = new File(FILEPATH+filePath);
             filenames.addAll(Arrays.asList(director.list()));
-            msg = "获取成功";
+            code = ReturnCode.SUCCESS;
             success = true;
         }
 
-        return Map.of("success",success,"message",msg,"filenames",filenames);
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"filenames",filenames);
     }
+
+
 
 
     /**
@@ -173,18 +182,24 @@ public class FeedbackController {
      * @param level
      * @return
      */
-    @RequestMapping(value = "/{id}",method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/score",method = RequestMethod.GET)
     @ResponseBody
     public Map<String,Object>  setLevel(@PathVariable("id")int id,
                                         @RequestParam("level")int level){
 
+        if(level<0||level>2){
+            return Map.of("succees",false,"code",ReturnCode.FAILED.getCode(),"msg","level out of range");
+        }
+
+
         Feedback feedback = feedBackService.getFeedBackById(id);
 
-        String msg = "评价成功";
+        ReturnCode code = ReturnCode.SUCCESS;
+
         boolean success = false;
         if(feedback==null){
-            msg = "反馈不存在";
-            return Map.of("success",success,"message",msg);
+            code = ReturnCode.NODATA;
+            return Map.of("success",false,"code",code.getCode(),"msg",code.getDesc());
         }
 
 
@@ -193,8 +208,31 @@ public class FeedbackController {
         feedback.setLevel(levelEnum);
         success = feedBackService.update(feedback);
 
-        if(!success) msg = "评价失败";
-        return Map.of("success",success,"message",msg);
+        if(!success) code = ReturnCode.FAILED;
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc());
     }
 
+
+
+
+    /**
+     * 根据申请id获取反馈
+     * @param id
+     * @return
+     */
+    @RequestMapping(value = "/{applyId}",method = RequestMethod.GET)
+    @ResponseBody
+    public Map getFeedback(@PathVariable("applyId")int id){
+        ReturnCode code;
+        boolean success = false;
+        Feedback feedback = feedBackService.getFeedBackByApplyId(id);
+        if(feedback==null){
+            success = false;
+            code = ReturnCode.NODATA;
+        }else{
+            code = ReturnCode.SUCCESS;
+            success = true;
+        }
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"data",feedback);
+    }
 }

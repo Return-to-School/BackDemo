@@ -11,29 +11,36 @@ import java.util.List;
 @Repository
 @Mapper
 public interface StudentDao {
+
+    /*增删改查方法*/
     int insert(@Param("student") Student student);
 
     int update(@Param("student") Student student);
 
-    int studentCardHasMatchName(@Param("studentCard") String studentCard, @Param("name") String name);
+    int  delete(@Param("studentId") String studentId);
 
+    /**
+     * 验证学生姓名与学号是否匹配
+     * @param studentId
+     * @param name
+     * @return
+     */
+    int studentIdHasMatchName(@Param("studentId") String studentId, @Param("name") String name);
+
+
+    /*获取学生信息的复用方法*/
     Student getStudentByColumn(@Param("column") String column, @Param("value") Object value);
 
-    int  delete(@Param("studentId") int studentId);
 
-    List<Student> getStudentListInAct(@Param("activityId") int activityId,
-                                      @Param("begin")int begin,
-                                      @Param("num")int num);
+    /**
+     * 获取参与某个活动的所有学生信息
+     * @param activityId
+     * @return
+     */
+    List<Student> getStudentListInAct(@Param("activityId") int activityId);
 
-    List<Student> listAll(@Param("begin")int begin,
-                          @Param("num")int num);
 
-    List<Student> searchByColumn(@Param("column") String column,@Param("key")String key);
+    List<Student> listAll();
 
-    Integer getAllCnt();
 
-    Integer getCntInAct(int activityId);
-
-    int updateUserId(@Param("userId")int userId,
-                     @Param("studentCard")String studentCard);
 }

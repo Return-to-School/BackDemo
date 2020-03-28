@@ -46,6 +46,7 @@ public class EnumTypeHandler<T extends Enum<T>> extends BaseTypeHandler<T> {
     }
 
     public T getNullableResult(ResultSet rs, int columnIndex) throws SQLException {
+
         int id = rs.getInt(columnIndex);
         return EnumUtils.getEnumByCode(this.type, id);
     }

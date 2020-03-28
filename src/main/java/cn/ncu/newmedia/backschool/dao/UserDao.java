@@ -11,25 +11,23 @@ import java.util.List;
 @Mapper
 public interface UserDao {
 
-    String getPasswordByAccount(@Param("account")String account);
 
-    int userExist(@Param("account")String account);
+    User getUserById(@Param("userId") String userId);
 
-    User getUserById(@Param("userId") Integer userId);
 
-    User getUserByAccount(@Param("account")String account);
+    List<User> listAll();
 
-    List<User> listAll(@Param("begin")int begin,
-                       @Param("num")int num);
+    int delete(@Param("userId") String userId);
 
-    int delete(@Param("userId") int userId);
-
-    int deleteManager(int userId);
+    int deleteManager(String userId);
 
     int insert(@Param("user") User user);
 
-    Integer getAllCnt();
-
+    /**
+     * 获取某个地区的管理员账号信息
+     * @param loc
+     * @return
+     */
     User getGroupManagerByLoc(@Param("loc") String loc);
 
     int update(User user);

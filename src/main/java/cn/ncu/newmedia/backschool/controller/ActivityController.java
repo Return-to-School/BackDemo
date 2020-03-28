@@ -1,10 +1,11 @@
 package cn.ncu.newmedia.backschool.controller;
 
+import cn.ncu.newmedia.backschool.Enumeration.ReturnCode;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.ApplyService;
-import cn.ncu.newmedia.backschool.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("/activity")
+@Slf4j
 public class ActivityController {
 
     static final String FILEPATH = "c:/形象大使回母校";
@@ -34,9 +36,64 @@ public class ActivityController {
 
 
 
+    /**
+     * PC端创建一个活动
+     * @param activity
+     * @return
+     */
+    @RequestMapping(value = "/{userId}",method = RequestMethod.POST)
+    @ResponseBody
+    public Map addActivity(@PathVariable("userId")String userId,
+                                          @RequestBody Activity activity){
+
+        activity.setCreateTime(new Date());
+
+        Activity tmp = activityService.getActivityByName(activity.getName());
+        if(tmp!=null){
+            log.error("账户："+userId+"创建活动失败，活动同名");
+            return Map.of("success",false, "code",ReturnCode.ACTIVITY_EXISTS.getCode(),
+                    "msg",ReturnCode.ACTIVITY_EXISTS.getDesc(),"activityId",-1);
+        }
+
+
+
+
+        /*去掉目录非法字符*/
+        activity.setFilePath("/"+activity.getName().replaceAll("[<>\"|/:?*\\\\ ]",""));
+
+        /*创建两个文件夹存放活动文件和返回文件*/
+        try{
+            File activityFileDirector = new File(FILEPATH+activity.getFilePath()+"/活动资料");
+            File feedBackFileDirector = new File(FILEPATH+activity.getFilePath()+"/反馈文件");
+            activityFileDirector.mkdirs();
+            feedBackFileDirector.mkdirs();
+        }catch (Exception e){
+            log.error("活动相关的目录创建失败");
+        }
+
+
+        boolean success = activityService.saveActivity(userId,activity);
+
+        ReturnCode code;
+        int id;
+        if(success){
+            code = ReturnCode.SUCCESS;
+            id = activity.getActivityId();
+        }else{
+            code = ReturnCode.PARAMS_ERROR;
+            id = -1;
+        }
+
+        return Map.of("success",success, "code",code.getCode(),
+                "msg",code.getDesc(),"activityId",id);
+
+    }
+
+
+
 
     /**
-     * 活动资料上传
+     * pc端活动资料上传
      * @param activityId
      * @param activityFiles
      * @return
@@ -66,51 +123,20 @@ public class ActivityController {
             }catch (IOException e1){
                 e1.printStackTrace();
                 fileList.forEach(e2->e2.delete());
-                return Map.of("success",false,"message","文件上传错误");
+
+                log.error("文件上传错误");
+                return Map.of("success",false,"code",ReturnCode.FILE_UPLOAD_ERROR.getCode(),
+                        "msg",ReturnCode.FILE_UPLOAD_ERROR.getDesc());
             }
         }
 
-        return Map.of("success",true,"message","文件上传成功");
+        return Map.of("success",true,"code",ReturnCode.SUCCESS.getCode(),
+                "msg",ReturnCode.SUCCESS.getDesc());
     }
 
 
 
 
-
-    /**
-     * 添加一个活动
-     * @param activity
-     * @return
-     */
-    @RequestMapping(value = "/{userId}",method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String,Object> addActivity(@PathVariable("userId")int userId,
-                                          @RequestBody Activity activity){
-
-        activity.setCreateTime(new Date());
-
-        Activity tmp = activityService.getActivityByName(activity.getName());
-        if(tmp!=null){
-            return Map.of("success",false,"message","活动名已存在","activityId",-1);
-        }
-
-
-        /*去掉目录非法字符*/
-        activity.setFilePath("/"+activity.getName().replaceAll("[<>\"|/:?*\\\\ ]",""));
-
-        /*创建两个文件夹存放活动文件和返回文件*/
-        File activityFileDirector = new File(FILEPATH+activity.getFilePath()+"/活动资料");
-        File feedBackFileDirector = new File(FILEPATH+activity.getFilePath()+"/反馈文件");
-
-        activityFileDirector.mkdirs();
-        feedBackFileDirector.mkdirs();
-
-        boolean success = activityService.saveActivity(userId,activity);
-        int id = success?activity.getId():-1;
-
-        return Map.of("success",success,"activityId",id);
-
-    }
 
 
     /**
@@ -122,33 +148,34 @@ public class ActivityController {
     @ResponseBody
     public Map<String,Object> getFilenames(@PathVariable("activityId")Integer activityId){
 
-        String msg = "";
         List<String> filenames = new ArrayList<>();
 
         Activity activity = activityService.getActivityById(activityId);
 
         boolean success = false;
 
+        ReturnCode code;
+
         if(activity==null){
-            msg = "活动不存在";
+            code = ReturnCode.NODATA;
         }else{
 
             String filePath = activity.getFilePath()+"/活动资料";
 
             File director = new File(FILEPATH+filePath);
             filenames.addAll(Arrays.asList(director.list()));
-            msg = "获取成功";
+            code = ReturnCode.SUCCESS;
             success = true;
         }
 
-        return Map.of("success",success,"message",msg,"filenames",filenames);
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"filenames",filenames);
     }
 
 
 
 
     /**
-     * 更新活动信息
+     * pc端更新活动信息
      * @param activity
      * @return
      */
@@ -160,15 +187,19 @@ public class ActivityController {
         Activity activityOld = activityService.getActivityById(id);
 
         if(activityOld==null){
-            return Map.of("success",false,"message","活动不存在");
-        }else if(activityOld.getId()!=activity.getId()){
-            return Map.of("success",false,"message","传入id与对象id不一致");
+            /*活动不存在*/
+            log.warn("更新的活动不存在=>id:"+id);
+            return Map.of("success",false,"code",ReturnCode.NODATA.getCode(),"msg",ReturnCode.NODATA.getDesc());
+        }else if(activityOld.getActivityId()!=activity.getActivityId()){
+            /*id不一致*/
+            return Map.of("success",false,"code",ReturnCode.PARAMS_ERROR,"msg",ReturnCode.PARAMS_ERROR);
         }
 
         activity.setFilePath("/"+activity.getName());
         activity.setCreateTime(activityOld.getCreateTime());
         boolean success = activityService.updateActivity(activity);
 
+        ReturnCode code = ReturnCode.FAILED;
         if(success){
             /*修改成新的资料文件路径*/
             File activityFileDirector = new File(FILEPATH+activityOld.getFilePath());
@@ -177,11 +208,10 @@ public class ActivityController {
                 activityFileDirector.renameTo(new File(FILEPATH+activity.getFilePath()));
             }
 
-            return Map.of("success",success);
+            code = ReturnCode.SUCCESS;
         }
 
-        return Map.of("success",false);
-
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc());
     }
 
 
@@ -190,7 +220,7 @@ public class ActivityController {
 
 
     /**
-     * 删除一个活动
+     * pc端接口，删除一个活动
      * @param activityId
      * @return
      */
@@ -199,9 +229,16 @@ public class ActivityController {
     public Map<String,Object> deleteActivity(@PathVariable("activityId")Integer activityId){
 
 
-        boolean success = activityService.deleteActivity(activityId);
+        Activity activity = activityService.getActivityById(activityId);
+        if(activity==null){
+            log.warn("删除的活动不存在=>id:"+activityId);
+            return Map.of("success",false,"code",
+                    ReturnCode.NODATA.getCode(),"msg",ReturnCode.NODATA.getDesc());
+        }
 
-        return Map.of("success",success);
+        activityService.deleteActivity(activityId);
+
+        return Map.of("success",true,"code",ReturnCode.SUCCESS.getCode(),"msg",ReturnCode.SUCCESS.getDesc());
     }
 
 
@@ -219,8 +256,10 @@ public class ActivityController {
     }
 
 
+
+
     /**
-     * 显示所有正在进行的活动
+     * 移动端接口，显示所有正在进行的活动
      * @return
      */
     @RequestMapping(value = "/all/underway-act",method = RequestMethod.GET)
@@ -235,7 +274,7 @@ public class ActivityController {
 
 
     /**
-     * 显示所有的历史活动
+     * 移动端显示所有的历史活动
      * @param currPage
      * @param pageSize
      * @return
@@ -248,8 +287,9 @@ public class ActivityController {
     }
 
 
+
     /**
-     * 获取活动下所有通过审核的学生申请
+     * pc端获取活动下所有通过审核的学生申请
      * @param activityId
      * @param currPage
      * @param pageSize
@@ -260,6 +300,7 @@ public class ActivityController {
     public Page getApplyPassStudentList(@PathVariable("id")int activityId,
                                         @RequestParam("currPage")int currPage,
                                         @RequestParam("pageSize")int pageSize){
+
         return applyService.getPassStudentApply(activityId,currPage,pageSize);
     }
 
@@ -268,7 +309,7 @@ public class ActivityController {
 
 
     /**
-     * 获取宣传组管理员下的所有正在进行的活动
+     * PC端获取宣传组管理员下的所有正在进行的活动
      * @param managerId
      * @return
      */
@@ -292,57 +333,27 @@ public class ActivityController {
      * @param pageSize
      * @return
      */
-    @RequestMapping(value = "/group/history",method = RequestMethod.GET)
+    @RequestMapping(value = "/group/{managerId}/history",method = RequestMethod.GET)
     @ResponseBody
-    public Page listGroupHistoryAct(@RequestParam("managerId")Integer managerId,
+    public Page listGroupHistoryAct(@PathVariable("managerId")String managerId,
                                     @RequestParam("currPage")Integer currPage,
                                     @RequestParam("pageSize")Integer pageSize){
         return activityService.listGroupHistoryAct(currPage,pageSize,managerId);
     }
 
 
-
-
     /**
-     * 获取宣传组管理员管理的活动
-     * @param userId
-     * @return
-     */
-    @RequestMapping(value = "/group/{managerId}/all",method = RequestMethod.GET)
-    @ResponseBody
-    public Page groupActivity(@PathVariable("managerId") Integer userId,
-                              @RequestParam("currPage")Integer currPage,
-                              @RequestParam("pageSize")Integer pageSize){
-        return activityService.getGroupActivityList(currPage,pageSize,userId);
-    }
-
-
-    /**
-     * 搜索指定区域的活动
+     * 全局搜索模糊查询活动的相关字段
      * @param key
+     * @param currPage
+     * @param pageSize
      * @return
      */
-    @RequestMapping(value = "/search-by-loc",method = RequestMethod.GET)
+    @RequestMapping(value = "/search-by-key",method = RequestMethod.GET)
     @ResponseBody
-    public Page searchByLoc(@RequestParam("key")String key,
-                              @RequestParam("currPage")Integer currPage,
-                              @RequestParam("pageSize")Integer pageSize){
-        return activityService.filterActivityByLocation(key,currPage,pageSize);
+    public Page search(@RequestParam("key")String key,
+                       @RequestParam("currPage")int currPage,
+                       @RequestParam("pageSize")int pageSize){
+        return activityService.search(key,currPage,pageSize);
     }
-
-
-    /**
-     * 搜索指定名称的活动，搜索模式为模糊查询
-     * @param key
-     * @return
-     */
-    @RequestMapping(value = "/search-by-name",method = RequestMethod.GET)
-    @ResponseBody
-    public Page searchByName(@RequestParam("key")String key,
-                                       @RequestParam("currPage")Integer currPage,
-                                       @RequestParam("pageSize")Integer pageSize){
-        return activityService.filterActivityByName(key,currPage,pageSize);
-    }
-
-
 }

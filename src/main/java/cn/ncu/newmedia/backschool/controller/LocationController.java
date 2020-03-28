@@ -1,7 +1,7 @@
 package cn.ncu.newmedia.backschool.controller;
 
-import cn.ncu.newmedia.backschool.pojo.vo.City;
-import cn.ncu.newmedia.backschool.pojo.vo.Province;
+import cn.ncu.newmedia.backschool.pojo.location.City;
+import cn.ncu.newmedia.backschool.pojo.location.Province;
 import cn.ncu.newmedia.backschool.service.LocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,7 +42,7 @@ public class LocationController {
      */
     @RequestMapping(value = "/cities/{provinceId}",method = RequestMethod.GET)
     @ResponseBody
-    public List<City> getCitiesByProvinceId(@PathVariable("provinceId") int provinceId){
+    public List<City> getCitiesByProvinceId(@PathVariable("provinceId") String provinceId){
         return locationService.getCitiesByProvinceId(provinceId);
     }
 
@@ -54,7 +54,7 @@ public class LocationController {
      */
     @RequestMapping(value = "/counties/{cityId}",method = RequestMethod.GET)
     @ResponseBody
-    public List<City> getCountiesByCityId(@PathVariable("cityId") int cityId){
+    public List<City> getCountiesByCityId(@PathVariable("cityId") String cityId){
         return locationService.getCountiesByCityId(cityId);
     }
 

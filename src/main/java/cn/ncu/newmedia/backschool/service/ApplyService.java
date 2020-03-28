@@ -7,8 +7,8 @@ import cn.ncu.newmedia.backschool.dao.ApplyDao;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
-import cn.ncu.newmedia.backschool.pojo.vo.ApplyVo;
-import cn.ncu.newmedia.backschool.pojo.vo.Keys;
+import cn.ncu.newmedia.backschool.pojo.vo.pc.ApplyVoPC;
+import cn.ncu.newmedia.backschool.pojo.vo.pc.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,22 +67,19 @@ public class ApplyService {
      */
     public Page listAllApplies(int currPage, int pageSize) {
         return PageService.getPage(currPage,pageSize,applyDao,
-                e->e.listAll((currPage-1)*pageSize,pageSize),
-                e->e.getApplyCnt());
+                e->e.listAll());
     }
 
     /**
-     * 分页获取某个活动下的所有申请
+     * 获取某个活动下的所有申请
      * @param activityId
-     * @param currPage
-     * @param pageSize
      * @return
      */
-    public Page listAllByActivityId(int activityId,int currPage,int pageSize) {
-        return PageService.getPage(currPage, pageSize, applyDao,
-                e -> e.getAppliesByActId(activityId, (currPage - 1) * pageSize, pageSize),
-                e -> e.getApplyCntInAct(activityId));
+    public List<Apply> listAllByActivityId(int activityId) {
+        return applyDao.getAppliesByActId(activityId);
     }
+
+
 
 
 
@@ -92,7 +89,7 @@ public class ApplyService {
      * @param studentId
      * @return
      */
-    public List<Apply> listAllByStudentId(int studentId){
+    public List<Apply> listAllByStudentId(String studentId){
         return applyDao.getAppliesByColumn("student_id",studentId);
     }
 
@@ -115,7 +112,7 @@ public class ApplyService {
 
         try {
             applyList.forEach(e->{
-                applyDao.changeApplyStatus(e.getId(),status);
+                applyDao.changeApplyStatus(e.getApplyId(),status);
             });
         }catch (Exception e){
             e.printStackTrace();
@@ -134,11 +131,11 @@ public class ApplyService {
      */
     public Page search(Keys keys,int currPage, int pageSize) {
         return PageService.getPage(currPage,pageSize,applyDao,
-                e->e.getAppVoForSuper(keys,(currPage-1)*pageSize,pageSize),
-                e->e.getAppVoForSuperCnt(keys));
+                e->e.getAppVoListByKeys(keys));
     }
 
-    public List<ApplyVo> search(Keys keys){
+
+    public List<ApplyVoPC> search(Keys keys){
         return applyDao.getAppVoListByKeys(keys);
     }
 
@@ -152,14 +149,20 @@ public class ApplyService {
      * @return
      */
     public Page searchForGroup(String userId,Keys keys,int currPage,int pageSize) {
-        List<ApplyVo> applyVoList = applyDao.getAppVoListByKeys(keys);
-        applyVoList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getId(),userId)==0);
+        List<ApplyVoPC> applyVoPCList = null;
 
-        int totalCount = applyVoList.size();
+        /*宣传子管理员不能进行地区查询*/
+        keys.setLocation(null);
+
+
+        applyVoPCList = applyDao.getAppVoListByKeys(keys);
+        applyVoPCList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getActivityId(),userId)==0);
+
+        int totalCount = applyVoPCList.size();
         int st = (currPage-1)*pageSize;
         int ed = st+pageSize-1>totalCount?totalCount:st+pageSize-1;
-        applyVoList = applyVoList.subList(st,ed);
-        return new Page(currPage,pageSize,totalCount,applyVoList);
+        applyVoPCList = applyVoPCList.subList(st,ed);
+        return new Page(currPage,pageSize,totalCount, applyVoPCList);
     }
 
 
@@ -170,19 +173,25 @@ public class ApplyService {
      * @return
      */
     public List searchForGroup(String userId, Keys keys){
-        List<ApplyVo> applyVoList = applyDao.getAppVoListByKeys(keys);
-        applyVoList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getId(),userId)==0);
-        return applyVoList;
+        List<ApplyVoPC> applyVoPCList = applyDao.getAppVoListByKeys(keys);
+
+        /*宣传子管理员不能进行地区查询*/
+        keys.setLocation(null);
+
+        applyVoPCList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getActivityId(),userId)==0);
+        return applyVoPCList;
     }
+
+
 
     /*获取某个活动下通过审核的学生申请列表*/
     public Page getPassStudentApply(int activityId, int currPage, int pageSize) {
         return PageService.getPage(currPage,pageSize,applyDao,
-                e->e.getPassStudentApply(activityId,(currPage-1)*pageSize,pageSize),
-                e->e.getPassStudentCnt(activityId));
+                e->e.getPassStudentApply(activityId));
     }
 
-    public Apply getApplyByActIdAndSdtId(int activityId, int studentId) {
-        return applyDao.getApply(activityId,studentId);
+    public Apply getApplyByActIdAndSdtId(int activityId, String studentId) {
+        return applyDao.getApplyByAidAndSid(activityId,studentId);
     }
+
 }

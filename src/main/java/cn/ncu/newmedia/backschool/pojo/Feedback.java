@@ -1,6 +1,8 @@
 package cn.ncu.newmedia.backschool.pojo;
 
 import cn.ncu.newmedia.backschool.Enumeration.Level;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.serializer.ToStringSerializer;
 import org.apache.ibatis.type.Alias;
 
 /**
@@ -11,7 +13,7 @@ import org.apache.ibatis.type.Alias;
 @Alias("Feedback")
 public class Feedback {
 
-    private int id;
+    private int feedbackId;
 
     private int apply;
 
@@ -19,6 +21,7 @@ public class Feedback {
     /**
      * 评价的级别
      */
+    @JSONField(serializeUsing = ToStringSerializer.class)
     private Level level;
 
     /**
@@ -29,12 +32,12 @@ public class Feedback {
     public Feedback() {
     }
 
-    public int getId() {
-        return id;
+    public int getFeedbackId() {
+        return feedbackId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setFeedbackId(int feedbackId) {
+        this.feedbackId = feedbackId;
     }
 
     public int getApply() {
@@ -64,7 +67,7 @@ public class Feedback {
     @Override
     public String toString() {
         return "Feedback{" +
-                "id=" + id +
+                "feedbackId=" + feedbackId +
                 ", apply=" + apply +
                 ", level=" + level +
                 ", filePath='" + filePath + '\'' +

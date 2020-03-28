@@ -13,7 +13,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum  Level implements BaseEnum{
     UNQUALIFIED(0,"不合格"),
     QUALIFIED(1,"合格"),
-    EXCELLENT(2,"优秀");
+    EXCELLENT(2,"优秀"),
+    UNPROCESSED(3,"未处理");
 
     private int code;
     private String desc;

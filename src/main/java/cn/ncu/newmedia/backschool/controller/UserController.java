@@ -1,21 +1,21 @@
 package cn.ncu.newmedia.backschool.controller;
 
+import cn.ncu.newmedia.backschool.Enumeration.ReturnCode;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.pojo.User;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import cn.ncu.newmedia.backschool.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 
@@ -26,6 +26,7 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/user")
+@Slf4j
 public class UserController {
 
     @Autowired
@@ -46,28 +47,26 @@ public class UserController {
     @RequestMapping(value = "/verification",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> validate(@RequestBody User user){
-        Subject subject = SecurityUtils.getSubject();
+//        Subject subject = SecurityUtils.getSubject();
 
-        String msg = "";
+        ReturnCode code = ReturnCode.SUCCESS;
         String userId = "-1";
         boolean success = false;
-        UsernamePasswordToken token = new UsernamePasswordToken(user.getAccount(),user.getPassword());
+//        UsernamePasswordToken token = new UsernamePasswordToken(user.getStudentId()+"",user.getPassword());
 
         try{
-            subject.login(token);
-            msg = "登录成功";
-            user = userService.getUsersByAccount(user.getAccount());
-            userId = user.getId()+"";
+//            subject.login(token);
+            user = userService.getUserById(user.getUserId());
+            userId = user.getUserId()+"";
             success = true;
         }catch (UnknownAccountException e1){
-            msg = "用户不存在";
+            code = ReturnCode.USER_NOT_EXISTS;
         }catch (IncorrectCredentialsException e2){
-            msg = "密码错误";
-        }
-        catch (AuthenticationException e3){
-            msg = e3.getMessage();
+            code = ReturnCode.PASSWORD_WRONG;
+        } catch (AuthenticationException e3){
+            code = ReturnCode.FAILED;
         }finally {
-            return Map.of("success",success,"message",msg,"UserId",userId);
+            return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"UserId",userId);
         }
 
     }
@@ -122,10 +121,19 @@ public class UserController {
      */
     @RequestMapping(value = "/{userId}",method = RequestMethod.DELETE)
     @ResponseBody
-    public Map<String,Object> deleteUser(@PathVariable("userId")Integer userId){
+    public Map<String,Object> deleteUser(@PathVariable("userId")String userId){
 
-        boolean success = userService.deleteUser(userId);
-        return Map.of("success",success);
+        User user = userService.getUserById(userId);
+
+        ReturnCode code = ReturnCode.SUCCESS;
+        boolean success = true;
+        if(user==null){
+            success = false;
+            code = ReturnCode.NODATA;
+        }else{
+            userService.deleteUser(userId);
+        }
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc());
 
     }
 
@@ -138,8 +146,19 @@ public class UserController {
      */
     @RequestMapping(value = "{userId}" ,method = RequestMethod.GET)
     @ResponseBody
-    public User getUserById(@PathVariable("userId")Integer userId){
-        return userService.getUserById(userId);
+    public Map getUserById(@PathVariable("userId")String userId){
+        User user = userService.getUserById(userId);
+
+
+        ReturnCode code = ReturnCode.SUCCESS;
+        boolean success = true;
+        if(user==null){
+            success = false;
+            code = ReturnCode.NODATA;
+        }else{
+            user.setPassword(null);
+        }
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"data",user);
     }
 
 
@@ -155,58 +174,88 @@ public class UserController {
     @ResponseBody
     public Map<String,Object> register(@RequestBody User user,@RequestParam("name")String name){
 
-        String message = "注册成功";
+        ReturnCode code = ReturnCode.SUCCESS;
         boolean success = false;
-        String studentCard = user.getAccount();//用学生的学号作为账户
+        String userId = "-1";
+        String studentId = user.getUserId()+"";//用学生的学号作为账户
 
-        User userInDb = userService.getUsersByAccount(studentCard);
+        User userInDb = userService.getUserById(studentId);
 
         if(userInDb!=null){
-            message = "学生已经用该学号注册了";
-            return Map.of("success",success,"message",message);
+            code = ReturnCode.REPEAT_OPERATION;
+            return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"userId",userId);
         }
 
-        Student student = studentService.getStudentByColumn("student_card",studentCard);
+        Student student = studentService.getStudentByColumn("student_id",studentId);
 
         //比对基础数据库，验证是否存在该学号
         if(student==null){
-            return Map.of("success",false,"message","学号不存在");
+            log.error("注册的该学号不存在=>studentId:"+studentId);
+            code = ReturnCode.STUDENT_NOT_EXISTS;
+            return Map.of("success",false,"code",code.getCode(),"msg",code.getDesc(),"userId",userId);
         }
 
         //验证学号和本人姓名是否一致
         if(!student.getName().equals(name)){
-            return Map.of("success",success,"message","学号与姓名不匹配");
+            log.error("注册账号时遇到致命错误，学号与姓名不匹配=>id:"+studentId+"   姓名:"+name);
+            code = ReturnCode.ID_NOT_MATCH_NAME;
+            return Map.of("success",success,"msg",code.getDesc(),"code",code.getCode(),"userId",userId);
         }
 
 
         success = userService.addUser(user);
-        return Map.of("success",success,"message",message);
+
+        if(success){
+            userId = user.getUserId();
+        }
+
+        return Map.of("success",success,"msg",code.getDesc(),"code",code.getCode(),"userId",userId);
     }
 
 
-
-    @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
+    /**
+     * 用户修改密码
+     * @param userId
+     * @param user
+     * @return
+     */
+    @RequestMapping(value = "/{id}/revision/pwd",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> updateUser(@PathVariable("id")int userId,@RequestBody User user){
+    public Map<String,Object> updateUser(@PathVariable("id")String userId,
+                                         @RequestParam("pwdNew")String pwdNew,
+                                         @RequestBody User user){
 
 
-        if(user.getId()!=userId){
-            return Map.of("success",false,"message","id不一致");
+        ReturnCode code = ReturnCode.SUCCESS;
+
+        /*两个参数不一致*/
+        if(!user.getUserId().equals(userId)){
+            code = ReturnCode.PARAMS_ERROR;
+            return Map.of("success",false,"msg",code.getDesc(),"code",code.getCode());
         }
+
 
         User userTmp = userService.getUserById(userId);
 
+        /*用户不存在*/
         if(userTmp==null){
-            return Map.of("success",false,"message","用户不存在");
+            code = ReturnCode.USER_NOT_EXISTS;
+            return Map.of("success",false,"msg",code.getDesc(),"code",code.getCode());
+        }
+
+        if(!userTmp.getPassword().equals(user.getPassword())){
+            return Map.of("success",false,"code",ReturnCode.PASSWORD_WRONG.getCode(),
+                    "msg",ReturnCode.PASSWORD_WRONG.getDesc());
         }
 
         try{
+            user.setPassword(pwdNew);
             userService.changePassword(user);
         }catch (Exception e){
             return Map.of("success",false,"message",e.getMessage());
         }
 
-        return Map.of("success",true,"message","修改成功");
+        return Map.of("success",true,"msg",code.getDesc(),"code",code.getCode());
     }
 
 }

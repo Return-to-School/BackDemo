@@ -4,22 +4,22 @@
 <mapper namespace="cn.ncu.newmedia.backschool.dao.ActivityDao">
 
     <resultMap id="activityMap" type="Activity">
-        <id property="id" column="activity_id"/>
+        <id property="activityId" column="activity_id"/>
         <result property="name" column="activity_name" />
         <result property="applyStartTime" column="apply_start_time" />
         <result property="applyEndTime" column="apply_end_time" />
         <result property="feedbackStartTime" column="feedback_start_time" />
         <result property="feedbackEndTime" column="feedback_end_time" />
         <result property="creator" column="creator" />
-        <result property="createTime" column="create_time" />
+        <result property="createTime" column="activity_create_time" />
         <result property="location" column="location" />
         <result property="needExamine" column="need_examine" />
         <result property="content" column="content" />
         <result property="filePath" column="activity_file_path" />
     </resultMap>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="activity.id">
-        insert into activity values (#{activity.id},#{activity.name},#{activity.applyStartTime},
+    <insert id="insert" useGeneratedKeys="true" keyProperty="activity.activityId">
+        insert into activity values (#{activity.activityId},#{activity.name},#{activity.applyStartTime},
                                      #{activity.applyEndTime},#{activity.feedbackStartTime},
                                      #{activity.feedbackEndTime},#{activity.creator},
                                      #{activity.createTime},#{activity.content},
@@ -37,11 +37,11 @@
                             feedback_start_time = #{activity.feedbackStartTime},
                             feedback_end_time = #{activity.feedbackEndTime},
                             creator = #{activity.creator},
-                            create_time = #{activity.createTime},
+                            activity_create_time = #{activity.createTime},
                             content = #{activity.content},
                             activity_file_path = #{activity.filePath},
                             location = #{activity.location} where
-                            activity_id = #{activity.id};
+                            activity_id = #{activity.activityId};
     </update>
 
 
@@ -63,26 +63,26 @@
 
 
     <select id="listAll" resultMap="activityMap">
-        select * from activity limit #{begin},#{num};
+        select * from activity
     </select>
 
 
 
     <select id="filterActivityByColumn" resultMap="activityMap">
-        select * from activity where ${column} like concat(concat('%',#{key}),'%') limit #{begin},#{num}
+        select * from activity where ${column} like concat(concat('%',#{key}),'%')
     </select>
 
 
 
     <select id="getActivitiesByGroupManagerId" resultMap="activityMap">
         select * from activity a,user u,activity_manager am where a.activity_id = am.activity_id
-        and u.user_id = am.user_id and u.user_id = #{userId} limit #{begin},#{num}
+        and u.user_id = am.user_id and u.user_id = #{userId}
     </select>
 
 
 
     <select id="listAllUnderwayAct" resultMap="activityMap">
-        select * from activity where now() between apply_start_time and feedback_end_time limit #{begin},#{num}
+        select * from activity where now() between apply_start_time and feedback_end_time
     </select>
 
 
@@ -90,63 +90,27 @@
     <select id="listGroupUnderwayAct" resultMap="activityMap">
         select * from user u,activity_manager am,activity a where u.user_id = am.user_id and
               a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() between apply_start_time and feedback_end_time
-        limit #{begin},#{num}
     </select>
 
     <select id="listAllHistoryAct" resultMap="activityMap">
-        select * from activity where now() not between apply_start_time and feedback_end_time limit #{begin},#{num}
+        select * from activity where now() not between apply_start_time and feedback_end_time
     </select>
 
-
-    <select id="getHistoryActCnt" resultType="int">
-        select count(*) from activity where now() not between apply_start_time and feedback_end_time
-    </select>
 
 
 
     <select id="listGroupHistoryAct" resultMap="activityMap">
         select * from user u,activity_manager am,activity a where u.user_id = am.user_id and
-            a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() not between apply_start_time and feedback_end_time
-        limit #{begin},#{num}
-    </select>
-
-    <select id="getGroupHistoryActCnt" resultType="int">
-        select count(*) from user u,activity_manager am,activity a where u.user_id = am.user_id and
-            a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() not between apply_start_time and feedback_end_time
+            a.activity_id =  am.activity_id and u.user_id = #{managerId} and now() > feedback_end_time
     </select>
 
 
-    <select id="getTotalCnt" resultType="int">
-        select count(*) from activity;
+    <select id="search" resultMap="activityMap">
+        select * from activity where activity_name like concat('%',concat(#{key},'%'))
+        or creator like concat('%',concat(#{key},'%'))
+        or content like concat('%',concat(#{key},'%'))
+        or location like concat('%',concat(#{key},'%'))
     </select>
-
-
-
-    <select id="getUnderwayTolCnt" resultType="int">
-        select count(*) from activity where now() between apply_start_time and feedback_end_time;
-    </select>
-
-
-
-    <select id="getGroupUnderwayTolCnt" resultType="int">
-        select count(*) from user u,activity_manager am,activity a where u.user_id = am.user_id and
-            a.activity_id =  am.activity_id and u.user_id = #{userId} and now() between apply_start_time and feedback_end_time
-    </select>
-
-
-    <select id="getGroupAllCnt" resultType="int">
-        select count(*) from activity a,user u,activity_manager am where a.activity_id = am.activity_id
-                                                              and u.user_id = am.user_id and u.user_id = #{userId}
-    </select>
-
-
-
-    <select id="filterActivityByColumnCnt" resultType="int">
-        select count(*) from activity where ${column} like concat(concat('%',#{key}),'%')
-    </select>
-
-
-
 
 
 </mapper>

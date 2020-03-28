@@ -57,7 +57,7 @@ public class ActivityService {
      * @return
      */
     @Transactional
-    public boolean saveActivity(int userId,Activity activity) {
+    public boolean saveActivity(String userId,Activity activity) {
 
         /*验证管理员是不是在自己的地区创建活动*/
         String loc = activity.getLocation();
@@ -66,11 +66,12 @@ public class ActivityService {
 
         User manager =  userService.getUserById(userId);
 
+        /*超级管理员可以在所有地区创建活动*/
         if(manager.getRole() == RoleEnum.SUPERMANAGER||
                 (manager.getRole() == RoleEnum.GROUPMANAGER&&manager.getLoc().equals(province))){
 
             int cnt = activityDao.insert(activity);
-            cnt += activityManagerDao.add(manager.getId(),activity.getId());
+            cnt += activityManagerDao.add(manager.getUserId(),activity.getActivityId());
             return cnt==2;
         }
 
@@ -101,7 +102,7 @@ public class ActivityService {
      */
     public Page listAllActivities(Integer currPage, Integer pageSize) {
         return PageService.getPage(currPage,pageSize,activityDao,
-                e -> e.listAll((currPage-1)*pageSize,pageSize),e->e.getTotalCnt());
+                e -> e.listAll());
     }
 
 
@@ -120,7 +121,7 @@ public class ActivityService {
         List<Apply> applyList = applyDao.getAppliesByColumn("activity_id",activityId);
 
         /* 删除所有相关的反馈*/
-        applyList.forEach(e->feedBackDao.deleteByApplyId(e.getId()));
+        applyList.forEach(e->feedBackDao.deleteByApplyId(e.getApplyId()));
 
         /*删除所有申请*/
         applyDao.deleteByActId(activityId);
@@ -139,8 +140,7 @@ public class ActivityService {
      */
     public Page filterActivityByLocation(String key,int currPage,int pageSize) {
         return PageService.getPage(currPage,pageSize,activityDao,
-                e->e.filterActivityByColumn("location",key,(currPage-1)*pageSize,pageSize),
-                e->e.filterActivityByColumnCnt("location",key));
+                e->e.filterActivityByColumn("location",key));
     }
 
     /**
@@ -150,8 +150,7 @@ public class ActivityService {
      */
     public Page filterActivityByName(String key,int currPage,int pageSize) {
         return PageService.getPage(currPage,pageSize,activityDao,
-                e->e.filterActivityByColumn("activity_name",key,(currPage-1)*pageSize,pageSize),
-                e->e.filterActivityByColumnCnt("activity_name",key));
+                e->e.filterActivityByColumn("activity_name",key));
     }
 
 
@@ -162,8 +161,7 @@ public class ActivityService {
      */
     public Page getGroupActivityList(int currPage,int pageSize,int userId) {
         return PageService.getPage(currPage,pageSize,activityDao,
-                e->e.getActivitiesByGroupManagerId(currPage,pageSize,userId),
-                e->e.getGroupAllCnt(userId));
+                e->e.getActivitiesByGroupManagerId(userId));
     }
 
 
@@ -174,8 +172,7 @@ public class ActivityService {
      * @return
      */
     public Page listAllUnderwayAct(Integer currPage,Integer pageSize) {
-        return PageService.getPage(currPage,pageSize,activityDao,e->e.listAllUnderwayAct((currPage-1)*pageSize,pageSize),
-                e->e.getUnderwayTolCnt());
+        return PageService.getPage(currPage,pageSize,activityDao,e->e.listAllUnderwayAct());
     }
 
     /**
@@ -187,10 +184,8 @@ public class ActivityService {
      */
     public Page listGroupUnderwayAct(int currPage,int pageSize,int managerId) {
         return PageService.getPage(currPage,pageSize,activityDao,
-                e->e.listGroupUnderwayAct((currPage-1)*pageSize,pageSize,managerId),
-                e->e.getGroupUnderwayTolCnt(managerId));
+                e->e.listGroupUnderwayAct((managerId)));
     }
-
 
     /**
      * 通过活动的id验证该活动是不是被userid的用户所管理
@@ -211,8 +206,7 @@ public class ActivityService {
      */
     public Page listAllHistoryAct(Integer currPage, Integer pageSize) {
         return PageService.getPage(currPage,pageSize,activityDao,
-                e->e.listAllHistoryAct((currPage-1)*pageSize,pageSize),
-                e->e.getHistoryActCnt());
+                e->e.listAllHistoryAct());
     }
 
 
@@ -222,10 +216,9 @@ public class ActivityService {
      * @param pageSize
      * @return
      */
-    public Page listGroupHistoryAct(Integer currPage, Integer pageSize,Integer managerId) {
+    public Page listGroupHistoryAct(Integer currPage, Integer pageSize,String managerId) {
         return PageService.getPage(currPage,pageSize,activityDao,
-                e->e.listGroupHistoryAct((currPage-1)*pageSize,pageSize,managerId),
-                e->e.getGroupHistoryActCnt(managerId));
+                e->e.listGroupHistoryAct(managerId));
     }
 
     /**
@@ -238,4 +231,17 @@ public class ActivityService {
     }
 
 
+    /**
+     * 全局搜索模糊查询
+     * @param key
+     * @param currPage
+     * @param pageSize
+     * @return
+     */
+    public Page search(String key, int currPage, int pageSize) {
+
+        return PageService.getPage(currPage,pageSize,activityDao,
+                e->e.search(key));
+
+    }
 }

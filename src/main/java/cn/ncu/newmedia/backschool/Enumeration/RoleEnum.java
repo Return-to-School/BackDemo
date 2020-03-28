@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 public enum RoleEnum implements BaseEnum{
     SUPERMANAGER(0,"superManager"),
     GROUPMANAGER(1,"groupManager"),
-    USER(2,"user");
+    USER(2,"normalUser");
 
     private int code;
     private String desc;

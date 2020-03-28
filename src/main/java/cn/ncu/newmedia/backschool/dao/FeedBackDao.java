@@ -16,16 +16,48 @@ import java.util.List;
 @Mapper
 public interface FeedBackDao {
 
+    /**
+     * 保存反馈信息
+     * @param feedBack
+     * @return
+     */
     int save(@Param("feedback") Feedback feedBack);
 
+    /**
+     * 获取单个反馈的复用方法·
+     * @param column
+     * @param value
+     * @return
+     */
     Feedback getFeedbackByColumn(@Param("column") String column, @Param("value") Object value);
 
 
+    /**
+     * 删除指定的反馈
+     * @param feedbackId
+     * @return
+     */
     int delete(@Param("feedbackId") Integer feedbackId);
 
+    /**
+     * 获取指定的反馈
+     * @param feedbackId
+     * @return
+     */
     Feedback getFeedbackById(@Param("feedbackId")Integer feedbackId);
 
+
+    /**
+     * 删除申请的反馈
+     * @param applyId
+     * @return
+     */
     int deleteByApplyId(@Param("applyId") int applyId);
 
+    /**
+     * 更新反馈
+     * @param feedback
+     * @return
+     */
     int update(Feedback feedback);
 }

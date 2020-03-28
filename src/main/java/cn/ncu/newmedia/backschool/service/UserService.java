@@ -30,14 +30,6 @@ public class UserService {
     private FeedBackDao feedBackDao;
 
 
-    public boolean hasUser (String username){
-        return userDao.userExist(username)>0;
-    }
-
-    public User getUsersByAccount(String account){
-        return userDao.getUserByAccount(account);
-    }
-
 //    @Transactional
 //    public int addGroupManager(User user) {
 //        if (user.getActivities()==null)
@@ -45,42 +37,39 @@ public class UserService {
 //
 //        int cnt = 0;
 //        for (Activity activity:user.getActivities()) {
-//            cnt +=activityManagerDao.add(user.getId(),activity.getId());
+//            cnt +=activityManagerDao.add(user.getStudentId(),activity.getStudentId());
 //        }
 //        return cnt;
 //    }
 
     public Page getAll(int currPage,int pageSize) {
         return PageService.getPage(currPage,pageSize,userDao,
-                e->e.listAll((currPage-1)*pageSize,pageSize),
-                e->e.getAllCnt());
+                e->e.listAll());
     }
 
     @Transactional
-    public boolean deleteUser(int userId) {
+    public boolean deleteUser(String userId) {
 
         try {
 
-            Student student = studentDao.getStudentByColumn("user_id", userId);
+            Student student = studentDao.getStudentByColumn("student_id", userId);
 
-            List<Apply> applyList = applyDao.getAppliesByColumn("student_id", student.getId());
+            List<Apply> applyList = applyDao.getAppliesByColumn("student_id", student.getStudentId());
+
             /*级联删除申请*/
             if (applyList != null) {
-                applyList.forEach(e->applyDao.delete(e.getId()));
+                applyList.forEach(e->applyDao.delete(e.getApplyId()));
             }
 
-            /*然后才能删除student，有外键约束*/
-            if (student != null) {
-                studentDao.delete(student.getId());
-            }
 
             List<Feedback> feedbackList  = new ArrayList<>();
-            applyList.forEach(e->feedbackList.add(feedBackDao.getFeedbackByColumn("apply_id",e.getId())));
+            applyList.forEach(e->feedbackList.add(feedBackDao.getFeedbackByColumn("apply_id",e.getApplyId())));
 
             if (feedbackList != null) {
-                feedbackList.forEach(e->feedBackDao.delete(e.getId()));
+                feedbackList.forEach(e->feedBackDao.delete(e.getFeedbackId()));
             }
 
+            /*管理员的映射关系也需要删除*/
             userDao.deleteManager(userId);
         }catch (Exception e){
             e.printStackTrace();
@@ -92,16 +81,13 @@ public class UserService {
     @Transactional
     public boolean addUser(User user) {
 
-        int cnt = userDao.insert(user);//保存该用户
-
-        cnt += studentDao.updateUserId(user.getId(),user.getAccount());//根据学号（用户账号)更新基础数据库中的外键userid
-        return cnt==2;
+        return  userDao.insert(user)>0;//保存该用户
 
     }
 
 
 
-    public User getUserById(Integer userId) {
+    public User getUserById(String userId) {
         return userDao.getUserById(userId);
     }
 

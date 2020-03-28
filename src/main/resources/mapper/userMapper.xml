@@ -4,24 +4,13 @@
 <mapper namespace="cn.ncu.newmedia.backschool.dao.UserDao">
 
     <resultMap id="userMap" type="User">
-        <id property="id" column="user_id" />
+        <id property="userId" column="user_id" />
         <result property="password" column="password" />
-        <result property="account" column="account" />
         <result property="role" column="role" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
         <result property="loc" column="group_loc" />
     </resultMap>
 
-    <select id="getPasswordByAccount" resultType="String">
-        select password from user where account = #{account}
-    </select>
 
-    <select id="userExist" resultType="int">
-        select count(*) from user where account = #{account}
-    </select>
-
-    <select id="getUserByAccount" resultMap="userMap">
-        select * from user where account = #{account}
-    </select>
 
     <select id="getUserById" resultMap="userMap">
         select * from user where user_id = #{userId}
@@ -29,7 +18,7 @@
 
 
     <select id="listAll" resultMap="userMap">
-        select user_id,account,role,group_loc from user limit #{begin},#{num}
+        select user_id,role,group_loc from user
     </select>
 
     <delete id="delete">
@@ -40,17 +29,14 @@
         delete from activity_manager where user_id = #{userId}
     </delete>
 
-    <insert id="insert" useGeneratedKeys="true" keyProperty="user.id">
-        insert into user (user_id, account, password, role, group_loc) values (#{user.id},#{user.account},#{user.password},2,null)
+    <insert id="insert">
+        insert into user (user_id, password, role, group_loc) values (#{user.userId},#{user.password},2,null)
     </insert>
 
     <update id="update">
-        update user set password = #{password} where user_id = #{id}
+        update user set password = #{password} where user_id = #{userId}
     </update>
 
-    <select id="getAllCnt" resultType="int">
-        select count(*) from user
-    </select>
 
     <select id="getGroupManagerByLoc" resultMap="userMap">
         select * from user where group_loc = #{loc}
