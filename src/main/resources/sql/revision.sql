@@ -6,7 +6,6 @@ update student set gender = 0 where gender = "女";
 
 alter table student change gender gender tinyint not null;
 
-
 insert into user value("admin1","12345678Aa",0,null);
 
 insert into user value("admin2","12345678Aa",0,null);

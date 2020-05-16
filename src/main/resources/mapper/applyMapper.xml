@@ -20,6 +20,8 @@
         <result property="createTime" column="apply_create_time" />
         <result property="status" column="apply_status" typeHandler="cn.ncu.newmedia.backschool.typeHandler.EnumTypeHandler"/>
         <result property="description" column="description" />
+        <result property="studentId" column="student_id" />
+        <result property="activityId" column="activity_id" />
         <association property="student" column="student_id"
                      javaType="Student"
                      resultMap="cn.ncu.newmedia.backschool.dao.StudentDao.studentMap" />
@@ -40,10 +42,12 @@
         select * from apply left join feedback f on apply.apply_id = f.apply_id
     </select>
 
-    <select id="getAppliesByActId" resultMap="applyMap">
-        select * from apply left join feedback f on apply.apply_id = f.apply_id where activity_id = #{activityId}
-    </select>
 
+    <select id="getApplyVoPcsByActId" resultMap="applyVoPCMap">
+        select * from apply ap,student s,activity ac where ac.activity_id = ap.activity_id
+                                                       and ap.student_id = s.student_id
+                                                       and ac.activity_id = #{activityId}
+    </select>
 
 
     <select id="getAppliesByColumn" resultMap="applyMap">
@@ -113,6 +117,9 @@
             </if>
             <if test = "keys.applyStatus !=null">
                 and apply_status = #{keys.applyStatus.code}
+            </if>
+            <if test = "keys.activityId !=null">
+                and activity_id = #{keys.activityId}
             </if>
         </where>
 

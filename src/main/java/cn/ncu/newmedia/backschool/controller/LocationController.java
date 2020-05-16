@@ -35,6 +35,9 @@ public class LocationController {
         return locationService.listAllProvinces();
     }
 
+
+
+
     /**
      * 通过省份的id获取该省份下的所有城市
      * @param provinceId

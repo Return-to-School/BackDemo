@@ -20,6 +20,17 @@ public class Keys {
 
     private ApplyStatus applyStatus;
 
+    private Integer activityId;
+
+
+    public Integer getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(Integer activityId) {
+        this.activityId = activityId;
+    }
+
     public String getStudentName() {
         return studentName;
     }

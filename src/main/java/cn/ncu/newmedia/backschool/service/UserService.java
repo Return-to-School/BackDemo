@@ -86,11 +86,9 @@ public class UserService {
     }
 
 
-
     public User getUserById(String userId) {
         return userDao.getUserById(userId);
     }
-
 
 
     public User getGroupByLoc(String loc) {
@@ -101,4 +99,5 @@ public class UserService {
     public boolean changePassword(User user) {
         return userDao.update(user)>0;
     }
+
 }

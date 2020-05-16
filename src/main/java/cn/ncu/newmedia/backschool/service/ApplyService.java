@@ -27,8 +27,9 @@ public class ApplyService {
     @Autowired
     private ApplyDao applyDao;
 
+
     @Autowired
-    private ActivityDao activityDao;
+    private ActivityService activityService;
 
     @Autowired
     private ActivityManagerDao activityManagerDao;
@@ -68,15 +69,6 @@ public class ApplyService {
     public Page listAllApplies(int currPage, int pageSize) {
         return PageService.getPage(currPage,pageSize,applyDao,
                 e->e.listAll());
-    }
-
-    /**
-     * 获取某个活动下的所有申请
-     * @param activityId
-     * @return
-     */
-    public List<Apply> listAllByActivityId(int activityId) {
-        return applyDao.getAppliesByActId(activityId);
     }
 
 
@@ -156,13 +148,10 @@ public class ApplyService {
 
 
         applyVoPCList = applyDao.getAppVoListByKeys(keys);
-        applyVoPCList.removeIf(e->activityManagerDao.isManagedByGroup(e.getActivity().getActivityId(),userId)==0);
+        applyVoPCList.removeIf(e->!activityService.isManagedByGroup(e.getActivity().getActivityId(),userId));
 
-        int totalCount = applyVoPCList.size();
-        int st = (currPage-1)*pageSize;
-        int ed = st+pageSize-1>totalCount?totalCount:st+pageSize-1;
-        applyVoPCList = applyVoPCList.subList(st,ed);
-        return new Page(currPage,pageSize,totalCount, applyVoPCList);
+
+        return PageService.getPage(currPage,pageSize,applyVoPCList);
     }
 
 
@@ -194,4 +183,17 @@ public class ApplyService {
         return applyDao.getApplyByAidAndSid(activityId,studentId);
     }
 
+
+    /**
+     * 获取id为activityId的活动的所有申请学生的信息
+     * @param currPage
+     * @param pageSize
+     * @param activityId
+     * @return
+     */
+    public Page listAllApplyVoInAct(int currPage, int pageSize, Integer activityId) {
+        List<ApplyVoPC> dataList = applyDao.getApplyVoPcsByActId(activityId);
+        dataList.forEach(e->e.setActivity(null));
+        return PageService.getPage(currPage,pageSize,dataList);
+    }
 }

@@ -31,10 +31,8 @@ public interface ApplyDao {
     int changeApplyStatus(@Param("applyId")int applyId,@Param("status") ApplyStatus status);
 
 
-    /*获取一个活动下的所有申请*/
-    List<Apply> getAppliesByActId(@Param("activityId")int activityId);
-
-
+    /*获取一个活动下的所有申请，包含学生信息*/
+    List<ApplyVoPC> getApplyVoPcsByActId(@Param("activityId") Integer activityId);
 
     /*根据字段搜索申请*/
     List<ApplyVoPC> getAppVoListByKeys(@Param("keys")Keys keys);
@@ -47,4 +45,6 @@ public interface ApplyDao {
     /*通过活动id和学生id查找申请*/
     Apply getApplyByAidAndSid(@Param("activityId") int activityId,
                               @Param("studentId")String studentId);
+
+
 }

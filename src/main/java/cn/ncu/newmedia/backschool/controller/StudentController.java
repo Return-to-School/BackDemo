@@ -128,9 +128,15 @@ public class StudentController {
      */
     @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
-    public Page listAll(@RequestParam("currPage")int currPage,
+    public Map listAll(@RequestParam("currPage")int currPage,
                         @RequestParam("pageSize")int pageSize){
-        return studentService.listAll(currPage,pageSize);
+        Page page = studentService.listAll(currPage,pageSize);
+        ReturnCode code = ReturnCode.SUCCESS;
+        if(page.getTotalCount()==0){
+            code = ReturnCode.NODATA;
+            page = null;
+        }
+        return Map.of("success",true,"code",code.getCode(),"msg",code.getDesc(),"data",page);
     }
 
 
@@ -142,36 +148,38 @@ public class StudentController {
      */
     @RequestMapping(value = "/student-in-act/{activityId}",method = RequestMethod.GET)
     @ResponseBody
-    public Object getStudentInAct(@PathVariable("activityId")Integer activityId){
+    public Map getStudentInAct(@PathVariable("activityId")Integer activityId,
+                                  @RequestParam("currPage")int currPage,
+                                  @RequestParam("pageSize")int pageSize){
 
         Activity activity = activityService.getActivityById(activityId);
 
         ReturnCode code = ReturnCode.SUCCESS;
-        boolean success = true;
 
+        /*活动不存在*/
         if(activity==null){
             code = ReturnCode.NODATA;
-            success = false;
-            return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"data",null);
+            return Map.of("success",false,"code",code.getCode(),"msg",code.getDesc(),"data",null);
         }
 
-        activity.setApplyList(applyService.listAllByActivityId(activityId));
+        return Map.of("success",true,"code",code.getCode(),"msg",code.getDesc(),"data",applyService.listAllApplyVoInAct(currPage,pageSize,activityId));
+//        activity.setApplyList(applyService.listAllByActivityId(activityId));
+//
+//        JSONArray applyArray = new JSONArray();
+//        for (Apply o : activity.getApplyList()) {
+//            JSONObject applyObj = JSONObject.parseObject(JSON.toJSONString(o,
+//                    SerializerFeature.WriteMapNullValue));
+//
+//            Student student = studentService.getStudentByColumn("student_id",
+//                    applyObj.get("studentId"));
+//            applyObj.put("student",student);
+//            applyObj.remove("studentId");
+//            applyArray.add(applyObj);
+//        }
+//
+//        JSONObject activityObj = JSONObject.parseObject(JSON.toJSONString(activity));
+//        activityObj.replace("applyList",applyArray);
 
-        JSONArray applyArray = new JSONArray();
-        for (Apply o : activity.getApplyList()) {
-            JSONObject applyObj = JSONObject.parseObject(JSON.toJSONString(o, SerializerFeature.WriteMapNullValue));
-            Student student = studentService.getStudentByColumn("student_id",
-                    applyObj.get("studentId"));
-            applyObj.put("student",student);
-            applyObj.remove("studentId");
-            applyArray.add(applyObj);
-        }
-
-        JSONObject activityObj = JSONObject.parseObject(JSON.toJSONString(activity));
-        activityObj.replace("applyList",applyArray);
-
-        return Map.of("success",success,"msg",code.getDesc(),"code",code.getCode(),
-                "data",activityObj);
     }
 
 }

@@ -133,6 +133,8 @@ public class ActivityService {
         return activityDao.delete(activityId)>0;
     }
 
+
+
     /**
      * 搜索某个地区的活动
      * @param key
@@ -142,6 +144,8 @@ public class ActivityService {
         return PageService.getPage(currPage,pageSize,activityDao,
                 e->e.filterActivityByColumn("location",key));
     }
+
+
 
     /**
      * 搜索某个名称的活动
@@ -186,6 +190,7 @@ public class ActivityService {
         return PageService.getPage(currPage,pageSize,activityDao,
                 e->e.listGroupUnderwayAct((managerId)));
     }
+
 
     /**
      * 通过活动的id验证该活动是不是被userid的用户所管理

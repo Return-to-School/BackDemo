@@ -28,6 +28,19 @@ public class PageService<T,R>{
         /*获取所有的数据*/
         List<R> dataList = method.apply(dao);
 
+        return getPage(currPage,pageSize,dataList);
+    }
+
+    /**
+     * 将获取到的数据dataList，进行分页，
+     * 从currPage开始，页面大小pageSize
+     * @param currPage
+     * @param pageSize
+     * @param dataList
+     * @return
+     */
+    public static Page getPage(int currPage,int pageSize,List dataList){
+
         Integer toltalCount = dataList.size();
         int fromIndex = (currPage-1)*pageSize;
         int toIndex = fromIndex+pageSize;
@@ -37,8 +50,6 @@ public class PageService<T,R>{
         dataList = dataList.subList(fromIndex,toIndex);
 
         /*获取数据库中所有的数据的数量*/
-
-
 
         return new Page(currPage,pageSize,toltalCount,dataList);
     }

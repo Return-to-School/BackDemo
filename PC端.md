@@ -170,62 +170,93 @@ pc端的接口面向的群体是宣传组管理员和超级管理员，主要完
 
 这个接口可以用于管理员勾选批量审核操作（[点击定位](#管理员批量审核报名申请)）和反馈评级（[点击定位](#管理员评级打分)）返回的数据中包含了四个pojo的信息，`活动信息`,`学生信息`，`申请信息`，`反馈信息`（反馈没有提交则为null）。若学生没有申请该活动，则返回数据中只会包含活动的信息（即applyList字段为空）。
 
-1. 接口地址：http://localhost:8080/student/student-in-act/{activityId}
+1. 接口地址：http://localhost:8080/student/student-in-act/{activityId}?currPage=PARAM1&pageSize=PARAM2
 
 2. 请求方式：get
 
-3. 请求参数说明：将接口地址中的{activityId}换成数字
+3. 请求参数说明：将接口地址中的{activityId}换成数字,提供分页参数
 
-4. 请求示例：获取参与id为1的活动的所有学生。http://localhost:8080/student/student-in-act/5
+4. 请求示例：获取参与id为1的活动的所有学生。http://localhost:8080/student/student-in-act/2?currPage=1&pageSize=2
 
 5. 返回参数示例：
 
+   ps:所有数据下面所有为null的字段都是正常的，因为不需要，但是实体封装了，所以设置成了null
+
 ```
 {
-    "msg": "操作成功",
     "code": 0,
-    "success": true,
+    "msg": "操作成功",
     "data": {
-        "applyEndTime": "2020-03-29 09:00:00",
-        "creator": "李四",
-        "feedbackEndTime": "2020-01-09 09:00:00",
-        "filePath": "/星期天",
-        "applyList": [
+        "pageSize": 2,
+        "totalCount": 3,
+        "pageNo": 1,
+        "hasPreviousPage": false,
+        "hasNextPage": true,
+        "totalPageCount": 2,
+        "result": [
             {
+                "applyId": 8,
+                "createTime": "2020-03-28 15:34:58",
+                "status": {
+                    "code": 0,
+                    "desc": "未审核"
+                },
+                "description": "xx搬砖搬砖经历",
+                "studentId": null,
+                "activityId": 0,
                 "feedback": null,
-                "activityId": 1,
-                "applyId": 2,
-                "createTime": "2020-03-27 23:30:19",
                 "student": {
-                    "studentId": "6109117199",
-                    "name": "zhangsan",
+                    "studentId": "6109117180",
+                    "name": "xixi",
                     "gender": {
-                        "code": 1,
-                        "desc": "男"
+                        "code": 0,
+                        "desc": "女"
                     },
-                    "college": "信工",
-                    "classname": "计算机111",
-                    "idCard": "236183618",
-                    "qq": "2313133",
-                    "bankCard": "36183718231",
-                    "phone": "13767418799",
-                    "email": "44213123@qq.com",
-                    "origin": "江西",
-                    "highSchool": "xx中学"
+                    "college": "材料",
+                    "classname": "材料199",
+                    "idCard": "43112119990729879X",
+                    "qq": "441712875",
+                    "bankCard": "7125712993700",
+                    "phone": "13767418749",
+                    "email": "441712875@qq.com",
+                    "origin": "湖南省-永州市-祁阳县",
+                    "highSchool": "祁阳一中"
+                },
+                "activity": null
+            },
+            {
+                "applyId": 5,
+                "createTime": "2020-03-28 00:55:56",
+                "status": {
+                    "code": 1,
+                    "desc": "通过"
                 },
                 "description": "",
-                "status": "NOTEXAMINE"
+                "studentId": null,
+                "activityId": 0,
+                "feedback": null,
+                "student": {
+                    "studentId": "6109117189",
+                    "name": "lisi",
+                    "gender": {
+                        "code": 0,
+                        "desc": "女"
+                    },
+                    "college": "金融",
+                    "classname": "金融182",
+                    "idCard": "1313211",
+                    "qq": "23123321",
+                    "bankCard": "123121242",
+                    "phone": "12322224444",
+                    "email": "33141@qq.com",
+                    "origin": "江西-南昌市",
+                    "highSchool": "yy中学"
+                },
+                "activity": null
             }
-        ],
-        "content": "选择正在进行的活动，展示学生列表，管理员可以查看所有学生，宣传组管理员只能查看报名自己所在区域学校的学生信息。点击学生姓名查看学生报名信息点击通过或不通过确认学生报名状态。管理员可以通过省、市、姓名、学院、回访中学、状态等信息，宣传组管理员可以通过姓名、学院、回访中学、状态等信息进行查询及导出。列表中可以批量选择进行审核操作。",
-        "applyStartTime": "2020-02-02 09:00:00",
-        "activityId": 1,
-        "createTime": "2020-03-27 00:46:04",
-        "name": "星期天",
-        "location": "江西省-南昌市-红谷滩新区",
-        "needExamine": true,
-        "feedbackStartTime": "2020-04-02 09:00:00"
-    }
+        ]
+    },
+    "success": true
 }
 ```
 
@@ -769,6 +800,9 @@ ps：未提交反馈的申请中feedback为null
 | college     | string | 学院                          |
 | highSchool  | string | 回访中学                      |
 | applyStatus | int    | 申请转态（枚举类装换，0,1,2） |
+| activityId  | int    | 活动id                        |
+
+
 
 请求参数示例
 
@@ -777,7 +811,8 @@ ps：未提交反馈的申请中feedback为null
 	"studentName":"lisi",
 	"college":"金融",
 	"highSchool":"yy中学",
-	"applyStatus":1
+	"applyStatus":0,
+	"activityId":7
 }
 ```
 
@@ -794,17 +829,20 @@ ps:宣传组管理员不能进行区域搜索
     "pageSize": 3,
     "totalCount": 1,
     "pageNo": 1,
+    "totalPageCount": 1,
+    "hasPreviousPage": false,
+    "hasNextPage": false,
     "result": [
         {
-            "applyId": 5,
-            "createTime": "2020-03-28 00:55:56",
+            "applyId": 11,
+            "createTime": "2020-05-16 11:13:29",
             "status": {
-                "code": 1,
-                "desc": "通过"
+                "code": 0,
+                "desc": "未审核"
             },
             "description": "",
-            "studentId": null,
-            "activityId": 0,
+            "studentId": "6109117189",
+            "activityId": 7,
             "feedback": null,
             "student": {
                 "studentId": "6109117189",
@@ -820,29 +858,26 @@ ps:宣传组管理员不能进行区域搜索
                 "bankCard": "123121242",
                 "phone": "12322224444",
                 "email": "33141@qq.com",
-                "origin": "湖南",
+                "origin": "江西-南昌市",
                 "highSchool": "yy中学"
             },
             "activity": {
-                "activityId": 2,
-                "name": "XXX活动",
-                "applyStartTime": "2020-01-01 09:00:00",
-                "applyEndTime": "2020-03-29 09:00:00",
-                "feedbackStartTime": "2020-02-29 17:00:00",
-                "feedbackEndTime": "2020-03-01 17:00:00",
+                "activityId": 7,
+                "name": "江西活动2",
+                "applyStartTime": "2020-05-01 09:00:00",
+                "applyEndTime": "2020-06-29 09:00:00",
+                "feedbackStartTime": "2020-06-29 17:00:00",
+                "feedbackEndTime": "2020-08-01 17:00:00",
                 "creator": "张三",
-                "createTime": "2020-03-27 23:36:21",
+                "createTime": "2020-05-16 11:13:10",
                 "content": "选择正在进行的活动，展示学生列表，管理员可以查看所有学生，宣传组管理员只能查看报名自己所在区域学校的学生信息。点击学生姓名查看学生报名信息点击通过或不通过确认学生报名状态。管理员可以通过省、市、姓名、学院、回访中学、状态等信息，宣传组管理员可以通过姓名、学院、回访中学、状态等信息进行查询及导出。列表中可以批量选择进行审核操",
-                "filePath": "/XXX活动",
-                "location": "江西省-南昌市-红谷滩新区",
+                "filePath": "/江西活动2",
+                "location": "江西省-宜春市",
                 "needExamine": true,
                 "applyList": null
             }
         }
-    ],
-    "totalPageCount": 1,
-    "hasPreviousPage": false,
-    "hasNextPage": false
+    ]
 }
 ```
 

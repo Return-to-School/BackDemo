@@ -217,7 +217,12 @@ public class ApplyController {
                                                     @RequestParam("currPage")int currPage,
                                                     @RequestParam("pageSize")int pageSize){
 
+        if(keys.getActivityId()!=null){
+            if(!activityService.isManagedByGroup(keys.getActivityId(),userId))
+                return new Page();
+        }
         return applyService.searchForGroup(userId,keys,currPage,pageSize);
+
     }
 
 
@@ -300,6 +305,7 @@ public class ApplyController {
             }
         });
     }
+
 
 
     /*
