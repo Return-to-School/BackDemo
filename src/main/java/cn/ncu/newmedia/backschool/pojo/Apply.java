@@ -26,10 +26,12 @@ public class Apply {
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+
+
     /**
      * 申请的状态
      */
-    @JSONField(serializeUsing = ToStringSerializer.class)
+//    @JSONField(serializeUsing = )
     private ApplyStatus status;
 
 

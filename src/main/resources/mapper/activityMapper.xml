@@ -93,7 +93,7 @@
     </select>
 
     <select id="listAllHistoryAct" resultMap="activityMap">
-        select * from activity where now() not between apply_start_time and feedback_end_time
+        select * from activity where now() > feedback_end_time
     </select>
 
 

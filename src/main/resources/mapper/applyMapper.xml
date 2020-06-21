@@ -54,6 +54,12 @@
         select * from apply left join feedback f on apply.apply_id = f.apply_id where ${column} = #{value}
     </select>
 
+
+    <select id="getAppVoListBySid" resultMap="applyVoPCMap">
+        select * from apply ap,activity ac where ac.activity_id = ap.activity_id
+                                                      and ap.student_id = #{studentId}
+    </select>
+
     <update id="changeApplyStatus">
         update apply set apply_status = #{status.code} where apply_id = #{applyId}
     </update>

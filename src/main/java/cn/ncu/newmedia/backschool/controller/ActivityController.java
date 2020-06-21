@@ -1,12 +1,21 @@
 package cn.ncu.newmedia.backschool.controller;
 
+import cn.ncu.newmedia.backschool.Enumeration.ApplyStatus;
 import cn.ncu.newmedia.backschool.Enumeration.ReturnCode;
 import cn.ncu.newmedia.backschool.dao.Page;
 import cn.ncu.newmedia.backschool.pojo.Activity;
+import cn.ncu.newmedia.backschool.pojo.Apply;
+import cn.ncu.newmedia.backschool.pojo.vo.pc.ApplyVoPC;
 import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.ApplyService;
+import cn.ncu.newmedia.backschool.service.PageService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,10 +31,10 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("/activity")
-@Slf4j
 public class ActivityController {
 
-    static final String FILEPATH = "c:/形象大使回母校";
+    @Value("${fileupload.path}")
+    private String FILEPATH;
 
 
     @Autowired
@@ -50,11 +59,9 @@ public class ActivityController {
 
         Activity tmp = activityService.getActivityByName(activity.getName());
         if(tmp!=null){
-            log.error("账户："+userId+"创建活动失败，活动同名");
             return Map.of("success",false, "code",ReturnCode.ACTIVITY_EXISTS.getCode(),
                     "msg",ReturnCode.ACTIVITY_EXISTS.getDesc(),"activityId",-1);
         }
-
 
 
 
@@ -68,7 +75,7 @@ public class ActivityController {
             activityFileDirector.mkdirs();
             feedBackFileDirector.mkdirs();
         }catch (Exception e){
-            log.error("活动相关的目录创建失败");
+            e.printStackTrace();
         }
 
 
@@ -125,7 +132,6 @@ public class ActivityController {
                 e1.printStackTrace();
                 fileList.forEach(e2->e2.delete());
 
-                log.error("文件上传错误");
                 return Map.of("success",false,"code",ReturnCode.FILE_UPLOAD_ERROR.getCode(),
                         "msg",ReturnCode.FILE_UPLOAD_ERROR.getDesc());
             }
@@ -189,7 +195,6 @@ public class ActivityController {
 
         if(activityOld==null){
             /*活动不存在*/
-            log.warn("更新的活动不存在=>id:"+id);
             return Map.of("success",false,"code",ReturnCode.NODATA.getCode(),"msg",ReturnCode.NODATA.getDesc());
         }else if(activityOld.getActivityId()!=activity.getActivityId()){
             /*id不一致*/
@@ -232,7 +237,6 @@ public class ActivityController {
 
         Activity activity = activityService.getActivityById(activityId);
         if(activity==null){
-            log.warn("删除的活动不存在=>id:"+activityId);
             return Map.of("success",false,"code",
                     ReturnCode.NODATA.getCode(),"msg",ReturnCode.NODATA.getDesc());
         }
@@ -302,7 +306,18 @@ public class ActivityController {
                                         @RequestParam("currPage")int currPage,
                                         @RequestParam("pageSize")int pageSize){
 
-        return applyService.getPassStudentApply(activityId,currPage,pageSize);
+        List<ApplyVoPC> applyVoPCS= applyService.getPassStudentApply(activityId);
+        List<JSONObject> list = new ArrayList<>();
+
+        for(ApplyVoPC o:applyVoPCS){
+            JSONObject obj = JSONObject.parseObject(JSON.toJSONString(o, SerializerFeature.WriteMapNullValue));
+            obj.remove("studentId");
+            obj.remove("activityId");
+            obj.remove("activity");
+            list.add(obj);
+        }
+
+        return PageService.getPage(currPage,pageSize,list);
     }
 
 
@@ -344,6 +359,43 @@ public class ActivityController {
 
 
     /**
+     * 获取活动的人数信息，总报名人数，已经通过审核的人数，未处理的人数
+     * @param activityId
+     * @return
+     */
+    @RequestMapping(value = "/{activityId}/statics")
+    @ResponseBody
+    public Map getActStatics(@PathVariable("activityId")Integer activityId){
+
+        Activity activity = activityService.getActivityById(activityId);
+
+        if(activity==null){
+            return Map.of("success",false,"code",ReturnCode.NODATA.getCode(),
+                    "msg",ReturnCode.NODATA.getDesc());
+        }
+
+        List<Apply> applyList = applyService.getAllByActId(activityId);
+
+        int total = applyList.size();
+        int passed = 0;
+        int ll = 0;
+
+        for(Apply e:applyList){
+            if(e.getStatus() == ApplyStatus.AGREE){
+                passed++;
+            }else if(e.getStatus() == ApplyStatus.NOTEXAMINE){
+                ll++;
+            }
+        }
+
+        Map<String,Integer> result = Map.of("total",total,"passed",passed,
+                "unprocessed",ll);
+
+        return Map.of("success",true,"code",ReturnCode.SUCCESS.getCode()
+                ,"msg",ReturnCode.SUCCESS.getDesc(),"data",result);
+    }
+
+    /**
      * 全局搜索模糊查询活动的相关字段
      * @param key
      * @param currPage
@@ -357,4 +409,7 @@ public class ActivityController {
                        @RequestParam("pageSize")int pageSize){
         return activityService.search(key,currPage,pageSize);
     }
+
+
+
 }

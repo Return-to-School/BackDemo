@@ -15,6 +15,10 @@ import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.ExcelExportService;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import cn.ncu.newmedia.backschool.view.ExcelView;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -34,7 +38,6 @@ import java.util.*;
  */
 @Controller
 @RequestMapping("/apply")
-@Slf4j
 public class ApplyController {
 
 
@@ -69,7 +72,6 @@ public class ApplyController {
         Student student = studentService.getStudentByColumn("student_id",apply.getStudentId());
 
         if(student==null){
-            log.warn("学生不存在=>id:"+apply.getStudentId());
             return Map.of("success",false,"code",ReturnCode.NODATA.getCode(),"msg", ReturnCode.NODATA.getDesc(),"applyId",-1);
         }
 
@@ -78,7 +80,6 @@ public class ApplyController {
         student.getPhone()==null||student.getEmail()==null||
         student.getOrigin()==null||student.getHighSchool()==null||
         student.getIdCard()==null){
-            log.warn("学生资料信息未完善=>id:"+student.getStudentId());
             return Map.of("success",false,"code",ReturnCode.NO_PROFILE.getCode(),
                     "msg",ReturnCode.NO_PROFILE.getDesc(),"applyId",-1);
         }
@@ -86,7 +87,6 @@ public class ApplyController {
 
         Activity activity = activityService.getActivityById(apply.getActivityId());
         if(activity==null){
-            log.warn("报名参加的活动不存在=>id:"+apply.getApplyId());
             return Map.of("success",false,"code",ReturnCode.NODATA.getCode(),
                     "msg",ReturnCode.NODATA.getDesc(),"applyId",-1);
         }
@@ -144,8 +144,20 @@ public class ApplyController {
     @RequestMapping(value = "/all/student-id/{studentId}",method = RequestMethod.GET)
     @ResponseBody
     public Map getAllByStudentId(@PathVariable("studentId") String studentId){
+
+        List<ApplyVoPC> data = applyService.listAllByStudentId(studentId);
+        JSONArray array = new JSONArray();
+
+        for(ApplyVoPC o:data){
+            JSONObject obj = JSONObject.parseObject(JSON.toJSONString(o, SerializerFeature.WriteMapNullValue));
+
+            obj.remove("activityId");
+            obj.remove("student");
+            array.add(obj);
+        }
+
         return Map.of("success",true,"code",ReturnCode.SUCCESS.getCode(),
-                "msg",ReturnCode.SUCCESS.getDesc(),"data",applyService.listAllByStudentId(studentId));
+                "msg",ReturnCode.SUCCESS.getDesc(),"data",array);
     }
 
 
@@ -315,9 +327,17 @@ public class ApplyController {
     @ResponseBody
     public Map getApplyByActIdAndSdtId(@PathVariable("activityId")int activityId,
                                          @PathVariable("studentId")String studentId){
-        return Map.of("success",true,"code",ReturnCode.SUCCESS.getCode(),
-                "msg",ReturnCode.SUCCESS.getDesc(),"data",
-                applyService.getApplyByActIdAndSdtId(activityId,studentId));
+        ReturnCode code = ReturnCode.SUCCESS;
+
+        Apply apply = applyService.getApplyByActIdAndSdtId(activityId,studentId);
+        if(apply==null){
+            code = ReturnCode.NODATA;
+            return Map.of("success",false,"code",code.getCode(),
+                    "msg",code.getDesc());
+        }
+        return Map.of("success",true,"code",code.getCode(),
+                "msg",code.getDesc(),"data",
+                apply);
 
     }
 

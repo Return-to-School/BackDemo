@@ -68,9 +68,6 @@ public class Activity implements Serializable {
     /*是否需要审核*/
     private Boolean needExamine;
 
-    /*所有的申请*/
-    private List<Apply> applyList;
-
 
     public Activity() {
     }
@@ -171,15 +168,6 @@ public class Activity implements Serializable {
         this.needExamine = needExamine;
     }
 
-
-    public List<Apply> getApplyList() {
-        return applyList;
-    }
-
-    public void setApplyList(List<Apply> applyList) {
-        this.applyList = applyList;
-    }
-
     @Override
     public String toString() {
         return "Activity{" +
@@ -195,7 +183,6 @@ public class Activity implements Serializable {
                 ", filePath='" + filePath + '\'' +
                 ", location='" + location + '\'' +
                 ", needExamine=" + needExamine +
-                ", applyList=" + applyList +
                 '}';
     }
 

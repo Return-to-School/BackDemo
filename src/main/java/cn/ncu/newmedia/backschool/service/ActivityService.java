@@ -7,6 +7,7 @@ import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,8 @@ import java.util.List;
 @Service
 public class ActivityService {
 
-    static final String FILEPATH = "e:/所有文件";
+    @Value("${fileupload.path}")
+    private String FILEPATH;
 
     @Autowired
     private ActivityDao activityDao;

@@ -81,10 +81,9 @@ public class ApplyService {
      * @param studentId
      * @return
      */
-    public List<Apply> listAllByStudentId(String studentId){
-        return applyDao.getAppliesByColumn("student_id",studentId);
+    public List<ApplyVoPC>  listAllByStudentId(String studentId){
+        return applyDao.getAppVoListBySid(studentId);
     }
-
 
 
 
@@ -174,11 +173,18 @@ public class ApplyService {
 
 
     /*获取某个活动下通过审核的学生申请列表*/
-    public Page getPassStudentApply(int activityId, int currPage, int pageSize) {
-        return PageService.getPage(currPage,pageSize,applyDao,
-                e->e.getPassStudentApply(activityId));
+    public List<ApplyVoPC> getPassStudentApply(int activityId) {
+        return applyDao.getPassStudentApply(activityId);
     }
 
+
+
+    /**
+     * 通过学生id和活动id获取相应的申请信息
+     * @param activityId
+     * @param studentId
+     * @return
+     */
     public Apply getApplyByActIdAndSdtId(int activityId, String studentId) {
         return applyDao.getApplyByAidAndSid(activityId,studentId);
     }
@@ -195,5 +201,15 @@ public class ApplyService {
         List<ApplyVoPC> dataList = applyDao.getApplyVoPcsByActId(activityId);
         dataList.forEach(e->e.setActivity(null));
         return PageService.getPage(currPage,pageSize,dataList);
+    }
+
+
+    /**
+     * 获取活动下的所有申请
+     * @param activityId
+     * @return
+     */
+    public List<Apply> getAllByActId(Integer activityId) {
+        return applyDao.getAppliesByColumn("activity_id",activityId);
     }
 }

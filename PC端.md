@@ -456,59 +456,73 @@ http://localhost:8080/activity/2/apply-pass?currPage=1&pageSize=5//分页获取�
 ```
 {
     "pageSize": 3,
-    "totalCount": 1,
+    "totalCount": 2,
     "pageNo": 1,
     "result": [
         {
-            "applyId": 0,
+            "feedback": {
+                "apply": 3,
+                "level": "EXCELLENT",
+                "filePath": "/XXX活动/反馈文件/6109117199-zhangsan",
+                "feedbackId": 1
+            },
+            "applyId": 3,
             "createTime": "2020-03-28 00:16:43",
+            "student": {
+                "college": "信工",
+                "qq": "2313133",
+                "studentId": "6109117199",
+                "bankCard": "36183718231",
+                "classname": "计算机111",
+                "gender": "SexEnum{code=1, desc='男'}",
+                "phone": "13767418799",
+                "idCard": "236183618",
+                "origin": "江西-南昌市",
+                "highSchool": "xx中学",
+                "name": "zhangsan",
+                "email": "44213123@qq.com"
+            },
+            "description": "",
             "status": {
                 "code": 1,
                 "desc": "通过"
+            }
+        },
+        {
+            "feedback": null,
+            "applyId": 5,
+            "createTime": "2020-03-28 00:55:56",
+            "student": {
+                "college": "金融",
+                "qq": "23123321",
+                "studentId": "6109117189",
+                "bankCard": "123121242",
+                "classname": "金融182",
+                "gender": "SexEnum{code=0, desc='女'}",
+                "phone": "12322224444",
+                "idCard": "1313211",
+                "origin": "江西-南昌市",
+                "highSchool": "yy中学",
+                "name": "lisi",
+                "email": "33141@qq.com"
             },
             "description": "",
-            "studentId": null,
-            "activityId": 0,
-            "feedback": null,
-            "student": {
-                "studentId": "6109117199",
-                "name": "zhangsan",
-                "gender": {
-                    "code": 1,
-                    "desc": "男"
-                },
-                "college": "信工",
-                "classname": "计算机111",
-                "idCard": "236183618",
-                "qq": "2313133",
-                "bankCard": "36183718231",
-                "phone": "13767418799",
-                "email": "44213123@qq.com",
-                "origin": "江西",
-                "highSchool": "xx中学"
-            },
-            "activity": {
-                "activityId": 2,
-                "name": "XXX活动",
-                "applyStartTime": "2020-01-01 09:00:00",
-                "applyEndTime": "2020-03-29 09:00:00",
-                "feedbackStartTime": "2020-03-29 17:00:00",
-                "feedbackEndTime": "2020-05-01 17:00:00",
-                "creator": "张三",
-                "createTime": "2020-03-27 23:36:21",
-                "content": "选择正在进行的活动，展示学生列表，管理员可以查看所有学生，宣传组管理员只能查看报名自己所在区域学校的学生信息。点击学生姓名查看学生报名信息点击通过或不通过确认学生报名状态。管理员可以通过省、市、姓名、学院、回访中学、状态等信息，宣传组管理员可以通过姓名、学院、回访中学、状态等信息进行查询及导出。列表中可以批量选择进行审核操",
-                "filePath": "/XXX活动",
-                "location": "江西省-南昌市-红谷滩新区",
-                "needExamine": true,
-                "applyList": null
+            "status": {
+                "code": 1,
+                "desc": "通过"
             }
         }
     ],
-    "hasNextPage": false,
     "totalPageCount": 1,
+    "hasNextPage": false,
     "hasPreviousPage": false
 }
 ```
+
+
+
+
+
 
 
 
@@ -564,19 +578,37 @@ http://localhost:8080/activity/group/jiangxi/history?currPage=1&pageSize=10
             "filePath": "/XXX活动",
             "location": "江西省-南昌市-红谷滩新区",
             "needExamine": true,
-            "applyList": null
         }
     ]
 }
 ```
 
-说明：
-
-这里的`applyList`是始终为空的，因为后台没有做连接查询（对于渲染页面没有用），需要获取请[点击](#获取参与某个活动的所有学生相关的信息)
 
 
 
 
+### 获取活动的人数统计信息
+
+接口地址：http://localhost:8080/activity/{activityId}/statics
+
+请求方式：get
+
+请求参数：活动id
+
+返回参数
+
+```
+{
+    "data": {
+        "passed": 2,
+        "unprocessed": 1,
+        "total": 3
+    },
+    "success": true,
+    "code": 0,
+    "msg": "操作成功"
+}
+```
 
 
 
@@ -724,7 +756,6 @@ ps：未提交反馈的申请中feedback为null
                 "filePath": "/XXX活动",
                 "location": "江西省-南昌市-红谷滩新区",
                 "needExamine": true,
-                "applyList": null
             }
         },
         {
@@ -768,7 +799,6 @@ ps：未提交反馈的申请中feedback为null
                 "filePath": "/XXX活动",
                 "location": "江西省-南昌市-红谷滩新区",
                 "needExamine": true,
-                "applyList": null
             }
         }
     ],
@@ -874,7 +904,6 @@ ps:宣传组管理员不能进行区域搜索
                 "filePath": "/江西活动2",
                 "location": "江西省-宜春市",
                 "needExamine": true,
-                "applyList": null
             }
         }
     ]
@@ -993,4 +1022,3 @@ http://localhost:8080/apply/export-for-group/jiangxi
 4. 请求参数：同宣传组管理员查询报名申请，不需要提供分页需要的参数
 
 5. 返回数据示例：同上
-

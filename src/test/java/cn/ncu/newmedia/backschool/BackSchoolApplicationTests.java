@@ -42,5 +42,10 @@ class BackSchoolApplicationTests {
     }
 
 
+    @Test
+    void test(){
+        applyDao.getAppVoListBySid("6109117189").forEach(System.out::println);
+    }
+
 
 }

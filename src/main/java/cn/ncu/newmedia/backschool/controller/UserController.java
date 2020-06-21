@@ -26,7 +26,6 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/user")
-@Slf4j
 public class UserController {
 
     @Autowired
@@ -190,14 +189,12 @@ public class UserController {
 
         //比对基础数据库，验证是否存在该学号
         if(student==null){
-            log.error("注册的该学号不存在=>studentId:"+studentId);
             code = ReturnCode.STUDENT_NOT_EXISTS;
             return Map.of("success",false,"code",code.getCode(),"msg",code.getDesc(),"userId",userId);
         }
 
         //验证学号和本人姓名是否一致
         if(!student.getName().equals(name)){
-            log.error("注册账号时遇到致命错误，学号与姓名不匹配=>id:"+studentId+"   姓名:"+name);
             code = ReturnCode.ID_NOT_MATCH_NAME;
             return Map.of("success",success,"msg",code.getDesc(),"code",code.getCode(),"userId",userId);
         }

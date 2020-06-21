@@ -47,4 +47,6 @@ public interface ApplyDao {
                               @Param("studentId")String studentId);
 
 
+    /*通过学生id获取学生申请*/
+    List<ApplyVoPC> getAppVoListBySid(@Param("studentId") String studentId);
 }

@@ -27,7 +27,7 @@ public class FeedBackService {
         Date now  = new Date();
 
         if(now.after(activity.getFeedbackStartTime())
-                &&now.before(activity.getApplyEndTime()))
+                &&now.before(activity.getFeedbackEndTime()))
             return feedBackDao.save(feedBack)>0;
 
         return false;

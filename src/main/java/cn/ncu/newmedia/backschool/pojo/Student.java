@@ -27,7 +27,6 @@ public class Student implements Serializable {
     /**
      * 学生的性别
      */
-    @JSONField(serializeUsing = ToStringSerializer.class)
     private SexEnum gender;
 
 

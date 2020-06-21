@@ -44,6 +44,8 @@ public class PageService<T,R>{
         Integer toltalCount = dataList.size();
         int fromIndex = (currPage-1)*pageSize;
         int toIndex = fromIndex+pageSize;
+
+
         if(toIndex > toltalCount){
             toIndex = toltalCount;
         }

@@ -37,4 +37,12 @@ public enum ApplyStatus implements BaseEnum{
     public void setDesc(String desc) {
         this.desc = desc;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "code=" + code +
+                ", desc='" + desc + '\'' +
+                '}';
+    }
 }

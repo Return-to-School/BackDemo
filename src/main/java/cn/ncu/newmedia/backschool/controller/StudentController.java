@@ -26,7 +26,6 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/student")
-@Slf4j
 public class StudentController {
 
     @Autowired
@@ -54,7 +53,6 @@ public class StudentController {
 
         /*判断下基础数据库是否有该学生的记录*/
         if(studentOld==null){
-            log.error("学生信息不存在，无法进行完善=>id:"+id);
             return Map.of("success",false,"msg", ReturnCode.NODATA.getDesc(),
                     "code",ReturnCode.NODATA.getCode());
         }else if(!studentOld.getName().equals(student.getName())){
@@ -76,7 +74,6 @@ public class StudentController {
         }else{
             /*验证身份证*/
             if(!studentService.checkIdCard(student.getIdCard())){
-                log.warn("身份证校验失败=>"+student.getIdCard());
                 code = ReturnCode.IDCARD_ERROR;
             }else{
                 studentOld.setQq(student.getQq());
