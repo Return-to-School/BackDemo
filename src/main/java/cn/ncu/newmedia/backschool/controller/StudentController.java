@@ -13,6 +13,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +46,7 @@ public class StudentController {
      * @param student
      * @return
      */
+    @RequiresRoles(value = {"normalUser"})
     @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
     @ResponseBody
     public Map<String,Object> updateProfile(@PathVariable("id")String id,@RequestBody Student student) {
@@ -102,6 +105,7 @@ public class StudentController {
      * @param studentId
      * @return
      */
+    @RequiresRoles(value = {"normalUser"})
     @RequestMapping(value = "/{studentId}",method = RequestMethod.GET)
     @ResponseBody
     public Map getStudent(@PathVariable("studentId")String studentId){
@@ -123,6 +127,7 @@ public class StudentController {
      * 获取所有学生的信息
      * @return
      */
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @RequestMapping(value = "/all",method = RequestMethod.GET)
     @ResponseBody
     public Map listAll(@RequestParam("currPage")int currPage,
@@ -143,6 +148,7 @@ public class StudentController {
      * @param activityId
      * @return
      */
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @RequestMapping(value = "/student-in-act/{activityId}",method = RequestMethod.GET)
     @ResponseBody
     public Map getStudentInAct(@PathVariable("activityId")Integer activityId,
@@ -156,7 +162,7 @@ public class StudentController {
         /*活动不存在*/
         if(activity==null){
             code = ReturnCode.NODATA;
-            return Map.of("success",false,"code",code.getCode(),"msg",code.getDesc(),"data",null);
+            return Map.of("success",false,"code",code.getCode(),"msg",code.getDesc(),"data","");
         }
 
         return Map.of("success",true,"code",code.getCode(),"msg",code.getDesc(),"data",applyService.listAllApplyVoInAct(currPage,pageSize,activityId));

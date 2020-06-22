@@ -9,10 +9,14 @@ import cn.ncu.newmedia.backschool.pojo.Activity;
 import cn.ncu.newmedia.backschool.pojo.Apply;
 import cn.ncu.newmedia.backschool.pojo.vo.pc.ApplyVoPC;
 import cn.ncu.newmedia.backschool.pojo.vo.pc.Keys;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -199,8 +203,15 @@ public class ApplyService {
      */
     public Page listAllApplyVoInAct(int currPage, int pageSize, Integer activityId) {
         List<ApplyVoPC> dataList = applyDao.getApplyVoPcsByActId(activityId);
-        dataList.forEach(e->e.setActivity(null));
-        return PageService.getPage(currPage,pageSize,dataList);
+        List<JSONObject> finalDataList = new ArrayList<>();
+
+        dataList.forEach(e->{
+            JSONObject obj = JSON.parseObject(JSON.toJSONString(e, SerializerFeature.WriteMapNullValue));
+            obj.remove("activity");
+            obj.remove("feedback");
+            finalDataList.add(obj);
+        });
+        return PageService.getPage(currPage,pageSize,finalDataList);
     }
 
 

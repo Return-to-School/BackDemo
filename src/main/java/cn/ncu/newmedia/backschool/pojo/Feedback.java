@@ -21,7 +21,6 @@ public class Feedback {
     /**
      * 评价的级别
      */
-    @JSONField(serializeUsing = ToStringSerializer.class)
     private Level level;
 
     /**

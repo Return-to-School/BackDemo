@@ -11,6 +11,10 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,8 +38,6 @@ public class UserController {
     @Autowired
     private StudentService studentService;
 
-//    @RequestMapping(value = "/login",method = RequestMethod.GET)
-//    public String showLoginPage(){return "login";}
 
 
     /**
@@ -46,17 +48,18 @@ public class UserController {
     @RequestMapping(value = "/verification",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> validate(@RequestBody User user){
-//        Subject subject = SecurityUtils.getSubject();
+        Subject subject = SecurityUtils.getSubject();
 
         ReturnCode code = ReturnCode.SUCCESS;
         String userId = "-1";
         boolean success = false;
-//        UsernamePasswordToken token = new UsernamePasswordToken(user.getStudentId()+"",user.getPassword());
+
+        UsernamePasswordToken token = new UsernamePasswordToken(user.getUserId(),user.getPassword());
 
         try{
-//            subject.login(token);
+            subject.login(token);
             user = userService.getUserById(user.getUserId());
-            userId = user.getUserId()+"";
+            userId = user.getUserId();
             success = true;
         }catch (UnknownAccountException e1){
             code = ReturnCode.USER_NOT_EXISTS;
@@ -76,6 +79,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/all",method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @ResponseBody
     public Page getAllUsers(@RequestParam("currPage")int currPage,
                             @RequestParam("pageSize")int pageSize){
@@ -119,6 +123,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/{userId}",method = RequestMethod.DELETE)
+    @RequiresRoles(value = {"superManager"})
     @ResponseBody
     public Map<String,Object> deleteUser(@PathVariable("userId")String userId){
 
@@ -144,6 +149,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "{userId}" ,method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @ResponseBody
     public Map getUserById(@PathVariable("userId")String userId){
         User user = userService.getUserById(userId);
@@ -153,6 +159,7 @@ public class UserController {
         boolean success = true;
         if(user==null){
             success = false;
+            user = new User();
             code = ReturnCode.NODATA;
         }else{
             user.setPassword(null);
@@ -162,14 +169,12 @@ public class UserController {
 
 
 
-
-
     /**
      * 注册用户
      * @param user
      * @return
      */
-    @RequestMapping(value = "",method = RequestMethod.POST)
+    @RequestMapping(value = "/register",method = RequestMethod.POST)
     @ResponseBody
     public Map<String,Object> register(@RequestBody User user,@RequestParam("name")String name){
 
@@ -200,6 +205,9 @@ public class UserController {
         }
 
 
+        /*对密码进行md5加密*/
+        Md5Hash md5Hash = new Md5Hash(user.getPassword());
+        user.setPassword(md5Hash.toString());
         success = userService.addUser(user);
 
         if(success){
@@ -210,6 +218,7 @@ public class UserController {
     }
 
 
+
     /**
      * 用户修改密码
      * @param userId
@@ -217,6 +226,7 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/{id}/revision/pwd",method = RequestMethod.POST)
+    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @ResponseBody
     public Map<String,Object> updateUser(@PathVariable("id")String userId,
                                          @RequestParam("pwdNew")String pwdNew,
@@ -254,6 +264,5 @@ public class UserController {
 
         return Map.of("success",true,"msg",code.getDesc(),"code",code.getCode());
     }
-
 }
 

@@ -14,7 +14,6 @@ public interface UserDao {
 
     User getUserById(@Param("userId") String userId);
 
-
     List<User> listAll();
 
     int delete(@Param("userId") String userId);

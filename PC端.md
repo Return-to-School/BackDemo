@@ -461,65 +461,80 @@ http://localhost:8080/activity/2/apply-pass?currPage=1&pageSize=5//分页获取�
     "result": [
         {
             "feedback": {
-                "apply": 3,
-                "level": "EXCELLENT",
-                "filePath": "/XXX活动/反馈文件/6109117199-zhangsan",
-                "feedbackId": 1
+                "apply": 10,
+                "level": {
+                    "code": 2,
+                    "desc": "优秀"
+                },
+                "filePath": "/test14/反馈文件/6109117091-易伟庭",
+                "feedbackId": 8
             },
-            "applyId": 3,
-            "createTime": "2020-03-28 00:16:43",
+            "applyId": 10,
+            "createTime": "2020-06-20 19:56:40",
             "student": {
-                "college": "信工",
-                "qq": "2313133",
-                "studentId": "6109117199",
-                "bankCard": "36183718231",
-                "classname": "计算机111",
-                "gender": "SexEnum{code=1, desc='男'}",
-                "phone": "13767418799",
-                "idCard": "236183618",
-                "origin": "江西-南昌市",
-                "highSchool": "xx中学",
-                "name": "zhangsan",
-                "email": "44213123@qq.com"
+                "college": "信息工程学院",
+                "qq": "23876323",
+                "studentId": "6109117091",
+                "bankCard": "676767676767020",
+                "classname": "计算机科学与技术（软件技术）175班",
+                "gender": {
+                    "code": 1,
+                    "desc": "男"
+                },
+                "phone": "18720767299",
+                "idCard": "360731199908052210",
+                "origin": "jx",
+                "highSchool": "yu",
+                "name": "易伟庭",
+                "email": "1123123@qq.com"
             },
-            "description": "",
+            "description": "123123123",
             "status": {
                 "code": 1,
                 "desc": "通过"
             }
         },
         {
-            "feedback": null,
-            "applyId": 5,
-            "createTime": "2020-03-28 00:55:56",
-            "student": {
-                "college": "金融",
-                "qq": "23123321",
-                "studentId": "6109117189",
-                "bankCard": "123121242",
-                "classname": "金融182",
-                "gender": "SexEnum{code=0, desc='女'}",
-                "phone": "12322224444",
-                "idCard": "1313211",
-                "origin": "江西-南昌市",
-                "highSchool": "yy中学",
-                "name": "lisi",
-                "email": "33141@qq.com"
+            "feedback": {
+                "apply": 11,
+                "level": {
+                    "code": 2,
+                    "desc": "优秀"
+                },
+                "filePath": "/test14/反馈文件/6109117166-毛阿龙",
+                "feedbackId": 9
             },
-            "description": "",
+            "applyId": 11,
+            "createTime": "2020-06-21 17:59:49",
+            "student": {
+                "college": "信息工程学院",
+                "qq": "441712875",
+                "studentId": "6109117166",
+                "bankCard": "7125712993700",
+                "classname": "计算机科学与技术（软件技术）173班",
+                "gender": {
+                    "code": 1,
+                    "desc": "男"
+                },
+                "phone": "13767418749",
+                "idCard": "43112119990729879X",
+                "origin": "湖南省-永州市-祁阳县",
+                "highSchool": "祁阳一中",
+                "name": "毛阿龙",
+                "email": "441712875@qq.com"
+            },
+            "description": "我们来吧",
             "status": {
                 "code": 1,
                 "desc": "通过"
             }
         }
     ],
-    "totalPageCount": 1,
+    "hasPreviousPage": false,
     "hasNextPage": false,
-    "hasPreviousPage": false
+    "totalPageCount": 1
 }
 ```
-
-
 
 
 

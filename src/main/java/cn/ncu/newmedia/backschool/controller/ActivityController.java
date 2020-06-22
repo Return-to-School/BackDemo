@@ -14,6 +14,9 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -50,6 +53,8 @@ public class ActivityController {
      * @param activity
      * @return
      */
+
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @RequestMapping(value = "/{userId}",method = RequestMethod.POST)
     @ResponseBody
     public Map addActivity(@PathVariable("userId")String userId,
@@ -95,6 +100,7 @@ public class ActivityController {
         return Map.of("success",success, "code",code.getCode(),
                 "msg",code.getDesc(),"activityId",id);
 
+
     }
 
 
@@ -106,6 +112,7 @@ public class ActivityController {
      * @param activityFiles
      * @return
      */
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @RequestMapping(value = "/file/{activityId}",method = RequestMethod.POST)
     @ResponseBody
     public Map<String, Object> upload(@PathVariable("activityId")int activityId,@RequestParam("activityFiles") List<MultipartFile> activityFiles){
@@ -145,13 +152,13 @@ public class ActivityController {
 
 
 
-
     /**
      * 获取活动下的文件名
      * @param activityId
      * @return
      */
     @RequestMapping(value = "/{activityId}/filenames",method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @ResponseBody
     public Map<String,Object> getFilenames(@PathVariable("activityId")Integer activityId){
 
@@ -188,6 +195,7 @@ public class ActivityController {
      */
     @RequestMapping(value = "/{id}",method = RequestMethod.PUT)
     @ResponseBody
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     public Map<String,Object> updateActivity(@PathVariable("id") Integer id,@RequestBody Activity activity){
 
         /*保留原来的旧的活动信息*/
@@ -231,6 +239,7 @@ public class ActivityController {
      * @return
      */
     @RequestMapping(value = "/{activityId}",method = RequestMethod.DELETE)
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @ResponseBody
     public Map<String,Object> deleteActivity(@PathVariable("activityId")Integer activityId){
 
@@ -254,6 +263,7 @@ public class ActivityController {
      * @return
      */
     @RequestMapping(value = "/all",method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @ResponseBody
     public Page listAllActivities(@RequestParam("currPage")Integer currPage,
                                   @RequestParam("pageSize")Integer pageSize){
@@ -268,6 +278,7 @@ public class ActivityController {
      * @return
      */
     @RequestMapping(value = "/all/underway-act",method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @ResponseBody
     public Page listAllUnderwayAct(@RequestParam("currPage")Integer currPage,
                                    @RequestParam("pageSize")Integer pageSize){
@@ -285,6 +296,7 @@ public class ActivityController {
      * @return
      */
     @RequestMapping(value = "/history",method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @ResponseBody
     public Page listAllHistoryAct(@RequestParam("currPage") Integer currPage,
                                   @RequestParam("pageSize")Integer pageSize){
@@ -301,6 +313,7 @@ public class ActivityController {
      * @return
      */
     @RequestMapping(value = "/{id}/apply-pass",method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @ResponseBody
     public Page getApplyPassStudentList(@PathVariable("id")int activityId,
                                         @RequestParam("currPage")int currPage,
@@ -330,6 +343,7 @@ public class ActivityController {
      * @return
      */
     @RequestMapping(value = "/group/{managerId}/all/underway-act",method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @ResponseBody
     public Page listGroupUnderwayAct(@PathVariable("managerId")Integer managerId,
                                                @RequestParam("currPage")Integer currPage,
@@ -349,6 +363,7 @@ public class ActivityController {
      * @param pageSize
      * @return
      */
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @RequestMapping(value = "/group/{managerId}/history",method = RequestMethod.GET)
     @ResponseBody
     public Page listGroupHistoryAct(@PathVariable("managerId")String managerId,
@@ -364,6 +379,7 @@ public class ActivityController {
      * @return
      */
     @RequestMapping(value = "/{activityId}/statics")
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @ResponseBody
     public Map getActStatics(@PathVariable("activityId")Integer activityId){
 
@@ -402,6 +418,7 @@ public class ActivityController {
      * @param pageSize
      * @return
      */
+    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @RequestMapping(value = "/search-by-key",method = RequestMethod.GET)
     @ResponseBody
     public Page search(@RequestParam("key")String key,

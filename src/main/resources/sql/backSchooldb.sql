@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2020/3/28 16:36:06                           */
+/* Created on:     2020/6/22 18:31:21                           */
 /*==============================================================*/
 
 
@@ -11,6 +11,10 @@ drop table if exists activity_manager;
 drop table if exists apply;
 
 drop table if exists city;
+
+drop table if exists class;
+
+drop table if exists college;
 
 drop table if exists county;
 
@@ -69,8 +73,9 @@ create table apply
    apply_status         tinyint not null default 0 comment '申请状态，0未审核，1通过，2不通过',
    description          text not null comment '个人简介',
    activity_id          int not null,
-   student_id           varchar(32) not null comment '学生的学号',
-   primary key (apply_id)
+   student_id           varchar(32) comment '学生的学号',
+   primary key (apply_id),
+   unique key AK_Key_2 (activity_id, student_id)
 )
 charset = UTF8;
 
@@ -89,6 +94,33 @@ create table city
 charset = UTF8;
 
 alter table city comment '地级行政区表';
+
+/*==============================================================*/
+/* Table: class                                                 */
+/*==============================================================*/
+create table class
+(
+   class_id             int not null auto_increment comment '班级id',
+   class_name           varchar(32) not null comment '班级名称',
+   college_id           int not null comment '学院id，外键',
+   primary key (class_id)
+)
+charset = UTF8;
+
+alter table class comment '基础数据库表，班级信息';
+
+/*==============================================================*/
+/* Table: college                                               */
+/*==============================================================*/
+create table college
+(
+   college_id           int not null auto_increment comment '学院id',
+   college_name         varchar(32) not null comment '学院名称',
+   primary key (college_id)
+)
+charset = UTF8;
+
+alter table college comment '基础数据库表，学院信息';
 
 /*==============================================================*/
 /* Table: county                                                */
@@ -162,7 +194,7 @@ alter table student comment '学生表';
 create table user
 (
    user_id              varchar(32) not null comment '用户id',
-   password             varchar(16) not null comment '密码',
+   password             varchar(32) not null comment '密码',
    role                 tinyint not null default 2 comment '用户角色',
    group_loc            varchar(32) character set utf8 comment '管理地区',
    primary key (user_id)
@@ -185,6 +217,9 @@ alter table apply add constraint FK_Reference_3 foreign key (student_id)
 
 alter table city add constraint FK_Reference_8 foreign key (province_id)
       references province (province_id) on delete restrict on update restrict;
+
+alter table class add constraint FK_Reference_7 foreign key (college_id)
+      references college (college_id) on delete restrict on update restrict;
 
 alter table county add constraint FK_Reference_9 foreign key (city_id)
       references city (city_id) on delete restrict on update restrict;

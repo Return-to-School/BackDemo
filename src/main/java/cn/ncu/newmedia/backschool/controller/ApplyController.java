@@ -22,6 +22,8 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.shiro.authz.annotation.Logical;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -66,6 +68,7 @@ public class ApplyController {
      */
     @RequestMapping(value = "",method = RequestMethod.POST)
     @ResponseBody
+    @RequiresRoles(value = {"normalUser"})
     public Map<String,Object> apply(@RequestBody Apply apply){
 
         /*判断是否存在该学生的账号*/
@@ -125,6 +128,7 @@ public class ApplyController {
      * @return
      */
     @RequestMapping(value = "/all",method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @ResponseBody
     public Page getAllApply(@RequestParam("currPage")int currPage,
                             @RequestParam("pageSize")int pageSize){
@@ -142,6 +146,7 @@ public class ApplyController {
      * @return
      */
     @RequestMapping(value = "/all/student-id/{studentId}",method = RequestMethod.GET)
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @ResponseBody
     public Map getAllByStudentId(@PathVariable("studentId") String studentId){
 
@@ -170,6 +175,7 @@ public class ApplyController {
      * @return
      */
     @RequestMapping(value = "/examination/{status}",method = RequestMethod.POST)
+    @RequiresRoles(value = {"groupManager"})
     @ResponseBody
     public Map<String,Object> examine(@RequestBody List<Apply> applyList,@PathVariable("status") int statusCode){
 
@@ -189,6 +195,7 @@ public class ApplyController {
      * @param pageSize
      * @return
      */
+    @RequiresRoles(value = {"superManager"})
     @RequestMapping(value = "/search-for-super",method = RequestMethod.POST)
     @ResponseBody
     public Page searchForSuperManager(@RequestBody Keys keys,
@@ -206,6 +213,7 @@ public class ApplyController {
      * @param key
      * @return
      */
+    @RequiresRoles(value = {"superManager"})
     @RequestMapping(value = "/export-for-super",method = RequestMethod.POST)
     public ModelAndView exportForSuperManager(@RequestBody Keys key){
 
@@ -223,6 +231,7 @@ public class ApplyController {
      * 宣传组管理员查询报名申请，宣传组管理员可以通过姓名、学院、回访中学、状态等信息进行查询及导出。
      */
     @RequestMapping(value = "/search-for-group/{userId}",method = RequestMethod.POST)
+    @RequiresRoles(value = {"groupManager"})
     @ResponseBody
     public Page searchForGroupManager(@PathVariable("userId")String userId,
                                                     @RequestBody Keys keys,
@@ -242,6 +251,7 @@ public class ApplyController {
     /**
      * excel导出宣传组管理员的查询数据，宣传组管理员只能用姓名、学院、回访中学、状态查询导出
      */
+    @RequiresRoles(value = {"groupManager"})
     @RequestMapping(value = "/export-for-group/{userId}",method = RequestMethod.POST)
     public ModelAndView exportForGroupManager(@PathVariable("userId")String userId,
                                                @RequestBody Keys keys){
@@ -323,6 +333,7 @@ public class ApplyController {
     /*
     * 通过活动的id和学生的id获取学生的申请信息
     * */
+    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @RequestMapping(value = "/activity/{activityId}/student/{studentId}",method = RequestMethod.GET)
     @ResponseBody
     public Map getApplyByActIdAndSdtId(@PathVariable("activityId")int activityId,
