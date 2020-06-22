@@ -6,20 +6,14 @@ import cn.ncu.newmedia.backschool.pojo.Student;
 import cn.ncu.newmedia.backschool.pojo.User;
 import cn.ncu.newmedia.backschool.service.StudentService;
 import cn.ncu.newmedia.backschool.service.UserService;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresRoles;
-import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.subject.Subject;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 
@@ -47,30 +41,29 @@ public class UserController {
      */
     @RequestMapping(value = "/verification",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> validate(@RequestBody User user){
-        Subject subject = SecurityUtils.getSubject();
+    public Map<String,Object> validate(@RequestBody User user, HttpServletRequest request){
 
-        ReturnCode code = ReturnCode.SUCCESS;
+
+        ReturnCode code;
         String userId = "-1";
         boolean success = false;
 
-        UsernamePasswordToken token = new UsernamePasswordToken(user.getUserId(),user.getPassword());
+        user.setPassword(DigestUtils.md5Hex(user.getPassword()));
 
-        try{
-            subject.login(token);
-            user = userService.getUserById(user.getUserId());
-            userId = user.getUserId();
-            success = true;
-        }catch (UnknownAccountException e1){
+        /*验证登录*/
+        User userDb = userService.getUserById(user.getUserId());
+        if(userDb==null){
             code = ReturnCode.USER_NOT_EXISTS;
-        }catch (IncorrectCredentialsException e2){
+        }else if(!user.getPassword().equals(userDb.getPassword())){
             code = ReturnCode.PASSWORD_WRONG;
-        } catch (AuthenticationException e3){
-            code = ReturnCode.FAILED;
-        }finally {
-            return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"UserId",userId);
+        }else{
+            code = ReturnCode.SUCCESS;
+            success = true;
+            userId = user.getUserId();
+            HttpSession session = request.getSession();
+            session.setAttribute("UserId",userId);
         }
-
+        return Map.of("success",success,"code",code.getCode(),"msg",code.getDesc(),"UserId",userId);
     }
 
 
@@ -79,7 +72,6 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/all",method = RequestMethod.GET)
-    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @ResponseBody
     public Page getAllUsers(@RequestParam("currPage")int currPage,
                             @RequestParam("pageSize")int pageSize){
@@ -123,7 +115,6 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/{userId}",method = RequestMethod.DELETE)
-    @RequiresRoles(value = {"superManager"})
     @ResponseBody
     public Map<String,Object> deleteUser(@PathVariable("userId")String userId){
 
@@ -149,7 +140,6 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "{userId}" ,method = RequestMethod.GET)
-    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @ResponseBody
     public Map getUserById(@PathVariable("userId")String userId){
         User user = userService.getUserById(userId);
@@ -206,8 +196,7 @@ public class UserController {
 
 
         /*对密码进行md5加密*/
-        Md5Hash md5Hash = new Md5Hash(user.getPassword());
-        user.setPassword(md5Hash.toString());
+        user.setPassword(DigestUtils.md5Hex(user.getPassword().getBytes()));
         success = userService.addUser(user);
 
         if(success){
@@ -226,7 +215,6 @@ public class UserController {
      * @return
      */
     @RequestMapping(value = "/{id}/revision/pwd",method = RequestMethod.POST)
-    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @ResponseBody
     public Map<String,Object> updateUser(@PathVariable("id")String userId,
                                          @RequestParam("pwdNew")String pwdNew,

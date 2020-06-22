@@ -13,8 +13,6 @@ import cn.ncu.newmedia.backschool.service.ActivityService;
 import cn.ncu.newmedia.backschool.service.ApplyService;
 import cn.ncu.newmedia.backschool.service.FeedBackService;
 import cn.ncu.newmedia.backschool.service.StudentService;
-import org.apache.shiro.authz.annotation.Logical;
-import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -56,7 +54,6 @@ public class FeedbackController {
      * @return
      */
     @RequestMapping(value = "/{applyId}",method = RequestMethod.POST)
-    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @ResponseBody
     public Map<String,Object> sendFeedback(@RequestParam("feedbackFiles") List<MultipartFile> feedbackFiles,
                                            @PathVariable("applyId") int applyId){
@@ -150,7 +147,6 @@ public class FeedbackController {
      * @param id
      * @return
      */
-    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @RequestMapping(value = "/{id}/filenames",method = RequestMethod.GET)
     @ResponseBody
     public Map<String,Object> getFilenames(@PathVariable("id")int id){
@@ -186,7 +182,6 @@ public class FeedbackController {
      * @param level
      * @return
      */
-    @RequiresRoles(value = {"groupManager","superManager"},logical = Logical.OR)
     @RequestMapping(value = "/{id}/score",method = RequestMethod.GET)
     @ResponseBody
     public Map<String,Object>  setLevel(@PathVariable("id")int id,
@@ -225,7 +220,6 @@ public class FeedbackController {
      * @param id
      * @return
      */
-    @RequiresRoles(value = {"groupManager","superManager","normalUser"},logical = Logical.OR)
     @RequestMapping(value = "/{applyId}",method = RequestMethod.GET)
     @ResponseBody
     public Map getFeedback(@PathVariable("applyId")int id){
